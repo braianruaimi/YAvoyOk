@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YaVoy 2026 - Portal de Gestión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #0b1220;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #ffffff;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: #0b1220;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .module-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .module-title {
+            font-size: 1.8em;
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .module-description {
+            font-size: 1em;
+            color: #ffffff;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .module-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .module-features li {
+            padding: 5px 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .module-features li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .btn-access {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-access:hover {
+            transform: scale(1.05);
+        }
+
+        .stats-bar {
+            background: #0b1220;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            color: #ffffff;
+            margin-top: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 YaVoy 2026</h1>
+            <p>Portal de Gestión Unificado - Todas las herramientas en un solo lugar</p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="totalComercios">0</div>
+                <div class="stat-label">Comercios Activos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalRepartidores">0</div>
+                <div class="stat-label">Repartidores</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalPedidos">0</div>
+                <div class="stat-label">Pedidos Hoy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalRegistros">0</div>
+                <div class="stat-label">Registros Totales</div>
+            </div>
+        </div>
+
+        <!-- Modules Grid -->
+        <div class="modules-grid">
+            <!-- Panel Admin -->
+            <a href="panel-admin.html" class="module-card">
+                <div class="module-icon">📊</div>
+                <div class="module-title">Panel de Administración</div>
+                <div class="module-description">
+                    Vista completa de todos los registros con búsqueda avanzada y filtros
+                </div>
+                <ul class="module-features">
+                    <li>Todos los comercios y repartidores</li>
+                    <li>Búsqueda y filtros avanzados</li>
+                    <li>Exportar CSV/JSON</li>
+                    <li>Estadísticas en tiempo real</li>
+                </ul>
+                <button class="btn-access">Acceder al Panel →</button>
+            </a>
+
+            <!-- Dashboard CEO -->
+            <a href="dashboard-ceo.html" class="module-card">
+                <div class="module-icon">📈</div>
+                <div class="module-title">Dashboard Ejecutivo</div>
+                <div class="module-description">
+                    Métricas ejecutivas con gráficos interactivos y KPIs en tiempo real
+                </div>
+                <ul class="module-features">
+                    <li>6 KPIs principales con tendencias</li>
+                    <li>5 gráficos interactivos (Chart.js)</li>
+                    <li>Top 10 comercios y repartidores</li>
+                    <li>Análisis de rendimiento</li>
+                </ul>
+                <button class="btn-access">Ver Dashboard →</button>
+            </a>
+
+            <!-- Chat Sistema -->
+            <a href="chat-sistema.html" class="module-card">
+                <div class="module-icon">💬</div>
+                <div class="module-title">Sistema de Chat</div>
+                <div class="module-description">
+                    Comunicación en tiempo real entre comercios, repartidores y clientes
+                </div>
+                <ul class="module-features">
+                    <li>Chat estilo WhatsApp</li>
+                    <li>Indicadores de lectura</li>
+                    <li>Búsqueda de conversaciones</li>
+                    <li>Historial persistente</li>
+                </ul>
+                <button class="btn-access">Abrir Chat →</button>
+            </a>
+
+            <!-- Notificaciones -->
+            <a href="notificaciones-push.html" class="module-card">
+                <div class="module-icon">🔔</div>
+                <div class="module-title">Notificaciones Push</div>
+                <div class="module-description">
+                    Sistema avanzado de notificaciones con plantillas y personalización
+                </div>
+                <ul class="module-features">
+                    <li>Plantillas rápidas predefinidas</li>
+                    <li>Notificaciones personalizadas</li>
+                    <li>Segmentación de destinatarios</li>
+                    <li>Historial y estadísticas</li>
+                </ul>
+                <button class="btn-access">Gestionar Notificaciones →</button>
+            </a>
+
+            <!-- Mapa Entregas -->
+            <a href="mapa-entregas.html" class="module-card">
+                <div class="module-icon">🗺️</div>
+                <div class="module-title">Mapa de Entregas</div>
+                <div class="module-description">
+                    Seguimiento GPS en tiempo real de todas las entregas activas
+                </div>
+                <ul class="module-features">
+                    <li>Mapa interactivo (OpenStreetMap)</li>
+                    <li>Tracking GPS en vivo</li>
+                    <li>Rutas y tiempos estimados</li>
+                    <li>Filtros por estado/repartidor</li>
+                </ul>
+                <button class="btn-access">Ver Mapa →</button>
+            </a>
+
+            <!-- App Repartidor -->
+            <a href="repartidor-app.html" class="module-card">
+                <div class="module-icon">🚴</div>
+                <div class="module-title">App Repartidor</div>
+                <div class="module-description">
+                    Aplicación móvil para repartidores con tracking GPS en vivo
+                </div>
+                <ul class="module-features">
+                    <li>Ver pedidos disponibles</li>
+                    <li>Tracking en tiempo real</li>
+                    <li>Chat con comercios/clientes</li>
+                    <li>Historial de entregas</li>
+                </ul>
+                <button class="btn-access">Abrir App →</button>
+            </a>
+
+            <!-- App Comercio -->
+            <a href="comercio-app.html" class="module-card">
+                <div class="module-icon">🏪</div>
+                <div class="module-title">App Comercio</div>
+                <div class="module-description">
+                    Aplicación móvil para comercios - Crea y gestiona pedidos
+                </div>
+                <ul class="module-features">
+                    <li>Crear pedidos rápidamente</li>
+                    <li>Ver estado en tiempo real</li>
+                    <li>Chat con repartidor</li>
+                    <li>Historial y estadísticas</li>
+                </ul>
+                <button class="btn-access">Abrir App →</button>
+            </a>
+
+            <!-- Portal Principal -->
+            <a href="/" class="module-card">
+                <div class="module-icon">🏠</div>
+                <div class="module-title">Portal Principal</div>
+                <div class="module-description">
+                    Volver a la página principal de YaVoy para registros y pedidos
+                </div>
+                <ul class="module-features">
+                    <li>Registro de comercios</li>
+                    <li>Registro de repartidores</li>
+                    <li>Crear nuevos pedidos</li>
+                    <li>Paneles de usuario</li>
+                </ul>
+                <button class="btn-access">Ir a Principal →</button>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>YaVoy 2026 - Sistema de Gestión Integral</p>
+            <p>Versión 2.0 | <a href="README.md">Documentación</a> | <a href="GUIA_INTEGRACION_BACKEND.md">Guía Técnica</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch('/api/dashboard/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('totalComercios').textContent = stats.comercios.total;
+                    document.getElementById('totalRepartidores').textContent = stats.repartidores.total;
+                    document.getElementById('totalPedidos').textContent = stats.pedidos.hoy;
+                    document.getElementById('totalRegistros').textContent = 
+                        stats.comercios.total + stats.repartidores.total;
+                }
+            } catch (error) {
+                console.log('Usando valores por defecto');
+                // Cargar desde API simple
+                try {
+                    const response = await fetch('/api/registros');
+                    if (response.ok) {
+                        const registros = await response.json();
+                        const comercios = registros.filter(r => r.tipo === 'comercio').length;
+                        const repartidores = registros.filter(r => r.tipo === 'repartidor').length;
+                        
+                        document.getElementById('totalComercios').textContent = comercios;
+                        document.getElementById('totalRepartidores').textContent = repartidores;
+                        document.getElementById('totalRegistros').textContent = registros.length;
+                    }
+                } catch (err) {
+                    console.log('Servidor no disponible');
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', cargarEstadisticas);
+    </script>
+</body>
+</html>

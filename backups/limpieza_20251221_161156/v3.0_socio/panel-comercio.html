@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Comercio - YaVoy</title>
+  <link rel="stylesheet" href="styles.css?v=13">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f1724;
+      min-height: 100vh;
+      color: #ffffff;
+    }
+
+    .panel-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header del panel */
+    .panel-header {
+      background: #0b1220;
+      border-radius: 15px;
+      padding: 20px 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      border: 1px solid #3a4a5c;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comercio-info h1 {
+      font-size: 28px;
+      color: #ffffff;
+      margin-bottom: 5px;
+    }
+
+    .comercio-info .id-comercio {
+      font-size: 14px;
+      color: #06b6d4;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .btn-cerrar-sesion {
+      background: #f56565;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-cerrar-sesion:hover {
+      background: #e53e3e;
+      transform: translateY(-2px);
+    }
+
+    /* Tabs de navegación */
+    .panel-tabs {
+      background: #0b1220;
+      border-radius: 15px;
+      padding: 15px 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      border: 1px solid #3a4a5c;
+      display: flex;
+      gap: 20px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      color: #06b6d4;
+      border-bottom-color: #06b6d4;
+    }
+
+    .tab-btn:hover {
+      color: #06b6d4;
+    }
+
+    /* Contenido de tabs */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Tarjetas de estadísticas */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: #0b1220;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      border: 1px solid #3a4a5c;
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .stat-card .label {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 5px;
+    }
+
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #06b6d4;
+    }
+
+    /* Sección de pedidos */
+    .pedidos-section {
+      background: #0b1220;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      border: 1px solid #3a4a5c;
+    }
+
+    .pedidos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .pedidos-header h2 {
+      font-size: 24px;
+      color: #ffffff;
+    }
+
+    .btn-nuevo-pedido {
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-nuevo-pedido:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(6, 182, 212, 0.4);
+    }
+
+    /* Filtros de pedidos */
+    .pedidos-filtros {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filtro-btn {
+      background: #1a2332;
+      border: 2px solid #3a4a5c;
+      padding: 8px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #ffffff;
+      transition: all 0.3s;
+    }
+
+    .filtro-btn.active {
+      background: #06b6d4;
+      color: white;
+      border-color: #06b6d4;
+    }
+
+    /* Lista de pedidos */
+    .pedidos-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .pedido-card {
+      background: #1a2332;
+      border: 2px solid #3a4a5c;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .pedido-card:hover {
+      border-color: #06b6d4;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+
+    .pedido-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+
+    .pedido-id {
+      font-weight: bold;
+      color: #06b6d4;
+      font-size: 16px;
+    }
+
+    .pedido-estado {
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .estado-pendiente {
+      background: #fef5e7;
+      color: #d68910;
+    }
+
+    .estado-asignado {
+      background: #ebf8ff;
+      color: #2c5282;
+    }
+
+    .estado-en-camino {
+      background: #e6fffa;
+      color: #047857;
+    }
+
+    .estado-entregado {
+      background: #f0fff4;
+      color: #22543d;
+    }
+
+    .pedido-detalles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .detalle-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .detalle-label {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .detalle-value {
+      font-size: 14px;
+      color: #ffffff;
+    }
+
+    .pedido-acciones {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #3a4a5c;
+    }
+
+    .btn-accion {
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .btn-asignar {
+      background: #48bb78;
+      color: white;
+    }
+
+    .btn-asignar:hover {
+      background: #38a169;
+    }
+
+    .btn-ver-detalle {
+      background: #4299e1;
+      color: white;
+    }
+
+    .btn-ver-detalle:hover {
+      background: #3182ce;
+    }
+
+    .btn-cancelar {
+      background: #fc8181;
+      color: white;
+    }
+
+    .btn-cancelar:hover {
+      background: #f56565;
+    }
+
+    .btn-entregar {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .btn-entregar:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-contenido {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      color: #2d3748;
+    }
+
+    .btn-cerrar-modal {
+      background: none;
+      border: none;
+      font-size: 30px;
+      color: #718096;
+      cursor: pointer;
+      padding: 0;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-cerrar-modal:hover {
+      color: #2d3748;
+    }
+
+    /* Formulario de nuevo pedido */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2d3748;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Lista de repartidores */
+    .repartidores-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .repartidor-item {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .repartidor-item:hover {
+      border-color: #667eea;
+      background: #f7fafc;
+    }
+
+    .repartidor-item.selected {
+      border-color: #48bb78;
+      background: #f0fff4;
+    }
+
+    .repartidor-info {
+      flex: 1;
+    }
+
+    .repartidor-nombre {
+      font-weight: bold;
+      color: #2d3748;
+      margin-bottom: 5px;
+    }
+
+    .repartidor-detalles {
+      font-size: 12px;
+      color: #718096;
+    }
+
+    .repartidor-disponible {
+      background: #48bb78;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .no-pedidos {
+      text-align: center;
+      padding: 60px 20px;
+      color: #718096;
+    }
+
+    .no-pedidos .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    .no-pedidos h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .panel-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .pedidos-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .pedido-detalles {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script>
+    // Función de login debe estar disponible antes del formulario
+    function loginComercio(event) {
+      event.preventDefault();
+      
+      const password = document.getElementById('passwordInput').value;
+      const passwordCorrecta = '2215690902';
+      
+      // Verificar contraseña exacta
+      if (password === passwordCorrecta) {
+        // Guardar sesión
+        localStorage.setItem('comercioLoggedIn', 'true');
+        localStorage.setItem('comercioPassword', password);
+        
+        // Ocultar login y mostrar panel
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('panelContainer').style.display = 'block';
+        
+        // Recargar página para que cargue todo el contenido del panel
+        window.location.reload();
+      } else {
+        alert('❌ Contraseña incorrecta.\n\nPor favor, ingresá la contraseña asignada.');
+      }
+    }
+
+    // Verificar si ya está logueado al cargar la página
+    function verificarSesionInicial() {
+      const loggedIn = localStorage.getItem('comercioLoggedIn');
+      const passwordGuardada = localStorage.getItem('comercioPassword');
+      const passwordCorrecta = '2215690902';
+      
+      // Solo mostrar panel si está logueado Y la contraseña guardada es correcta
+      if (loggedIn === 'true' && passwordGuardada === passwordCorrecta) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('panelContainer').style.display = 'block';
+      } else {
+        // Si la sesión es inválida, limpiar localStorage
+        localStorage.removeItem('comercioLoggedIn');
+        localStorage.removeItem('comercioPassword');
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('panelContainer').style.display = 'none';
+      }
+    }
+
+    // Ejecutar verificación cuando cargue el DOM
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', verificarSesionInicial);
+    } else {
+      verificarSesionInicial();
+    }
+  </script>
+</head>
+<body>
+  <!-- Pantalla de Login -->
+  <div id="loginScreen" class="comercio-login-screen">
+    <div class="comercio-login-wrapper">
+      <div class="comercio-login-card">
+        <div class="comercio-login-header">
+          <div class="comercio-login-icon">🏪</div>
+          <h1 class="comercio-login-title">Panel de Comercio</h1>
+          <p class="comercio-login-subtitle">Ingresá tu contraseña para continuar</p>
+        </div>
+        
+        <form id="loginForm" onsubmit="loginComercio(event)" class="comercio-login-form">
+          <div>
+            <label class="comercio-login-label">Contraseña</label>
+            <input 
+              type="password" 
+              id="passwordInput" 
+              placeholder="Ingresá tu contraseña asignada"
+              required
+              class="comercio-login-input"
+            />
+          </div>
+          
+          <button type="submit" class="comercio-login-btn">
+            🔐 Ingresar al Panel
+          </button>
+        </form>
+        
+        <div class="comercio-login-footer">
+          <p class="comercio-login-footer-text">¿No tenés contraseña? <a href="../index.html" class="comercio-login-footer-link">Registrate aquí</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel Principal (oculto hasta login exitoso) -->
+  <div class="panel-container comercio-panel-hidden" id="panelContainer">
+    <!-- Header del Panel -->
+    <div class="panel-header">
+      <div class="comercio-info">
+        <h1 id="nombreComercio">Cargando...</h1>
+        <span class="id-comercio" id="idComercio">COM-000</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-cerrar-sesion" onclick="cerrarSesion()">
+          🚪 Cerrar Sesión
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs de Navegación -->
+    <div class="panel-tabs">
+      <button class="tab-btn active" onclick="cambiarTab('pedidos')">
+        📦 Pedidos Recibidos
+      </button>
+      <button class="tab-btn" onclick="cambiarTab('mis-pedidos')">
+        🛒 Mis Pedidos
+      </button>
+      <button class="tab-btn" onclick="cambiarTab('estadisticas')">
+        📊 Estadísticas
+      </button>
+      <button class="tab-btn" onclick="cambiarTab('tienda')">
+        🛍️ Mi Tienda Digital
+      </button>
+      <button class="tab-btn" onclick="cambiarTab('anuncios')">
+        📣 Anuncios
+      </button>
+      <button class="tab-btn" onclick="cambiarTab('configuracion')">
+        ⚙️ Configuración
+      </button>
+    </div>
+
+    <!-- Tab: Pedidos Recibidos -->
+    <div id="tabPedidos" class="tab-content active">
+      <!-- Estadísticas Rápidas -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="icon">👆</div>
+          <div class="label">Clicks Pendientes</div>
+          <div class="value" id="statPendientes">0</div>
+          <div class="comercio-clicks-stats">
+            📱 WhatsApp: <span class="comercio-clicks-whatsapp" id="clicksWhatsapp">0</span><br>
+            📷 Instagram: <span class="comercio-clicks-instagram" id="clicksInstagram">0</span><br>
+            🛒 Tienda: <span class="comercio-clicks-tienda" id="clicksTienda">0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">🚚</div>
+          <div class="label">En Proceso</div>
+          <div class="value" id="statProceso">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">✅</div>
+          <div class="label">Completados Hoy</div>
+          <div class="value" id="statCompletados">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">💰</div>
+          <div class="label">Ventas Hoy</div>
+          <div class="value" id="statVentas">$0</div>
+        </div>
+      </div>
+
+      <!-- Sección de Pedidos -->
+      <div class="pedidos-section">
+        <div class="pedidos-header">
+          <h2>📥 Pedidos Recibidos</h2>
+        </div>
+
+        <!-- Filtros -->
+        <div class="pedidos-filtros">
+          <button class="filtro-btn active" onclick="filtrarPedidos('todos')">
+            Todos
+          </button>
+          <button class="filtro-btn" onclick="filtrarPedidos('pendiente')">
+            Pendientes
+          </button>
+          <button class="filtro-btn" onclick="filtrarPedidos('asignado')">
+            Asignados
+          </button>
+          <button class="filtro-btn" onclick="filtrarPedidos('en-camino')">
+            En Camino
+          </button>
+          <button class="filtro-btn" onclick="filtrarPedidos('entregado')">
+            Entregados
+          </button>
+        </div>
+
+        <!-- Lista de Pedidos -->
+        <div class="pedidos-lista" id="listaPedidos">
+          <div class="no-pedidos">
+            <div class="icon">📦</div>
+            <h3>No hay pedidos aún</h3>
+            <p>Los pedidos que recibas aparecerán aquí</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Mis Pedidos (como cliente) -->
+    <div id="tabMisPedidos" class="tab-content">
+      <div class="pedidos-section">
+        <div class="pedidos-header">
+          <h2>🛒 Mis Pedidos a Repartidores</h2>
+          <button class="btn-nuevo-pedido" onclick="abrirModalNuevoPedido()">
+            ➕ Crear Pedido
+          </button>
+        </div>
+
+        <div class="pedidos-lista" id="listaMisPedidos">
+          <div class="no-pedidos">
+            <div class="icon">🛒</div>
+            <h3>No has creado pedidos</h3>
+            <p>Crea pedidos para que los repartidores te ayuden con entregas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Estadísticas -->
+    <div id="tabEstadisticas" class="tab-content">
+      <div class="pedidos-section">
+        <h2 class="comercio-stats-title">📊 Estadísticas del Comercio</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="icon">📦</div>
+            <div class="label">Total Pedidos Recibidos</div>
+            <div class="value" id="totalPedidosRecibidos">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">💰</div>
+            <div class="label">Ventas Totales</div>
+            <div class="value" id="ventasTotales">$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">⭐</div>
+            <div class="label">Calificación Promedio</div>
+            <div class="value" id="calificacionPromedio">0.0</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">👥</div>
+            <div class="label">Clientes Únicos</div>
+            <div class="value" id="clientesUnicos">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Mi Tienda Digital -->
+    <div id="tabTienda" class="tab-content">
+      <div class="pedidos-section comercio-tienda-empty">
+        <div class="comercio-tienda-empty-wrapper">
+          <div class="comercio-tienda-empty-icon">🛍️</div>
+          <h2 class="comercio-tienda-empty-title">Mi Tienda Digital</h2>
+          <p class="comercio-tienda-empty-text">
+            ¿Querés tener tu propia tienda digital y vender en línea?
+            <br>
+            Contactanos ahora y te ayudamos a crear tu tienda personalizada.
+          </p>
+          
+          <button onclick="solicitarTiendaDigital()" class="comercio-btn-solicitar-tienda">
+            <span class="comercio-btn-icon">💬</span>
+            ¡Quiero mi Tienda!
+          </button>
+          
+          <div class="comercio-beneficios-box">
+            <h3 class="comercio-beneficios-title">✨ Beneficios de tener tu Tienda Digital</h3>
+            <div class="comercio-beneficios-lista">
+              <p class="comercio-beneficio-item">✅ Catálogo de productos personalizado</p>
+              <p class="comercio-beneficio-item">✅ Pagos en línea seguros</p>
+              <p class="comercio-beneficio-item">✅ Sistema de entregas integrado</p>
+              <p class="comercio-beneficio-item">✅ Panel de control de ventas</p>
+              <p class="comercio-beneficio-item">✅ Soporte técnico 24/7</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Anuncios -->
+    <div id="tabAnuncios" class="tab-content">
+      <div class="pedidos-section comercio-anuncios-empty">
+        <div class="comercio-anuncios-empty-wrapper">
+          <div class="comercio-anuncios-empty-icon">📣</div>
+          <h2 class="comercio-anuncios-empty-title">Publicidad y Anuncios</h2>
+          <p class="comercio-anuncios-empty-text">
+            ¿Querés promocionar tu negocio y llegar a más clientes?
+            <br>
+            Te ayudamos a crear campañas publicitarias efectivas para tu comercio.
+          </p>
+          
+          <button onclick="solicitarAnuncios()" class="comercio-btn-anuncios">
+            <span class="comercio-btn-icon">💬</span>
+            ¡Quiero Publicidad!
+          </button>
+          
+          <div class="comercio-beneficios-box">
+            <h3 class="comercio-beneficios-title">🚀 Opciones de Publicidad</h3>
+            <div class="comercio-beneficios-lista">
+              <p class="comercio-beneficio-item">✅ Anuncios en redes sociales</p>
+              <p class="comercio-beneficio-item">✅ Promociones destacadas en la app</p>
+              <p class="comercio-beneficio-item">✅ Banners personalizados</p>
+              <p class="comercio-beneficio-item">✅ Campañas por email y WhatsApp</p>
+              <p class="comercio-beneficio-item">✅ Estadísticas de rendimiento</p>
+              <p class="comercio-beneficio-item">✅ Asesoramiento de marketing digital</p>
+            </div>
+          </div>
+          
+          <div class="comercio-oferta-box">
+            <p class="comercio-oferta-title">⭐ Oferta Especial</p>
+            <p class="comercio-oferta-text">
+              Primera campaña con <strong class="comercio-oferta-highlight">20% de descuento</strong> para nuevos anunciantes.
+              <br>
+              ¡Contactanos ahora y aprovechá esta oportunidad!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Configuración -->
+    <div id="tabConfiguracion" class="tab-content">
+      <div class="pedidos-section">
+        <h2 class="comercio-config-title">⚙️ Configuración del Comercio</h2>
+        
+        <form id="formConfiguracion" onsubmit="guardarConfiguracion(event)">
+          <div class="form-group">
+            <label>Nombre del Comercio *</label>
+            <input type="text" id="configNombre" required>
+          </div>
+
+          <div class="form-group">
+            <label>Categoría *</label>
+            <select id="configCategoria" required>
+              <option value="">Selecciona una categoría</option>
+              <option value="alimentacion">🍔 Alimentación</option>
+              <option value="salud">🏥 Salud</option>
+              <option value="bazar">🏪 Bazar</option>
+              <option value="indumentaria">👕 Indumentaria</option>
+              <option value="kiosco">🍬 Kiosco</option>
+              <option value="otros">📦 Otros</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Dirección *</label>
+            <input type="text" id="configDireccion" required>
+          </div>
+
+          <div class="form-group">
+            <label>Teléfono *</label>
+            <input type="tel" id="configTelefono" required>
+          </div>
+
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="configEmail" required>
+          </div>
+
+          <div class="form-group">
+            <label>Horario de Atención</label>
+            <input type="text" id="configHorario" placeholder="Ej: Lun-Vie 9:00-18:00">
+          </div>
+
+          <div class="form-group">
+            <label>Descripción del Comercio</label>
+            <textarea id="configDescripcion" placeholder="Describe tu comercio..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            💾 Guardar Cambios
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Asignar Repartidor -->
+  <div id="modalAsignarRepartidor" class="modal">
+    <div class="modal-contenido">
+      <div class="modal-header">
+        <h2>🚴 Asignar Repartidor</h2>
+        <button class="btn-cerrar-modal" onclick="cerrarModal('modalAsignarRepartidor')">&times;</button>
+      </div>
+
+      <p class="comercio-modal-text">
+        Selecciona un repartidor disponible para este pedido:
+      </p>
+
+      <div class="repartidores-lista" id="listaRepartidoresDisponibles">
+        <p class="comercio-modal-loading">
+          Cargando repartidores disponibles...
+        </p>
+      </div>
+
+      <button class="btn-submit comercio-btn-margin-top" onclick="confirmarAsignacion()">
+        ✅ Confirmar Asignación
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal: Nuevo Pedido -->
+  <div id="modalNuevoPedido" class="modal">
+    <div class="modal-contenido">
+      <div class="modal-header">
+        <h2>➕ Crear Nuevo Pedido</h2>
+        <button class="btn-cerrar-modal" onclick="cerrarModal('modalNuevoPedido')">&times;</button>
+      </div>
+
+      <form id="formNuevoPedido" onsubmit="crearPedido(event)">
+        <div class="form-group">
+          <label>Descripción del Pedido *</label>
+          <textarea id="pedidoDescripcion" required placeholder="Describe qué necesitas entregar..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Dirección de Entrega *</label>
+          <input type="text" id="pedidoDireccion" required placeholder="Calle, número, barrio">
+        </div>
+
+        <div class="form-group">
+          <label>Destinatario *</label>
+          <input type="text" id="pedidoDestinatario" required>
+        </div>
+
+        <div class="form-group">
+          <label>Teléfono Destinatario *</label>
+          <input type="tel" id="pedidoTelefono" required>
+        </div>
+
+        <div class="form-group">
+          <label>Monto a Cobrar</label>
+          <input type="number" id="pedidoMonto" step="0.01" min="0" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+          <label>Notas Adicionales</label>
+          <textarea id="pedidoNotas" placeholder="Instrucciones especiales..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          ✅ Crear Pedido
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    // Variables globales
+    let comercioActual = null;
+    let pedidosRecibidos = [];
+    let misPedidos = [];
+    let repartidoresDisponibles = [];
+    let pedidoParaAsignar = null;
+    let repartidorSeleccionado = null;
+    let filtroActual = 'todos';
+
+    // Inicializar panel
+    async function inicializarPanel() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let comercioId = urlParams.get('id');
+
+      // Si no hay ID en URL, usar uno por defecto (modo demo)
+      if (!comercioId) {
+        comercioId = 'COM-DEMO-001';
+        console.log('Modo demo: usando ID de comercio por defecto');
+      }
+
+      try {
+        // Cargar datos del comercio
+        const response = await fetch(`/api/comercio/${comercioId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          comercioActual = data.comercio;
+          cargarDatosComercio();
+          await cargarPedidosRecibidos();
+          await cargarMisPedidos();
+          actualizarEstadisticas();
+        } else {
+          // Modo demo: crear comercio ficticio
+          console.log('Comercio no encontrado, usando datos demo');
+          comercioActual = {
+            id: comercioId,
+            nombre: 'Comercio Demo',
+            categoria: 'General',
+            direccion: 'Dirección Demo',
+            telefono: '2215690902',
+            email: 'demo@yavoy.com',
+            horario: '9:00 - 18:00',
+            descripcion: 'Panel de demostración'
+          };
+          cargarDatosComercio();
+          await cargarPedidosRecibidos();
+          await cargarMisPedidos();
+          actualizarEstadisticas();
+        }
+      } catch (error) {
+        console.error('Error al cargar comercio:', error);
+        // En caso de error de red, usar modo demo
+        comercioActual = {
+          id: comercioId,
+          nombre: 'Comercio Demo',
+          categoria: 'General',
+          direccion: 'Dirección Demo',
+          telefono: '2215690902',
+          email: 'demo@yavoy.com',
+          horario: '9:00 - 18:00',
+          descripcion: 'Panel de demostración'
+        };
+        cargarDatosComercio();
+        await cargarPedidosRecibidos();
+        await cargarMisPedidos();
+        actualizarEstadisticas();
+      }
+    }
+
+    // Cargar datos del comercio en la interfaz
+    function cargarDatosComercio() {
+      document.getElementById('nombreComercio').textContent = comercioActual.nombre;
+      document.getElementById('idComercio').textContent = comercioActual.id;
+
+      // Cargar en formulario de configuración
+      document.getElementById('configNombre').value = comercioActual.nombre || '';
+      document.getElementById('configCategoria').value = comercioActual.categoria || '';
+      document.getElementById('configDireccion').value = comercioActual.direccion || '';
+      document.getElementById('configTelefono').value = comercioActual.telefono || '';
+      document.getElementById('configEmail').value = comercioActual.email || '';
+      document.getElementById('configHorario').value = comercioActual.horario || '';
+      document.getElementById('configDescripcion').value = comercioActual.descripcion || '';
+    }
+
+    // Cargar pedidos recibidos
+    async function cargarPedidosRecibidos() {
+      try {
+        const response = await fetch(`/api/pedidos?comercioId=${comercioActual.id}`);
+        const data = await response.json();
+
+        if (data.success) {
+          pedidosRecibidos = data.pedidos || [];
+          renderizarPedidos();
+        }
+      } catch (error) {
+        console.error('Error al cargar pedidos:', error);
+      }
+    }
+
+    // Cargar mis pedidos (como cliente)
+    async function cargarMisPedidos() {
+      try {
+        const response = await fetch(`/api/pedidos?clienteId=${comercioActual.id}`);
+        const data = await response.json();
+
+        if (data.success) {
+          misPedidos = data.pedidos || [];
+          renderizarMisPedidos();
+        }
+      } catch (error) {
+        console.error('Error al cargar mis pedidos:', error);
+      }
+    }
+
+    // Renderizar pedidos recibidos
+    function renderizarPedidos() {
+      const lista = document.getElementById('listaPedidos');
+      
+      let pedidosFiltrados = pedidosRecibidos;
+      if (filtroActual !== 'todos') {
+        pedidosFiltrados = pedidosRecibidos.filter(p => p.estado === filtroActual);
+      }
+
+      if (pedidosFiltrados.length === 0) {
+        lista.innerHTML = `
+          <div class="no-pedidos">
+            <div class="icon">📦</div>
+            <h3>No hay pedidos ${filtroActual !== 'todos' ? 'con este estado' : 'aún'}</h3>
+            <p>Los pedidos que recibas aparecerán aquí</p>
+          </div>
+        `;
+        return;
+      }
+
+      lista.innerHTML = pedidosFiltrados.map(pedido => `
+        <div class="pedido-card" data-id="${pedido.id}">
+          <div class="pedido-card-header">
+            <span class="pedido-id">${pedido.id}</span>
+            <span class="pedido-estado estado-${pedido.estado}">${obtenerTextoEstado(pedido.estado)}</span>
+          </div>
+
+          <div class="pedido-detalles">
+            <div class="detalle-item">
+              <span class="detalle-label">Cliente</span>
+              <span class="detalle-value">${pedido.cliente?.nombre || 'No especificado'}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Dirección Entrega</span>
+              <span class="detalle-value">${pedido.direccionEntrega || 'No especificada'}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Monto</span>
+              <span class="detalle-value">$${pedido.monto?.toFixed(2) || '0.00'}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Fecha</span>
+              <span class="detalle-value">${new Date(pedido.fecha).toLocaleString('es')}</span>
+            </div>
+          </div>
+
+          ${pedido.descripcion ? `<p style="margin-top: 10px; color: #718096;"><strong>Descripción:</strong> ${pedido.descripcion}</p>` : ''}
+
+          <div class="pedido-acciones">
+            ${pedido.estado === 'pendiente' ? `
+              <button class="btn-accion btn-asignar" onclick="abrirModalAsignarRepartidor('${pedido.id}')">
+                🚴 Asignar Repartidor
+              </button>
+            ` : ''}
+            ${pedido.estado === 'en-camino' ? `
+              <button class="btn-accion btn-entregar" onclick="confirmarEntregaCliente('${pedido.id}')">
+                ✅ Cliente Recibió Pedido
+              </button>
+            ` : ''}
+            <button class="btn-accion btn-ver-detalle" onclick="verDetallePedido('${pedido.id}')">
+              👁️ Ver Detalle
+            </button>
+            ${pedido.estado === 'pendiente' ? `
+              <button class="btn-accion btn-cancelar" onclick="cancelarPedido('${pedido.id}')">
+                ❌ Cancelar
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      actualizarEstadisticasRapidas();
+    }
+
+    // Renderizar mis pedidos
+    function renderizarMisPedidos() {
+      const lista = document.getElementById('listaMisPedidos');
+      
+      if (misPedidos.length === 0) {
+        lista.innerHTML = `
+          <div class="no-pedidos">
+            <div class="icon">🛒</div>
+            <h3>No has creado pedidos</h3>
+            <p>Crea pedidos para que los repartidores te ayuden con entregas</p>
+          </div>
+        `;
+        return;
+      }
+
+      lista.innerHTML = misPedidos.map(pedido => `
+        <div class="pedido-card">
+          <div class="pedido-card-header">
+            <span class="pedido-id">${pedido.id}</span>
+            <span class="pedido-estado estado-${pedido.estado}">${obtenerTextoEstado(pedido.estado)}</span>
+          </div>
+
+          <div class="pedido-detalles">
+            <div class="detalle-item">
+              <span class="detalle-label">Destinatario</span>
+              <span class="detalle-value">${pedido.destinatario || 'No especificado'}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Dirección</span>
+              <span class="detalle-value">${pedido.direccionEntrega}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Repartidor</span>
+              <span class="detalle-value">${pedido.repartidor?.nombre || 'Sin asignar'}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Monto</span>
+              <span class="detalle-value">$${pedido.monto?.toFixed(2) || '0.00'}</span>
+            </div>
+          </div>
+
+          <div class="pedido-acciones">
+            ${pedido.estado === 'en-camino' ? `
+              <button class="btn-accion btn-entregar" onclick="confirmarEntregaCliente('${pedido.id}')">
+                ✅ Cliente Recibió Pedido
+              </button>
+            ` : ''}
+            <button class="btn-accion btn-ver-detalle" onclick="verDetallePedido('${pedido.id}')">
+              👁️ Ver Detalle
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Obtener texto de estado
+    function obtenerTextoEstado(estado) {
+      const estados = {
+        'pendiente': '⏳ Pendiente',
+        'asignado': '📋 Asignado',
+        'en-camino': '🚚 En Camino',
+        'entregado': '✅ Entregado',
+        'cancelado': '❌ Cancelado'
+      };
+      return estados[estado] || estado;
+    }
+
+    // Cambiar tab
+    window.cambiarTab = function(tabName) {
+      // Desactivar todos los tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      // Activar tab seleccionado
+      event.target.classList.add('active');
+      document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1).replace('-', '')}`).classList.add('active');
+    };
+
+    // Solicitar tienda digital (WhatsApp)
+    window.solicitarTiendaDigital = function() {
+      const telefono = comercioActual.telefono || '2215690902';
+      const mensaje = encodeURIComponent(`¡Hola! Soy ${comercioActual.nombre || 'un comercio'} y quiero tener mi Tienda Digital. ¿Me pueden ayudar?`);
+      const urlWhatsApp = `https://wa.me/${telefono.replace(/\D/g, '')}?text=${mensaje}`;
+      window.open(urlWhatsApp, '_blank');
+    };
+
+    // Solicitar anuncios (WhatsApp)
+    window.solicitarAnuncios = function() {
+      const telefono = comercioActual.telefono || '2215690902';
+      const mensaje = encodeURIComponent(`¡Hola! Soy ${comercioActual.nombre || 'un comercio'} y estoy interesado en hacer publicidad y anuncios. ¿Me pueden brindar información?`);
+      const urlWhatsApp = `https://wa.me/${telefono.replace(/\D/g, '')}?text=${mensaje}`;
+      window.open(urlWhatsApp, '_blank');
+    };
+
+    // Filtrar pedidos
+    window.filtrarPedidos = function(estado) {
+      filtroActual = estado;
+      
+      // Actualizar botones de filtro
+      document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      renderizarPedidos();
+    };
+
+    // Abrir modal asignar repartidor
+    window.abrirModalAsignarRepartidor = async function(pedidoId) {
+      pedidoParaAsignar = pedidoId;
+      repartidorSeleccionado = null;
+
+      try {
+        const response = await fetch('/api/repartidores?disponible=true');
+        const data = await response.json();
+
+        if (data.success) {
+          repartidoresDisponibles = data.repartidores || [];
+          renderizarRepartidoresDisponibles();
+          document.getElementById('modalAsignarRepartidor').classList.add('active');
+        }
+      } catch (error) {
+        console.error('Error al cargar repartidores:', error);
+        alert('⚠️ Error al cargar repartidores disponibles');
+      }
+    };
+
+    // Renderizar repartidores disponibles
+    function renderizarRepartidoresDisponibles() {
+      const lista = document.getElementById('listaRepartidoresDisponibles');
+
+      if (repartidoresDisponibles.length === 0) {
+        lista.innerHTML = `
+          <p style="text-align: center; padding: 40px; color: #718096;">
+            No hay repartidores disponibles en este momento
+          </p>
+        `;
+        return;
+      }
+
+      lista.innerHTML = repartidoresDisponibles.map(rep => `
+        <div class="repartidor-item" onclick="seleccionarRepartidor('${rep.id}')">
+          <div class="repartidor-info">
+            <div class="repartidor-nombre">${rep.nombre}</div>
+            <div class="repartidor-detalles">
+              📱 ${rep.telefono} | 🏍️ ${rep.vehiculo} | ⭐ ${rep.calificacion || '5.0'}
+            </div>
+          </div>
+          <span class="repartidor-disponible">✓ Disponible</span>
+        </div>
+      `).join('');
+    }
+
+    // Seleccionar repartidor
+    window.seleccionarRepartidor = function(repartidorId) {
+      repartidorSeleccionado = repartidorId;
+      
+      document.querySelectorAll('.repartidor-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      event.currentTarget.classList.add('selected');
+    };
+
+    // Confirmar asignación
+    window.confirmarAsignacion = async function() {
+      if (!repartidorSeleccionado) {
+        alert('⚠️ Selecciona un repartidor');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/pedidos/${pedidoParaAsignar}/asignar`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ repartidorId: repartidorSeleccionado })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Repartidor asignado correctamente');
+          cerrarModal('modalAsignarRepartidor');
+          await cargarPedidosRecibidos();
+        } else {
+          alert('⚠️ Error al asignar repartidor');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al asignar repartidor');
+      }
+    };
+
+    // Confirmar que el cliente recibió el pedido
+    window.confirmarEntregaCliente = async function(pedidoId) {
+      if (!confirm('¿Confirmas que el cliente ya recibió su pedido?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/pedidos/${pedidoId}/estado`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estado: 'entregado' })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Pedido marcado como entregado');
+          await cargarPedidosRecibidos();
+          await cargarMisPedidos();
+        } else {
+          alert('⚠️ Error al confirmar entrega');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al confirmar entrega');
+      }
+    };
+
+    // Abrir modal nuevo pedido
+    window.abrirModalNuevoPedido = function() {
+      document.getElementById('formNuevoPedido').reset();
+      document.getElementById('modalNuevoPedido').classList.add('active');
+    };
+
+    // Crear pedido
+    window.crearPedido = async function(event) {
+      event.preventDefault();
+
+      const pedido = {
+        clienteId: comercioActual.id,
+        clienteNombre: comercioActual.nombre,
+        descripcion: document.getElementById('pedidoDescripcion').value,
+        direccionEntrega: document.getElementById('pedidoDireccion').value,
+        destinatario: document.getElementById('pedidoDestinatario').value,
+        telefonoDestinatario: document.getElementById('pedidoTelefono').value,
+        monto: parseFloat(document.getElementById('pedidoMonto').value) || 0,
+        notas: document.getElementById('pedidoNotas').value
+      };
+
+      try {
+        const response = await fetch('/api/pedidos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pedido)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert(`✅ Pedido creado: ${data.pedido.id}`);
+          cerrarModal('modalNuevoPedido');
+          await cargarMisPedidos();
+        } else {
+          alert('⚠️ Error al crear pedido');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al crear pedido');
+      }
+    };
+
+    // Guardar configuración
+    window.guardarConfiguracion = async function(event) {
+      event.preventDefault();
+
+      const configuracion = {
+        nombre: document.getElementById('configNombre').value,
+        categoria: document.getElementById('configCategoria').value,
+        direccion: document.getElementById('configDireccion').value,
+        telefono: document.getElementById('configTelefono').value,
+        email: document.getElementById('configEmail').value,
+        horario: document.getElementById('configHorario').value,
+        descripcion: document.getElementById('configDescripcion').value
+      };
+
+      try {
+        // Guardar en el servidor (actualización)
+        const response = await fetch(`/api/comercio/${comercioActual.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(configuracion)
+        });
+
+        const data = await response.json();
+
+        // Guardar registro para CEOs
+        const registroParaCEO = {
+          comercioId: comercioActual.id,
+          nombre: configuracion.nombre,
+          categoria: configuracion.categoria,
+          direccion: configuracion.direccion,
+          telefono: configuracion.telefono,
+          email: configuracion.email,
+          horario: configuracion.horario,
+          descripcion: configuracion.descripcion,
+          fecha: new Date().toISOString(),
+          tipo: 'actualizacion_configuracion',
+          accion: 'Comercio actualizó su configuración'
+        };
+
+        // Enviar registro a carpeta de CEO
+        await fetch('/api/registros/ceo/configuraciones-comercios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(registroParaCEO)
+        });
+
+        if (data.success) {
+          comercioActual = { ...comercioActual, ...configuracion };
+          document.getElementById('nombreComercio').textContent = configuracion.nombre;
+          alert('✅ Configuración guardada correctamente\n\nSe ha notificado a los administradores.');
+        } else {
+          alert('⚠️ Error al guardar configuración');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Guardar en registros locales como fallback
+        const registroLocal = {
+          comercioId: comercioActual.id,
+          nombre: configuracion.nombre,
+          categoria: configuracion.categoria,
+          telefono: configuracion.telefono,
+          email: configuracion.email,
+          fecha: new Date().toISOString(),
+          carpeta: `servicios-${configuracion.categoria}`
+        };
+        
+        // Guardar en localStorage para sincronizar después
+        const registrosPendientes = JSON.parse(localStorage.getItem('registrosPendientesCEO') || '[]');
+        registrosPendientes.push(registroLocal);
+        localStorage.setItem('registrosPendientesCEO', JSON.stringify(registrosPendientes));
+        
+        alert('⚠️ Configuración guardada localmente.\n\nSe sincronizará cuando haya conexión.');
+      }
+    };
+
+    // Actualizar estadísticas rápidas
+    function actualizarEstadisticasRapidas() {
+      const hoy = new Date().toDateString();
+      
+      const pendientes = pedidosRecibidos.filter(p => p.estado === 'pendiente');
+      const totalPendientes = pendientes.length;
+      
+      // Contar clicks por origen
+      const clicksWhatsapp = pendientes.filter(p => p.origen === 'whatsapp').length;
+      const clicksInstagram = pendientes.filter(p => p.origen === 'instagram').length;
+      const clicksTienda = pendientes.filter(p => p.origen === 'tienda' || !p.origen).length;
+      
+      const proceso = pedidosRecibidos.filter(p => p.estado === 'asignado' || p.estado === 'en-camino').length;
+      const completadosHoy = pedidosRecibidos.filter(p => {
+        return p.estado === 'entregado' && new Date(p.fechaEntrega).toDateString() === hoy;
+      }).length;
+      const ventasHoy = pedidosRecibidos
+        .filter(p => p.estado === 'entregado' && new Date(p.fechaEntrega).toDateString() === hoy)
+        .reduce((sum, p) => sum + (p.monto || 0), 0);
+
+      document.getElementById('statPendientes').textContent = totalPendientes;
+      document.getElementById('clicksWhatsapp').textContent = clicksWhatsapp;
+      document.getElementById('clicksInstagram').textContent = clicksInstagram;
+      document.getElementById('clicksTienda').textContent = clicksTienda;
+      document.getElementById('statProceso').textContent = proceso;
+      document.getElementById('statCompletados').textContent = completadosHoy;
+      document.getElementById('statVentas').textContent = `$${ventasHoy.toFixed(2)}`;
+    }
+
+    // Actualizar estadísticas generales
+    function actualizarEstadisticas() {
+      const totalPedidos = pedidosRecibidos.length;
+      const ventasTotales = pedidosRecibidos
+        .filter(p => p.estado === 'entregado')
+        .reduce((sum, p) => sum + (p.monto || 0), 0);
+      
+      // Clientes únicos
+      const clientesUnicos = new Set(pedidosRecibidos.map(p => p.cliente?.id).filter(Boolean)).size;
+
+      document.getElementById('totalPedidosRecibidos').textContent = totalPedidos;
+      document.getElementById('ventasTotales').textContent = `$${ventasTotales.toFixed(2)}`;
+      document.getElementById('calificacionPromedio').textContent = '5.0';
+      document.getElementById('clientesUnicos').textContent = clientesUnicos;
+    }
+
+    // Ver detalle de pedido
+    window.verDetallePedido = function(pedidoId) {
+      alert(`Ver detalle del pedido: ${pedidoId}\n(Funcionalidad en desarrollo)`);
+    };
+
+    // Cancelar pedido
+    window.cancelarPedido = async function(pedidoId) {
+      if (!confirm('¿Seguro que deseas cancelar este pedido?')) return;
+
+      try {
+        const response = await fetch(`/api/pedidos/${pedidoId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estado: 'cancelado' })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Pedido cancelado');
+          await cargarPedidosRecibidos();
+        } else {
+          alert('⚠️ Error al cancelar pedido');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al cancelar pedido');
+      }
+    };
+
+    // Cerrar modal
+    window.cerrarModal = function(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    };
+
+    // Cerrar sesión
+    window.cerrarSesion = function() {
+      if (confirm('¿Seguro que deseas cerrar sesión?')) {
+        localStorage.removeItem('comercioLoggedIn');
+        localStorage.removeItem('comercioPassword');
+        window.location.href = '../index.html';
+      }
+    };
+
+    // Verificar sesión al cargar
+    const loggedIn = localStorage.getItem('comercioLoggedIn');
+    if (loggedIn === 'true') {
+      inicializarPanel();
+    }
+
+    // Función para mostrar notificación de entrega completada
+    function mostrarNotificacionEntrega(pedidoId, clienteNombre) {
+      // Crear elemento de notificación
+      const notif = document.createElement('div');
+      notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        z-index: 10000;
+        font-size: 16px;
+        animation: slideIn 0.5s ease-out;
+      `;
+      notif.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <div style="font-size: 32px;">✅</div>
+          <div>
+            <div style="font-weight: bold; margin-bottom: 5px;">¡Entrega Completada!</div>
+            <div style="font-size: 14px; opacity: 0.9;">Pedido ${pedidoId}</div>
+            <div style="font-size: 13px; opacity: 0.8;">Cliente: ${clienteNombre}</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notif);
+      
+      // Reproducir sonido de notificación
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQ
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+      } catch (e) {}
+      
+      // Eliminar después de 5 segundos
+      setTimeout(() => {
+        notif.style.animation = 'slideOut 0.5s ease-in';
+        setTimeout(() => notif.remove(), 500);
+      }, 5000);
+    }
+
+    // Agregar animaciones CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Auto-refresh cada 30 segundos (solo si está logueado)
+    let pedidosAnteriores = {};
+    setInterval(async () => {
+      const loggedIn = localStorage.getItem('comercioLoggedIn');
+      if (loggedIn === 'true') {
+        // Guardar estado anterior
+        const estadoAnterior = JSON.parse(JSON.stringify(pedidosRecibidos));
+        
+        await cargarPedidosRecibidos();
+        await cargarMisPedidos();
+        
+        // Detectar pedidos recién entregados
+        if (estadoAnterior.length > 0) {
+          pedidosRecibidos.forEach(pedido => {
+            const anterior = estadoAnterior.find(p => p.id === pedido.id);
+            if (anterior && anterior.estado !== 'entregado' && pedido.estado === 'entregado') {
+              // El pedido acaba de ser entregado
+              mostrarNotificacionEntrega(pedido.id, pedido.nombreCliente || 'Cliente');
+            }
+          });
+        }
+      }
+    }, 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAvoy - Plataforma Líder de Entregas</title>
+    <link rel="icon" href="favicon.ico">
+    <meta name="description"
+        content="YAvoy v3.1 Enterprise - La plataforma líder para pedidos, entregas y gestión empresarial con tecnología de vanguardia">
+    <meta name="keywords" content="entregas, pedidos, delivery, empresas, tecnología, YAvoy">
+
+    <!-- CSS Premium System -->
+    <link rel="stylesheet" href="css/premium-system.css">
+
+    <!-- Preload crítico -->
+    <link rel="preload" href="js/intelligent-router.js" as="script">
+    <link rel="preload" href="js/biometric-auth.js" as="script">
+</head>
+
+<body class="landing-page">
+    <!-- ========================================
+         🎯 HERO SECTION PREMIUM
+         ======================================== -->
+    <header class="hero-section">
+        <nav class="navbar-premium">
+            <div class="nav-container">
+                <div class="logo-premium">
+                    <img src="assets/logo-yavoy.svg" alt="YAvoy" class="logo-img">
+                    <span class="logo-text">YAvoy</span>
+                    <span class="version-badge">v3.1</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="#features" class="nav-link">Características</a>
+                    <a href="#pricing" class="nav-link">Planes</a>
+                    <a href="#contact" class="nav-link">Contacto</a>
+                    <button class="btn-login" onclick="showQuickLogin()">Iniciar Sesión</button>
+                </div>
+
+                <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    La Plataforma <span class="text-gradient">Líder</span><br>
+                    de Entregas Empresariales
+                </h1>
+                <p class="hero-subtitle">
+                    Conectamos empresas, comercios y repartidores con tecnología de vanguardia.
+                    Gestión inteligente, entregas rápidas, crecimiento asegurado.
+                </p>
+
+                <!-- ========================================
+                     🚀 BOTONES DE ACCESO PRINCIPAL
+                     ======================================== -->
+                <div class="access-buttons">
+                    <div class="access-card ceo-access" onclick="openCEOAccess()">
+                        <div class="access-icon">👑</div>
+                        <div class="access-content">
+                            <h3>CEO / Empresa</h3>
+                            <p>Dashboard ejecutivo y analytics avanzados</p>
+                        </div>
+                        <div class="access-arrow">→</div>
+                    </div>
+
+                    <div class="access-card comercio-access" onclick="openComercioAccess()">
+                        <div class="access-icon">🏪</div>
+                        <div class="access-content">
+                            <h3>Comercio</h3>
+                            <p>Gestión de pedidos y ventas en línea</p>
+                        </div>
+                        <div class="access-arrow">→</div>
+                    </div>
+
+                    <div class="access-card repartidor-access" onclick="openRepartidorAccess()">
+                        <div class="access-icon">🚚</div>
+                        <div class="access-content">
+                            <h3>Repartidor</h3>
+                            <p>App móvil y seguimiento GPS en tiempo real</p>
+                        </div>
+                        <div class="access-arrow">→</div>
+                    </div>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Entregas Diarias</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Empresas Activas</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">99.9%</span>
+                        <span class="stat-label">Disponibilidad</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="dashboard-preview">
+                    <div class="preview-window">
+                        <div class="window-header">
+                            <div class="window-controls">
+                                <span class="control close"></span>
+                                <span class="control minimize"></span>
+                                <span class="control maximize"></span>
+                            </div>
+                            <div class="window-title">YAvoy Dashboard</div>
+                        </div>
+                        <div class="window-content">
+                            <div class="preview-stats">
+                                <div class="preview-card">
+                                    <div class="card-icon">📊</div>
+                                    <div class="card-content">
+                                        <span class="card-number">2,847</span>
+                                        <span class="card-label">Pedidos Hoy</span>
+                                    </div>
+                                </div>
+                                <div class="preview-card">
+                                    <div class="card-icon">💰</div>
+                                    <div class="card-content">
+                                        <span class="card-number">$45,890</span>
+                                        <span class="card-label">Ingresos</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preview-chart">
+                                <div class="chart-bars">
+                                    <div class="chart-bar chart-bar-60"></div>
+                                    <div class="chart-bar chart-bar-80"></div>
+                                    <div class="chart-bar chart-bar-45"></div>
+                                    <div class="chart-bar chart-bar-90"></div>
+                                    <div class="chart-bar chart-bar-75"></div>
+                                    <div class="chart-bar chart-bar-95"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <div class="scroll-arrow">↓</div>
+        </div>
+    </header>
+
+    <!-- ========================================
+         ✨ CARACTERÍSTICAS PREMIUM
+         ======================================== -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Tecnología de <span class="text-gradient">Vanguardia</span></h2>
+                <p class="section-subtitle">Herramientas empresariales que impulsan tu crecimiento</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>IA Predictiva</h3>
+                    <p>Algoritmos inteligentes que optimizan rutas y predicen demanda</p>
+                    <ul class="feature-list">
+                        <li>Optimización automática de rutas</li>
+                        <li>Predicción de tiempos de entrega</li>
+                        <li>Análisis de patrones de demanda</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Apps Nativas</h3>
+                    <p>Aplicaciones móviles premium para cada tipo de usuario</p>
+                    <ul class="feature-list">
+                        <li>Interface intuitiva y moderna</li>
+                        <li>Notificaciones push en tiempo real</li>
+                        <li>Modo offline para repartidores</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Seguridad Avanzada</h3>
+                    <p>Protección de datos y autenticación biométrica</p>
+                    <ul class="feature-list">
+                        <li>Autenticación biométrica WebAuthn</li>
+                        <li>Encriptación end-to-end</li>
+                        <li>Auditoría completa de transacciones</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics Avanzados</h3>
+                    <p>Dashboards ejecutivos con métricas en tiempo real</p>
+                    <ul class="feature-list">
+                        <li>KPIs personalizables</li>
+                        <li>Reportes automáticos</li>
+                        <li>Predicciones de negocio</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Multi-plataforma</h3>
+                    <p>Acceso desde cualquier dispositivo, en cualquier lugar</p>
+                    <ul class="feature-list">
+                        <li>Web responsive premium</li>
+                        <li>Apps móviles nativas</li>
+                        <li>API REST completa</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Rendimiento Elite</h3>
+                    <p>Infraestructura optimizada para máxima velocidad</p>
+                    <ul class="feature-list">
+                        <li>99.9% de disponibilidad</li>
+                        <li>CDN global</li>
+                        <li>Escalabilidad automática</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         💎 PLANES Y PRECIOS
+         ======================================== -->
+    <section id="pricing" class="pricing-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Planes que <span class="text-gradient">Escalan</span> Contigo</h2>
+                <p class="section-subtitle">Desde startups hasta empresas Fortune 500</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Startup</h3>
+                        <div class="pricing-price">
+                            <span class="price-currency">$</span>
+                            <span class="price-amount">99</span>
+                            <span class="price-period">/mes</span>
+                        </div>
+                        <p>Perfecto para comenzar tu negocio</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ Hasta 1,000 entregas/mes</li>
+                        <li>✅ 5 comercios</li>
+                        <li>✅ Dashboard básico</li>
+                        <li>✅ App móvil</li>
+                        <li>✅ Soporte email</li>
+                    </ul>
+                    <button class="pricing-btn" onclick="selectPlan('startup')">Comenzar Prueba</button>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Más Popular</div>
+                    <div class="pricing-header">
+                        <h3>Professional</h3>
+                        <div class="pricing-price">
+                            <span class="price-currency">$</span>
+                            <span class="price-amount">299</span>
+                            <span class="price-period">/mes</span>
+                        </div>
+                        <p>Para empresas en crecimiento</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ Hasta 10,000 entregas/mes</li>
+                        <li>✅ 25 comercios</li>
+                        <li>✅ Analytics avanzados</li>
+                        <li>✅ IA Predictiva</li>
+                        <li>✅ Autenticación biométrica</li>
+                        <li>✅ API completa</li>
+                        <li>✅ Soporte 24/7</li>
+                    </ul>
+                    <button class="pricing-btn" onclick="selectPlan('professional')">Comenzar Prueba</button>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="pricing-price">
+                            <span class="price-currency">$</span>
+                            <span class="price-amount">999</span>
+                            <span class="price-period">/mes</span>
+                        </div>
+                        <p>Para corporaciones globales</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ Entregas ilimitadas</li>
+                        <li>✅ Comercios ilimitados</li>
+                        <li>✅ Dashboard CEO personalizado</li>
+                        <li>✅ Infraestructura dedicada</li>
+                        <li>✅ Integraciones custom</li>
+                        <li>✅ Account Manager dedicado</li>
+                        <li>✅ SLA garantizado</li>
+                    </ul>
+                    <button class="pricing-btn" onclick="selectPlan('enterprise')">Contactar Ventas</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         🚀 CALL TO ACTION
+         ======================================== -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>¿Listo para <span class="text-gradient">Revolucionar</span> tus Entregas?</h2>
+                <p>Únete a más de 500 empresas que ya confían en YAvoy</p>
+                <div class="cta-buttons">
+                    <button class="cta-btn primary" onclick="startFreeTrial()">Prueba Gratis 30 Días</button>
+                    <button class="cta-btn secondary" onclick="scheduleDemo()">Agendar Demo</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         📞 FOOTER PREMIUM
+         ======================================== -->
+    <footer class="footer-premium">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="assets/logo-yavoy.svg" alt="YAvoy" class="footer-logo-img">
+                        <span class="footer-logo-text">YAvoy</span>
+                    </div>
+                    <p>La plataforma líder de entregas empresariales con tecnología de vanguardia.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📸</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Producto</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Características</a></li>
+                        <li><a href="#pricing">Precios</a></li>
+                        <li><a href="acerca-de.html">Acerca de</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Empresa</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Equipo</a></li>
+                        <li><a href="#">Carreras</a></li>
+                        <li><a href="#">Prensa</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Soporte</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="privacidad.html">Privacidad</a></li>
+                        <li><a href="#">Términos</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2024 YAvoy Enterprise. Todos los derechos reservados.</p>
+                </div>
+                <div class="footer-version">
+                    <span>v3.1 Enterprise</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================
+         🔐 MODAL DE LOGIN RÁPIDO
+         ======================================== -->
+    <div id="quickLoginModal" class="modal-overlay modal-hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚀 Acceso Rápido YAvoy</h3>
+                <button class="modal-close" onclick="closeQuickLogin()">&times;</button>
+            </div>
+
+            <div class="login-options">
+                <!-- Autenticación Biométrica -->
+                <div class="auth-option biometric" onclick="tryBiometricLogin()">
+                    <div class="auth-icon">🔐</div>
+                    <div class="auth-content">
+                        <h4>Acceso Biométrico</h4>
+                        <p>Huella digital o Face ID</p>
+                    </div>
+                </div>
+
+                <!-- Login Tradicional -->
+                <div class="auth-option traditional">
+                    <div class="auth-icon">📧</div>
+                    <div class="auth-content">
+                        <h4>Email & Contraseña</h4>
+                        <form id="quickLoginForm" onsubmit="handleQuickLogin(event)">
+                            <input type="email" name="email" placeholder="Email" required>
+                            <input type="password" name="password" placeholder="Contraseña" required>
+                            <label class="remember-me">
+                                <input type="checkbox" name="remember"> Recordarme
+                            </label>
+                            <button type="submit" class="auth-btn">Iniciar Sesión</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <p>¿No tienes cuenta? <a href="registro.html" class="link-gold">Regístrate aquí</a></p>
+                <p><a href="#" class="link-gold">¿Olvidaste tu contraseña?</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         📱 SCRIPTS CRÍTICOS
+         ======================================== -->
+    <script src="js/intelligent-router.js"></script>
+    <script src="js/biometric-auth.js"></script>
+
+    <script>
+        // ========================================\n        // 🎯 FUNCIONES DE ACCESO\n        // ========================================\n        \n        function openCEOAccess() {\n            console.log('🎯 Redirigiendo a acceso CEO...');\n            // Verificar si hay token de CEO\n            const userData = window.YAvoyRouter?.getCurrentUser();\n            if (userData && userData.role === 'ceo') {\n                window.location.href = 'dashboard-ceo.html';\n            } else {\n                showRoleLogin('ceo');\n            }\n        }\n        \n        function openComercioAccess() {\n            console.log('🎯 Redirigiendo a acceso Comercio...');\n            const userData = window.YAvoyRouter?.getCurrentUser();\n            if (userData && userData.role === 'comercio') {\n                window.location.href = 'panel-comercio-pro.html';\n            } else {\n                showRoleLogin('comercio');\n            }\n        }\n        \n        function openRepartidorAccess() {\n            console.log('🎯 Redirigiendo a acceso Repartidor...');\n            const userData = window.YAvoyRouter?.getCurrentUser();\n            if (userData && userData.role === 'repartidor') {\n                window.location.href = 'panel-repartidor-pro.html';\n            } else {\n                showRoleLogin('repartidor');\n            }\n        }\n        \n        function showRoleLogin(role) {\n            const modal = document.getElementById('quickLoginModal');\n            const title = modal.querySelector('h3');\n            \n            const roleNames = {\n                'ceo': '👑 Acceso CEO / Empresa',\n                'comercio': '🏪 Acceso Comercio',\n                'repartidor': '🚚 Acceso Repartidor'\n            };\n            \n            title.textContent = roleNames[role] || '🚀 Acceso YAvoy';\n            modal.style.display = 'flex';\n            \n            // Guardar rol seleccionado\n            sessionStorage.setItem('login_role_target', role);\n        }\n        \n        // ========================================\n        // 🔐 FUNCIONES DE AUTENTICACIÓN\n        // ========================================\n        \n        function showQuickLogin() {\n            document.getElementById('quickLoginModal').style.display = 'flex';\n        }\n        \n        function closeQuickLogin() {\n            document.getElementById('quickLoginModal').style.display = 'none';\n            sessionStorage.removeItem('login_role_target');\n        }\n        \n        async function tryBiometricLogin() {\n            if (!window.YAvoyBiometricAuth?.isAvailable()) {\n                showNotification('Autenticación biométrica no disponible en este dispositivo', 'warning');\n                return;\n            }\n            \n            // Intentar login biométrico\n            const email = localStorage.getItem('yavoy_last_email') || prompt('Email para autenticación biométrica:');\n            if (!email) return;\n            \n            try {\n                const result = await window.YAvoyBiometricAuth.authenticateBiometric(email);\n                \n                if (result.success) {\n                    closeQuickLogin();\n                    showNotification('¡Bienvenido! Autenticación exitosa', 'success');\n                } else if (result.cancelled) {\n                    showNotification('Autenticación cancelada', 'info');\n                } else {\n                    showNotification('Error en autenticación biométrica', 'error');\n                }\n            } catch (error) {\n                console.error('Error biometric login:', error);\n                showNotification('Error en autenticación biométrica', 'error');\n            }\n        }\n        \n        async function handleQuickLogin(event) {\n            event.preventDefault();\n            \n            const form = event.target;\n            const formData = new FormData(form);\n            const email = formData.get('email');\n            const password = formData.get('password');\n            const remember = formData.get('remember');\n            \n            // Guardar último email\n            localStorage.setItem('yavoy_last_email', email);\n            \n            try {\n                const response = await fetch('/api/auth/login', {\n                    method: 'POST',\n                    headers: {\n                        'Content-Type': 'application/json'\n                    },\n                    body: JSON.stringify({ email, password })\n                });\n                \n                const result = await response.json();\n                \n                if (result.success) {\n                    // Login exitoso - usar router inteligente\n                    if (window.YAvoyRouter) {\n                        window.YAvoyRouter.handleLogin(result.token, result.user, !!remember);\n                    }\n                    \n                    closeQuickLogin();\n                    showNotification(`¡Bienvenido, ${result.user.nombre}!`, 'success');\n                } else {\n                    showNotification(result.error || 'Error en credenciales', 'error');\n                }\n            } catch (error) {\n                console.error('Error login:', error);\n                showNotification('Error de conexión', 'error');\n            }\n        }\n        \n        // ========================================\n        // 🎨 FUNCIONES UI/UX\n        // ========================================\n        \n        function toggleMobileMenu() {\n            const nav = document.querySelector('.nav-links');\n            nav.classList.toggle('mobile-open');\n        }\n        \n        function selectPlan(plan) {\n            console.log(`Plan seleccionado: ${plan}`);\n            showNotification(`Plan ${plan} seleccionado. Redirigiendo a registro...`, 'info');\n            \n            setTimeout(() => {\n                window.location.href = `registro.html?plan=${plan}`;\n            }, 1500);\n        }\n        \n        function startFreeTrial() {\n            showNotification('Iniciando prueba gratuita...', 'info');\n            setTimeout(() => {\n                window.location.href = 'registro.html?trial=30';\n            }, 1000);\n        }\n        \n        function scheduleDemo() {\n            showNotification('Redirigiendo a agenda de demos...', 'info');\n            setTimeout(() => {\n                window.location.href = 'demo.html';\n            }, 1000);\n        }\n        \n        function showNotification(message, type = 'info') {\n            const notification = document.createElement('div');\n            notification.className = `landing-notification ${type}`;\n            notification.innerHTML = `\n                <div class=\"notification-content\">\n                    <span class=\"notification-icon\">${getNotificationIcon(type)}</span>\n                    <span class=\"notification-message\">${message}</span>\n                </div>\n            `;\n            \n            notification.style.cssText = `\n                position: fixed;\n                top: 20px;\n                right: 20px;\n                background: rgba(2, 6, 23, 0.95);\n                border: 1px solid #fbbf24;\n                color: #ffffff;\n                padding: 16px;\n                border-radius: 8px;\n                z-index: 10000;\n                backdrop-filter: blur(10px);\n                animation: slideInRight 0.3s ease-out;\n                max-width: 350px;\n            `;\n            \n            document.body.appendChild(notification);\n            \n            setTimeout(() => {\n                notification.style.animation = 'slideOutRight 0.3s ease-out';\n                setTimeout(() => notification.remove(), 300);\n            }, 5000);\n        }\n        \n        function getNotificationIcon(type) {\n            const icons = {\n                'success': '✅',\n                'warning': '⚠️',\n                'error': '❌',\n                'info': 'ℹ️'\n            };\n            return icons[type] || 'ℹ️';\n        }\n        \n        // ========================================\n        // 🚀 INICIALIZACIÓN\n        // ========================================\n        \n        document.addEventListener('DOMContentLoaded', () => {\n            console.log('🎯 YAvoy Landing Page v3.1 Enterprise cargado');\n            \n            // Verificar si usuario ya está logueado\n            if (window.YAvoyRouter && window.YAvoyRouter.isAuthenticated()) {\n                console.log('🔄 Usuario autenticado detectado, ejecutando routing...');\n                // El router se encargará de redirigir automáticamente\n            }\n            \n            // Animaciones de entrada\n            setTimeout(() => {\n                document.querySelector('.hero-content').classList.add('animate-in');\n            }, 500);\n            \n            // Smooth scroll para navegación\n            document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {\n                anchor.addEventListener('click', function (e) {\n                    e.preventDefault();\n                    const target = document.querySelector(this.getAttribute('href'));\n                    if (target) {\n                        target.scrollIntoView({ behavior: 'smooth' });\n                    }\n                });\n            });\n        });\n        \n        // ========================================\n        // 📊 ANALYTICS Y TRACKING\n        // ========================================\n        \n        // Track page view\n        console.log('📊 Landing page view tracked');\n        \n        // Track button clicks\n        document.addEventListener('click', (e) => {\n            if (e.target.matches('.access-card, .pricing-btn, .cta-btn')) {\n                console.log(`📊 Button clicked: ${e.target.textContent.trim()}`);\n            }\n        });\n    </script>
+    \n \n
+    <!-- ========================================\n         ⚡ PWA & SERVICE WORKER\n         ======================================== -->\n
+    <script>\n        // Registrar Service Worker para PWA\n        if ('serviceWorker' in navigator) {\n            window.addEventListener('load', () => {\n                navigator.serviceWorker.register('/sw.js')\n                    .then(registration => {\n                        console.log('SW registered: ', registration);\n                    })\n                    .catch(registrationError => {\n                        console.log('SW registration failed: ', registrationError);\n                    });\n            });\n        }\n    </script>
+    \n
+</body>\n
+
+</html>
+\n\n<!-- ====================================\n     CTO: Landing Page Premium Completo\n     ==================================== -->

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAvoy - Comercio Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f5576c;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .btn-logout {
+            padding: 0.5rem 1.5rem;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: #ff3838;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #f5576c;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .tab {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: #f5576c;
+            border-bottom-color: #f5576c;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .pedido-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #f5576c;
+        }
+        
+        .pedido-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .pedido-id {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .pedido-estado {
+            padding: 0.3rem 1rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .estado-pendiente {
+            background: #ffeaa7;
+            color: #d63031;
+        }
+        
+        .estado-preparando {
+            background: #74b9ff;
+            color: #0984e3;
+        }
+        
+        .estado-listo {
+            background: #55efc4;
+            color: #00b894;
+        }
+        
+        .pedido-items {
+            margin: 1rem 0;
+        }
+        
+        .pedido-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .pedido-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #f5576c;
+            text-align: right;
+            margin-top: 1rem;
+        }
+        
+        .pedido-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-aceptar {
+            background: #38ef7d;
+            color: white;
+        }
+        
+        .btn-aceptar:hover {
+            background: #2dd36f;
+        }
+        
+        .btn-rechazar {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn-rechazar:hover {
+            background: #ff3838;
+        }
+        
+        .btn-listo {
+            background: #5f27cd;
+            color: white;
+        }
+        
+        .btn-listo:hover {
+            background: #341f97;
+        }
+        
+        .producto-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .producto-info {
+            flex: 1;
+        }
+        
+        .producto-nombre {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .producto-precio {
+            color: #f5576c;
+            font-weight: bold;
+        }
+        
+        .producto-stock {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .btn-editar {
+            padding: 0.4rem 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-box h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-box p {
+            opacity: 0.9;
+        }
+        
+        .repartidores-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .repartidor-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .repartidor-nombre {
+            font-weight: bold;
+        }
+        
+        .repartidor-estado {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        
+        .estado-activo {
+            background: #55efc4;
+            color: #00b894;
+        }
+        
+        .estado-ocupado {
+            background: #ffeaa7;
+            color: #d63031;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏪 YAvoy Comercio</div>
+        <div class="user-info">
+            <span id="userName">Cargando...</span>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>📊 Panel de Gestión</h2>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="cambiarTab('pedidos')">Pedidos</button>
+                <button class="tab" onclick="cambiarTab('inventario')">Inventario</button>
+            </div>
+
+            <div id="pedidos-tab" class="tab-content active">
+                <div id="pedidosList">
+                    <p>Cargando pedidos...</p>
+                </div>
+            </div>
+
+            <div id="inventario-tab" class="tab-content">
+                <div style="margin-bottom: 1rem;">
+                    <button class="btn btn-aceptar" onclick="agregarProducto()">+ Agregar Producto</button>
+                </div>
+                <div id="productosList">
+                    <p>Cargando inventario...</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card" style="margin-bottom: 2rem;">
+                <h2>📈 Estadísticas</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <h3 id="pedidosHoy">0</h3>
+                        <p>Pedidos Hoy</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="ventasHoy">$0</h3>
+                        <p>Ventas Hoy</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🏍️ Repartidores Asignados</h2>
+                <div id="repartidoresList" class="repartidores-list">
+                    <p>Cargando repartidores...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Universal -->
+    <div id="chatbot-container"></div>
+
+    <script src="/js/chatbot-yavoy.js"></script>
+    <script>
+        // Verificar autenticación
+        const token = localStorage.getItem('yavoy_token');
+        if (!token) {
+            window.location.href = '/index.html';
+        }
+
+        function parseJwt(token) {
+            try {
+                return JSON.parse(atob(token.split('.')[1]));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const userData = parseJwt(token);
+        if (userData) {
+            document.getElementById('userName').textContent = userData.name || 'Comercio';
+        }
+
+        // Cambiar entre tabs
+        function cambiarTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+        }
+
+        // Cargar pedidos
+        async function cargarPedidos() {
+            try {
+                const response = await fetch('/api/comercio/pedidos', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const pedidos = await response.json();
+                const lista = document.getElementById('pedidosList');
+                
+                if (pedidos.length === 0) {
+                    lista.innerHTML = '<p style="text-align: center; color: #999;">No hay pedidos pendientes</p>';
+                    return;
+                }
+                
+                lista.innerHTML = '';
+                pedidos.forEach(pedido => {
+                    const estadoClass = pedido.estado === 'pendiente' ? 'estado-pendiente' :
+                                       pedido.estado === 'preparando' ? 'estado-preparando' : 'estado-listo';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'pedido-card';
+                    card.innerHTML = `
+                        <div class="pedido-header">
+                            <span class="pedido-id">Pedido #${pedido.id}</span>
+                            <span class="pedido-estado ${estadoClass}">${pedido.estado.toUpperCase()}</span>
+                        </div>
+                        <p><strong>Cliente:</strong> ${pedido.cliente_nombre}</p>
+                        <p><strong>Dirección:</strong> ${pedido.direccion_entrega}</p>
+                        <div class="pedido-items">
+                            ${pedido.items ? pedido.items.map(item => `
+                                <div class="pedido-item">
+                                    <span>${item.cantidad}x ${item.producto}</span>
+                                    <span>$${item.precio}</span>
+                                </div>
+                            `).join('') : ''}
+                        </div>
+                        <div class="pedido-total">Total: $${pedido.total}</div>
+                        <div class="pedido-actions">
+                            ${pedido.estado === 'pendiente' ? `
+                                <button class="btn btn-aceptar" onclick="cambiarEstadoPedido(${pedido.id}, 'preparando')">Aceptar</button>
+                                <button class="btn btn-rechazar" onclick="cambiarEstadoPedido(${pedido.id}, 'rechazado')">Rechazar</button>
+                            ` : ''}
+                            ${pedido.estado === 'preparando' ? `
+                                <button class="btn btn-listo" onclick="cambiarEstadoPedido(${pedido.id}, 'listo')">Marcar Listo</button>
+                            ` : ''}
+                        </div>
+                    `;
+                    lista.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error al cargar pedidos:', error);
+            }
+        }
+
+        // Cambiar estado del pedido
+        async function cambiarEstadoPedido(pedidoId, nuevoEstado) {
+            try {
+                const response = await fetch(`/api/comercio/pedidos/${pedidoId}/estado`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+                
+                if (response.ok) {
+                    alert('✅ Estado actualizado');
+                    cargarPedidos();
+                    cargarEstadisticas();
+                }
+            } catch (error) {
+                console.error('Error al cambiar estado:', error);
+            }
+        }
+
+        // Cargar inventario
+        async function cargarInventario() {
+            try {
+                const response = await fetch('/api/comercio/productos', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const productos = await response.json();
+                const lista = document.getElementById('productosList');
+                
+                if (productos.length === 0) {
+                    lista.innerHTML = '<p style="text-align: center; color: #999;">No hay productos en el inventario</p>';
+                    return;
+                }
+                
+                lista.innerHTML = '';
+                productos.forEach(producto => {
+                    const item = document.createElement('div');
+                    item.className = 'producto-item';
+                    item.innerHTML = `
+                        <div class="producto-info">
+                            <div class="producto-nombre">${producto.nombre}</div>
+                            <div class="producto-precio">$${producto.precio}</div>
+                            <div class="producto-stock">Stock: ${producto.stock || 'Sin límite'}</div>
+                        </div>
+                        <button class="btn-editar" onclick="editarProducto(${producto.id})">Editar</button>
+                    `;
+                    lista.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error al cargar inventario:', error);
+            }
+        }
+
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch('/api/comercio/estadisticas', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const stats = await response.json();
+                document.getElementById('pedidosHoy').textContent = stats.pedidos_hoy || 0;
+                document.getElementById('ventasHoy').textContent = `$${stats.ventas_hoy || 0}`;
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        // Cargar repartidores
+        async function cargarRepartidores() {
+            try {
+                const response = await fetch('/api/comercio/repartidores', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const repartidores = await response.json();
+                const lista = document.getElementById('repartidoresList');
+                
+                if (repartidores.length === 0) {
+                    lista.innerHTML = '<p style="text-align: center; color: #999;">No hay repartidores activos</p>';
+                    return;
+                }
+                
+                lista.innerHTML = '';
+                repartidores.forEach(rep => {
+                    const item = document.createElement('div');
+                    item.className = 'repartidor-item';
+                    item.innerHTML = `
+                        <div>
+                            <div class="repartidor-nombre">${rep.nombre}</div>
+                            <div style="font-size: 0.85rem; color: #666;">⭐ ${rep.calificacion || '5.0'}</div>
+                        </div>
+                        <span class="repartidor-estado ${rep.estado === 'activo' ? 'estado-activo' : 'estado-ocupado'}">
+                            ${rep.estado === 'activo' ? 'Disponible' : 'En entrega'}
+                        </span>
+                    `;
+                    lista.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error al cargar repartidores:', error);
+            }
+        }
+
+        function agregarProducto() {
+            // Implementar modal o formulario
+            alert('Función de agregar producto - implementar formulario');
+        }
+
+        function editarProducto(id) {
+            // Implementar modal de edición
+            alert(`Editar producto ${id} - implementar formulario`);
+        }
+
+        function logout() {
+            localStorage.removeItem('yavoy_token');
+            window.location.href = '/index.html';
+        }
+
+        // Inicializar chatbot
+        if (typeof initChatbot === 'function') {
+            initChatbot('comercio');
+        }
+
+        // Cargar datos iniciales
+        cargarPedidos();
+        cargarInventario();
+        cargarEstadisticas();
+        cargarRepartidores();
+        
+        // Actualizar cada 20 segundos
+        setInterval(() => {
+            cargarPedidos();
+            cargarEstadisticas();
+            cargarRepartidores();
+        }, 20000);
+    </script>
+</body>
+</html>

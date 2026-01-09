@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="YAvoy v3.1 Enterprise - La plataforma de delivery más rápida y segura del mercado.">
+  <meta name="theme-color" content="#020617">
+  <meta name="msapplication-TileColor" content="#020617">
+
+  <!-- PWA & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-yavoy.png">
+  <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+
+  <!-- Polyfill para compatibilidad theme-color (Firefox/Opera) -->
+  <script src="js/theme-color-polyfill.js" defer></script>
+
+  <!-- MercadoPago SDK -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+  <title>YAvoy - Tu plataforma de entregas local</title>
+
+  <style>
+    /* ==================== RESET Y VARIABLES ==================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #020617;
+      --accent-gold: #fbbf24;
+      --accent-gold-dark: #f59e0b;
+      --text-light: #f8fafc;
+      --text-muted: #cbd5e1;
+      --glassmorphism-bg: rgba(248, 250, 252, 0.05);
+      --glassmorphism-border: rgba(248, 250, 252, 0.1);
+      --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 12px 48px rgba(251, 191, 36, 0.2);
+      --border-radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --max-width: 1200px;
+      --section-padding: 80px 0;
+      --grid-gap: 2rem;
+    }
+
+    /* ==================== TIPOGRAFÍA ==================== */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-light);
+      line-height: 1.6;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    h4 {
+      font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ==================== LAYOUT PRINCIPAL (CSS GRID) ==================== */
+    .spa-container {
+      display: grid;
+      grid-template-areas:
+        "controls"
+        "hero"
+        "como-funciona"
+        "repartidores"
+        "tiendas"
+        "contacto"
+        "footer";
+      min-height: 100vh;
+    }
+
+    .contenedor {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ==================== CONTROLES FLOTANTES ==================== */
+    .floating-controls {
+      grid-area: controls;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 12px;
+    }
+
+    .control-btn {
+      width: 50px;
+      height: 50px;
+      border: none;
+      border-radius: 50%;
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      color: var(--text-light);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .control-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+      background: var(--accent-gold);
+      color: var(--bg-primary);
+    }
+
+    /* ==================== HERO SECTION ==================== */
+    .hero {
+      grid-area: hero;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, #1e293b 50%, var(--bg-primary) 100%);
+      text-align: center;
+      padding: var(--section-padding);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(251, 191, 36, 0.08) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--text-light), var(--accent-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ==================== ROLE SELECTOR (FLEXBOX) ==================== */
+    .role-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--grid-gap);
+      margin-top: 4rem;
+    }
+
+    .role-card {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: var(--border-radius);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .role-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--accent-gold);
+    }
+
+    .role-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .role-card h3 {
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .role-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .btn-role {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+      color: var(--bg-primary);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-role:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    .btn-role-secondary {
+      background: transparent;
+      color: var(--accent-gold);
+      border: 1px solid var(--accent-gold);
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .btn-role-secondary:hover {
+      background: var(--accent-gold);
+      color: var(--bg-primary);
+    }
+
+    /* ==================== SECCIONES PRINCIPALES ==================== */
+    .seccion-principal {
+      padding: var(--section-padding);
+      position: relative;
+    }
+
+    .seccion-como-funciona {
+      grid-area: como-funciona;
+    }
+
+    .seccion-repartidores {
+      grid-area: repartidores;
+    }
+
+    .seccion-tiendas {
+      grid-area: tiendas;
+    }
+
+    .seccion-contacto {
+      grid-area: contacto;
+    }
+
+    .seccion-header-title {
+      text-align: center;
+      margin-bottom: 3rem;
+      color: var(--text-light);
+    }
+
+    .seccion-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ==================== COMO FUNCIONA GRID ==================== */
+    .funciona-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--grid-gap);
+    }
+
+    .funciona-card {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      text-align: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .funciona-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .funciona-icono {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pasos {
+      margin: 2rem 0;
+    }
+
+    .paso {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .paso-num {
+      width: 30px;
+      height: 30px;
+      background: var(--accent-gold);
+      color: var(--bg-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .btn-funciona {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+      color: var(--bg-primary);
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: inline-block;
+      transition: var(--transition);
+    }
+
+    .btn-funciona:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    /* ==================== FEATURES GRID ==================== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--grid-gap);
+    }
+
+    .feature-card {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      text-align: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .feature-card .icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ==================== TIENDAS GRID ==================== */
+    .tiendas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--grid-gap);
+    }
+
+    .tienda-card {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .tienda-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--accent-gold);
+    }
+
+    .tienda-icono {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .tienda-nombre {
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .tienda-categoria {
+      background: var(--accent-gold);
+      color: var(--bg-primary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .tienda-descripcion {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .tienda-badge {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    /* ==================== CONTACTO GRID ==================== */
+    .contacto-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .contacto-info h3 {
+      margin-bottom: 1rem;
+    }
+
+    .contacto-info p {
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+    }
+
+    .contacto-info a {
+      color: var(--accent-gold);
+      text-decoration: none;
+    }
+
+    .contacto-info a:hover {
+      text-decoration: underline;
+    }
+
+    .contacto-formulario {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .form-row {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-row input,
+    .form-row textarea,
+    .form-row select {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(248, 250, 252, 0.05);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+    }
+
+    .form-row input::placeholder,
+    .form-row textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn-primario {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+      color: var(--bg-primary);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .btn-primario:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      grid-area: footer;
+      background: linear-gradient(135deg, #0f172a 0%, var(--bg-primary) 100%);
+      padding: var(--section-padding);
+      border-top: 1px solid var(--glassmorphism-border);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .footer-info h4,
+    .footer-links h4,
+    .footer-social h4 {
+      color: var(--accent-gold);
+      margin-bottom: 1rem;
+    }
+
+    .footer-links a,
+    .footer-social a {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover,
+    .footer-social a:hover {
+      color: var(--accent-gold);
+    }
+
+    /* ==================== MODALES ==================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(2, 6, 23, 0.8);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 1;
+      visibility: visible;
+      transition: var(--transition);
+      padding: 1rem;
+    }
+
+    .modal-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .modal-content {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      transform: scale(1);
+      transition: var(--transition);
+    }
+
+    .modal-overlay.hidden .modal-content {
+      transform: scale(0.9);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      background: rgba(248, 250, 252, 0.1);
+      color: var(--text-light);
+    }
+
+    /* ==================== UTILIDADES ==================== */
+    .hidden {
+      display: none !important;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mb-20 {
+      margin-bottom: 1.25rem;
+    }
+
+    .w-100 {
+      width: 100%;
+    }
+
+    .color-exito {
+      color: #10b981;
+    }
+
+    .color-text-claro {
+      color: var(--text-muted);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 768px) {
+      .role-selector {
+        grid-template-columns: 1fr;
+      }
+
+      .contacto-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .floating-controls {
+        top: 10px;
+        right: 10px;
+        gap: 8px;
+      }
+
+      .control-btn {
+        width: 45px;
+        height: 45px;
+      }
+
+      :root {
+        --section-padding: 60px 0;
+        --grid-gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .contenedor {
+        padding: 0 1rem;
+      }
+
+      :root {
+        --section-padding: 40px 0;
+        --grid-gap: 1rem;
+      }
+    }
+
+    /* ==================== CLASSES PARA ELIMINAR ESTILOS INLINE ==================== */
+    .form-flex-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-large {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .id-box {
+      background: var(--glassmorphism-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .id-label {
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .id-display {
+      color: var(--accent-gold);
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .button-flex-group {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .flex-1 {
+      flex: 1;
+    }
+
+    .flex-2 {
+      flex: 2;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--glassmorphism-border);
+      color: var(--text-light);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: var(--transition);
+    }
+
+    .btn-outline:hover {
+      background: rgba(248, 250, 252, 0.05);
+    }
+
+    .tienda-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .tienda-icon-modal {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .tienda-description {
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-link {
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .notification-content {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .notification-header-flex {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    .notification-text {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .chatbot-container {
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-soft);
+      width: 350px;
+      max-width: 90vw;
+    }
+
+    .chatbot-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .chatbot-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chatbot-avatar {
+      font-size: 1.5rem;
+    }
+
+    .chatbot-name {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .chatbot-status {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .chatbot-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .chatbot-messages {
+      height: 200px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+
+    .chatbot-input-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chatbot-input {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(248, 250, 252, 0.05);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: 6px;
+      color: var(--text-light);
+    }
+
+    .chatbot-send {
+      padding: 8px 12px;
+    }
+
+    .loading-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(2, 6, 23, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20000;
+    }
+
+    .loading-content {
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--glassmorphism-border);
+      border-top: 3px solid var(--accent-gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    .loading-text {
+      color: var(--text-light);
+    }
+
+    .splash-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 30000;
+    }
+
+    .splash-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+    }
+
+    .splash-text {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    .scroll-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--glassmorphism-bg);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glassmorphism-border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      color: var(--accent-gold);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+      z-index: 1000;
+    }
+
+    .mb-container {
+      margin-bottom: 1rem;
+    }
+
+    .notification-icon {
+      font-size: 1.2rem;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="spa-container">
+    <!-- ==================== CONTROLES FLOTANTES ==================== -->
+    <div class="floating-controls">
+      <button id="btnThemeToggle" class="control-btn" data-tooltip="Cambiar tema" title="Cambiar tema (Claro/Oscuro)"
+        aria-label="Cambiar modo de tema">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <button id="btnNotificacionesFlotante" class="control-btn" data-tooltip="Notificaciones" title="Notificaciones"
+        aria-label="Gestionar notificaciones">
+        <span>🔔</span>
+        <span class="notification-dot"></span>
+      </button>
+      <button id="btnChatbotFlotante" class="control-btn" data-tooltip="Asistente YAvoy" title="Asistente Virtual"
+        aria-label="Abrir asistente virtual">
+        <span>💬</span>
+      </button>
+    </div>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="inicio" class="hero" role="banner">
+      <div class="hero-content contenedor">
+        <h1>YAvoy - Tu plataforma de entregas local</h1>
+        <p class="hero-subtitle">Conectando clientes, comercios y repartidores en tu ciudad con la tecnología más
+          avanzada</p>
+
+        <!-- Selector de Rol -->
+        <div class="role-selector" role="navigation" aria-label="Selección de rol de usuario">
+          <div class="role-card hover-lift">
+            <div class="role-icon" aria-hidden="true">🛍️</div>
+            <h3>Quiero Pedir</h3>
+            <p>Solicita productos de comercios locales con entrega rápida y segura</p>
+            <button class="btn-role btn-cliente" onclick="abrirModalPedido()"
+              aria-label="Abrir formulario para hacer un pedido">Hacer Pedido</button>
+          </div>
+
+          <div class="role-card hover-lift">
+            <div class="role-icon" aria-hidden="true">🚴</div>
+            <h3>Soy Repartidor</h3>
+            <p>Gana dinero entregando pedidos con horarios flexibles</p>
+            <button class="btn-role btn-repartidor" onclick="abrirModalRepartidor()"
+              aria-label="Abrir formulario de registro para repartidores">Registrarme</button>
+            <a href="panel-repartidor.html" class="btn-role-secondary" aria-label="Ir al panel de repartidor">Acceder
+              a Mi Panel</a>
+          </div>
+
+          <div class="role-card hover-lift">
+            <div class="role-icon" aria-hidden="true">🏪</div>
+            <h3>Soy Comercio</h3>
+            <p>Aumenta tus ventas con entregas profesionales</p>
+            <button class="btn-role btn-comercio" onclick="abrirModalComercio()"
+              aria-label="Abrir formulario de registro para comercios">Registrarme</button>
+            <a href="panel-comercio.html" class="btn-role-secondary" aria-label="Ir al panel de comercio">Acceder a Mi
+              Panel</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN CÓMO FUNCIONA ==================== -->
+    <section class="seccion-principal seccion-como-funciona">
+      <div class="contenedor">
+        <h2 class="seccion-header-title">¿Cómo Funciona YAvoy?</h2>
+        <p class="seccion-subtitle">Un sistema simple y eficiente para conectar toda la ciudad</p>
+
+        <div class="funciona-grid">
+          <!-- Para Clientes -->
+          <div class="funciona-card">
+            <div class="funciona-icono">🛍️</div>
+            <h3>Para Clientes</h3>
+            <div class="pasos">
+              <div class="paso">
+                <span class="paso-num">1</span>
+                <p>Elige tu comercio favorito</p>
+              </div>
+              <div class="paso">
+                <span class="paso-num">2</span>
+                <p>Crea tu pedido con los productos</p>
+              </div>
+              <div class="paso">
+                <span class="paso-num">3</span>
+                <p>Un repartidor lo lleva a tu puerta</p>
+              </div>
+            </div>
+            <a href="pedidos.html" class="btn-funciona">Hacer mi Primer Pedido</a>
+          </div>
+
+          <!-- Para Repartidores -->
+          <div class="funciona-card">
+            <div class="funciona-icono">🚴</div>
+            <h3>Para Repartidores</h3>
+            <div class="pasos">
+              <div class="paso">
+                <span class="paso-num">1</span>
+                <p>Regístrate como repartidor</p>
+              </div>
+              <div class="paso">
+                <span class="paso-num">2</span>
+                <p>Toma los pedidos disponibles</p>
+              </div>
+              <div class="paso">
+                <span class="paso-num">3</span>
+                <p>Entrega y gana dinero</p>
+              </div>
+            </div>
+            <a href="#repartidores" class="btn-funciona">Empezar a Repartir</a>
+          </div>
+
+          <!-- Para Comercios -->
+          <div class="funciona-card">
+            <div class="funciona-icono">🏪</div>
+            <h3>Para Comercios</h3>
+            <div class="pasos">
+              <div class="paso">
+                <span class="paso-num">1</span>
+                <p>Registra tu comercio gratis</p>
+              </div>
+              <div class="paso">
+                <span class="paso-num">2</span>
+                <p>Recibe pedidos de clientes</p>
+              </div>
+              <div class="paso">
+                <span class="paso-num">3</span>
+                <p>Aumenta tus ventas locales</p>
+              </div>
+            </div>
+            <a href="#comercios" class="btn-funciona">Registrar mi Negocio</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN REPARTIDORES ==================== -->
+    <section id="repartidores" class="seccion-principal seccion-repartidores">
+      <div class="contenedor">
+        <h2 class="seccion-header-title">Genera Ingresos Extras 🏍️🚗</h2>
+        <p class="seccion-subtitle">Únete a la red de repartidores de YAvoy y sé tu propio jefe</p>
+
+        <div class="features-grid">
+          <div class="feature-card" data-feature="horarios">
+            <div class="icon">⏰</div>
+            <h4>Horarios Flexibles</h4>
+            <p>Conéctate cuando quieras. Tú decides cuántas horas trabajas y cuándo descansas.</p>
+          </div>
+
+          <div class="feature-card" data-feature="ganancias">
+            <div class="icon">💰</div>
+            <h4>Ganancias Claras</h4>
+            <p>Tarifas competitivas por cada envío. Ve tus ganancias en tiempo real.</p>
+          </div>
+
+          <div class="feature-card" data-feature="envios">
+            <div class="icon">🗺️</div>
+            <h4>Envíos Locales</h4>
+            <p>Entrega solo dentro de tu ciudad, optimizando rutas y reduciendo el tiempo de viaje.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN TIENDAS LOCALES ==================== -->
+    <section id="tiendas-locales" class="seccion-principal seccion-tiendas">
+      <div class="contenedor">
+        <h2 class="seccion-header-title">🏪 Tiendas Locales Destacadas</h2>
+        <p class="seccion-subtitle">
+          Descubre los comercios locales que confían en YAvoy para llegar a más clientes
+        </p>
+
+        <div class="tiendas-grid">
+          <div class="tienda-card" onclick="abrirModalTienda('pizzeria')">
+            <div class="tienda-icono">🍕</div>
+            <h3 class="tienda-nombre">Pizzería Don Mario</h3>
+            <span class="tienda-categoria">Alimentación</span>
+            <p class="tienda-descripcion">Pizzas artesanales a la piedra con ingredientes frescos.</p>
+            <div class="tienda-badge">Ver más →</div>
+          </div>
+
+          <div class="tienda-card" onclick="abrirModalTienda('farmacia')">
+            <div class="tienda-icono">💊</div>
+            <h3 class="tienda-nombre">Farmacia La Salud</h3>
+            <span class="tienda-categoria">Salud</span>
+            <p class="tienda-descripcion">Medicamentos y productos de cuidado personal.</p>
+            <div class="tienda-badge">Ver más →</div>
+          </div>
+
+          <div class="tienda-card" onclick="abrirModalTienda('kiosco')">
+            <div class="tienda-icono">🍬</div>
+            <h3 class="tienda-nombre">Kiosco El Rápido</h3>
+            <span class="tienda-categoria">Kiosco</span>
+            <p class="tienda-descripcion">Golosinas, bebidas y snacks las 24 horas.</p>
+            <div class="tienda-badge">Ver más →</div>
+          </div>
+
+          <div class="tienda-card" onclick="abrirModalTienda('boutique')">
+            <div class="tienda-icono">👕</div>
+            <h3 class="tienda-nombre">Boutique Estilo</h3>
+            <span class="tienda-categoria">Indumentaria</span>
+            <p class="tienda-descripcion">Ropa de moda para toda la familia.</p>
+            <div class="tienda-badge">Ver más →</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN CONTACTO ==================== -->
+    <section id="contacto" class="seccion-principal seccion-contacto">
+      <div class="contenedor contacto-grid">
+        <div class="contacto-info">
+          <h3>¿Tienes Preguntas? Contáctanos.</h3>
+          <p>Estamos aquí para ayudarte a impulsar tu negocio o resolver dudas sobre los envíos.</p>
+          <p>📞 <strong>Teléfono:</strong> <a href="https://wa.me/542215047962" target="_blank"
+              rel="noopener noreferrer">2215047962</a></p>
+          <p>📧 <strong>Email:</strong> <a href="mailto:yavoyen5@gmail.com">yavoyen5@gmail.com</a></p>
+          <p>💬 <strong>WhatsApp:</strong> <a href="https://wa.me/542215047962" target="_blank"
+              rel="noopener noreferrer">+54 221 504 7962</a></p>
+          <p>📍 <strong>Oficina:</strong> Ensenada</p>
+        </div>
+
+        <div class="contacto-formulario">
+          <h4>Envíanos un Mensaje Rápido</h4>
+          <form id="form-contacto" novalidate data-validate="true">
+            <div class="form-row">
+              <input type="text" placeholder="Tu Nombre" required />
+            </div>
+            <div class="form-row">
+              <input type="email" placeholder="Tu Correo" required />
+            </div>
+            <div class="form-row">
+              <textarea placeholder="Escribe tu mensaje aquí..." rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn-primario">Enviar Mensaje</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer>
+      <div class="contenedor footer-grid">
+        <div class="footer-info">
+          <h4>YAvoy</h4>
+          <p>Conectando la ciudad, un envío a la vez.</p>
+          <p>&copy; 2025 Todos los derechos reservados.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Enlaces Rápidos</h4>
+          <a href="#inicio">Inicio</a>
+          <a href="#comercios">Para Comercios</a>
+          <a href="#repartidores">Haz Envíos</a>
+          <a href="faq.html">Preguntas Frecuentes</a>
+          <a href="soporte.html">🤖 Soporte 24/7</a>
+          <a href="portal-gestion.html" class="admin-link">⚙️ Portal Admin</a>
+        </div>
+
+        <div class="footer-social">
+          <h4>Síguenos</h4>
+          <a href="#"><i class="icono-social">FB</i> Facebook</a>
+          <a href="#"><i class="icono-social">IG</i> Instagram</a>
+          <a href="https://wa.me/542215047962" target="_blank" rel="noopener noreferrer"><i class="icono-social">WA</i>
+            WhatsApp</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== MODALES ==================== -->
+
+  <!-- Modal Repartidor -->
+  <div id="modalRepartidor" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalRepartidor()">&times;</button>
+      <h3>Solicitud de Registro - Repartidor 🚴</h3>
+      <p class="color-text-claro mb-20">Completa todos los campos para unirte a nuestro equipo de repartidores.</p>
+
+      <form id="formRegistrarRepartidor" class="form-registro" enctype="multipart/form-data">
+        <div class="form-row">
+          <label for="repNombre">Nombre Completo *</label>
+          <input type="text" id="repNombre" name="repNombre" required placeholder="Ej: Juan Pérez">
+        </div>
+        <div class="form-row">
+          <label for="repTelefono">Teléfono *</label>
+          <input type="tel" id="repTelefono" name="repTelefono" required placeholder="Ej: 1234567890">
+        </div>
+        <div class="form-row">
+          <label for="repEmail">Email *</label>
+          <input type="email" id="repEmail" name="repEmail" required placeholder="Ej: juan@example.com">
+        </div>
+        <div class="form-row">
+          <label for="repDni">DNI *</label>
+          <input type="text" id="repDni" name="repDni" required placeholder="Ej: 12345678">
+        </div>
+        <div class="form-row">
+          <label for="repVehiculo">Tipo de Vehículo *</label>
+          <select id="repVehiculo" name="repVehiculo" required>
+            <option value="">-- Selecciona --</option>
+            <option value="moto">Moto</option>
+            <option value="bicicleta">Bicicleta</option>
+            <option value="auto">Auto</option>
+            <option value="a-pie">A pie</option>
+          </select>
+        </div>
+        <div class="form-row form-flex-row">
+          <input type="checkbox" id="repAceptaTerminos" name="aceptaTerminos" required>
+          <label for="repAceptaTerminos">He leído y acepto los Términos y Condiciones *</label>
+        </div>
+        <button type="submit" class="btn-primario">📤 Enviar Solicitud</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Verificación Repartidor -->
+  <div id="modalVerificacionRepartidor" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content text-center" role="dialog">
+      <div class="mb-20">
+        <div class="icon-large">✅</div>
+        <h2 class="mb-10 color-exito">¡Registro Exitoso!</h2>
+        <p class="color-text-claro">Tu cuenta de repartidor ha sido creada correctamente</p>
+      </div>
+      <div class="id-box">
+        <p class="id-label">Tu ID de Repartidor</p>
+        <div id="repartidorIdDisplay" class="id-display">REP-XXX
+        </div>
+      </div>
+      <div class="button-flex-group">
+        <button onclick="copiarIdRepartidor()" class="btn-primario flex-1">📋 Copiar ID</button>
+        <a href="panel-repartidor.html" class="btn-primario flex-1 btn-link">Ir a Mi
+          Panel</a>
+      </div>
+      <button onclick="cerrarModalVerificacion()" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal Comercio -->
+  <div id="modalComercio" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog">
+      <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalComercio()">&times;</button>
+      <h3>Registrá tu Comercio 🏪</h3>
+      <p class="color-text-claro mb-20">Completá el formulario y nos pondremos en contacto.</p>
+
+      <form id="formRegistrarComercio" class="form-registro">
+        <div class="form-row">
+          <label for="comercioNombrePropietario">Nombre del Propietario *</label>
+          <input id="comercioNombrePropietario" type="text" required placeholder="Juan Pérez" />
+        </div>
+        <div class="form-row">
+          <label for="comercioNombreNegocio">Nombre del Comercio *</label>
+          <input id="comercioNombreNegocio" type="text" required placeholder="Ej. Panadería Don José" />
+        </div>
+        <div class="form-row">
+          <label for="comercioEmail">Email *</label>
+          <input id="comercioEmail" type="email" required placeholder="comercio@ejemplo.com" />
+        </div>
+        <div class="form-row">
+          <label for="comercioTelefono">Teléfono *</label>
+          <input id="comercioTelefono" type="tel" required placeholder="+54 9 11 1234-5678" />
+        </div>
+        <div class="form-row">
+          <label for="comercioCategoria">Categoría *</label>
+          <select id="comercioCategoria" required>
+            <option value="">Selecciona una categoría</option>
+            <option value="restaurante">Restaurante / Comida</option>
+            <option value="indumentaria">Indumentaria</option>
+            <option value="farmacia">Farmacia / Salud</option>
+            <option value="kiosco">Kiosco</option>
+            <option value="bazar">Bazar</option>
+            <option value="otros">Otros</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primario">Enviar Registro</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Verificación Comercio -->
+  <div id="modalVerificacionComercio" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content text-center" role="dialog">
+      <div class="mb-20">
+        <div class="icon-large">🏪</div>
+        <h2 class="mb-10 color-exito">¡Registro Exitoso!</h2>
+        <p class="color-text-claro">Tu comercio ha sido registrado correctamente</p>
+      </div>
+      <div class="id-box">
+        <p class="id-label">Tu ID de Comercio</p>
+        <div id="comercioIdDisplay" class="id-display">COM-XXX
+        </div>
+      </div>
+      <div class="button-flex-group">
+        <button onclick="copiarIdComercio()" class="btn-primario flex-1">📋 Copiar ID</button>
+        <button onclick="irAPanelComercio()" class="btn-primario flex-2">🏪 Ir a Mi Panel</button>
+      </div>
+      <button onclick="cerrarModalVerificacionComercio()" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal Pedido -->
+  <div id="modalPedido" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog">
+      <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalPedido()">&times;</button>
+      <h3>Crear Nuevo Pedido 🛍️</h3>
+      <p class="color-text-claro mb-20">Completá los datos para realizar tu pedido</p>
+
+      <form id="formCrearPedido" class="form-registro">
+        <div class="form-row">
+          <label for="pedidoNombreCliente">Tu Nombre *</label>
+          <input id="pedidoNombreCliente" type="text" required placeholder="Juan Pérez" />
+        </div>
+        <div class="form-row">
+          <label for="pedidoTelefonoCliente">Tu Teléfono *</label>
+          <input id="pedidoTelefonoCliente" type="tel" required placeholder="+54 9 11 1234-5678" />
+        </div>
+        <div class="form-row">
+          <label for="pedidoDireccionEntrega">Dirección de Entrega *</label>
+          <input id="pedidoDireccionEntrega" type="text" required placeholder="Calle 123, Barrio" />
+        </div>
+        <div class="form-row">
+          <label for="pedidoDescripcion">Descripción del Pedido *</label>
+          <textarea id="pedidoDescripcion" required rows="4" placeholder="Describe qué necesitas..."></textarea>
+        </div>
+        <div class="form-row">
+          <label for="pedidoMonto">Monto Estimado *</label>
+          <input id="pedidoMonto" type="number" step="0.01" required placeholder="$0.00" />
+        </div>
+        <button type="submit" class="btn-primario">Crear Pedido</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Verificación Pedido -->
+  <div id="modalVerificacionPedido" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content text-center" role="dialog">
+      <div class="mb-20">
+        <div class="icon-large">🎉</div>
+        <h2 class="mb-10 color-exito">¡Pedido Creado!</h2>
+        <p class="color-text-claro">Tu pedido ha sido registrado exitosamente</p>
+      </div>
+      <div class="id-box">
+        <p class="id-label">Número de Pedido</p>
+        <div id="pedidoIdDisplay" class="id-display">PED-XXX</div>
+      </div>
+      <div class="mb-container">
+        <button onclick="copiarIdPedido()" class="btn-primario w-100">📋 Copiar N° Pedido</button>
+      </div>
+      <button onclick="cerrarModalVerificacionPedido()" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modales de Tiendas -->
+  <div id="modalTiendaPizzeria" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="tienda-header">
+        <div class="tienda-icon-modal">🍕</div>
+        <h2>Pizzería Don Mario</h2>
+      </div>
+      <div>
+        <p class="tienda-description">Pizzas artesanales con más de 15 años de experiencia.</p>
+        <div>
+          <a href="https://wa.me/542215047962?text=Hola,%20quiero%20hacer%20un%20pedido"
+            class="btn-primario w-100 btn-link">
+            Pedir por WhatsApp
+          </a>
+        </div>
+      </div>
+      <button onclick="cerrarModalTienda('pizzeria')" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <div id="modalTiendaFarmacia" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="tienda-header">
+        <div class="tienda-icon-modal">💊</div>
+        <h2>Farmacia La Salud</h2>
+      </div>
+      <div>
+        <p class="tienda-description">Farmacia de confianza con atención personalizada.</p>
+        <div>
+          <a href="https://wa.me/542215047962?text=Hola,%20necesito%20consultar" class="btn-primario w-100 btn-link">
+            Consultar por WhatsApp
+          </a>
+        </div>
+      </div>
+      <button onclick="cerrarModalTienda('farmacia')" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <div id="modalTiendaKiosco" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="tienda-header">
+        <div class="tienda-icon-modal">🍬</div>
+        <h2>Kiosco El Rápido</h2>
+      </div>
+      <div>
+        <p class="tienda-description">Tu kiosco de barrio abierto las 24 horas.</p>
+        <div>
+          <a href="https://wa.me/542215047962?text=Hola,%20quiero%20hacer%20un%20pedido"
+            class="btn-primario w-100 btn-link">
+            Pedir por WhatsApp
+          </a>
+        </div>
+      </div>
+      <button onclick="cerrarModalTienda('kiosco')" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <div id="modalTiendaBoutique" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="tienda-header">
+        <div class="tienda-icon-modal">👕</div>
+        <h2>Boutique Estilo</h2>
+      </div>
+      <div>
+        <p class="tienda-description">Boutique de moda con las últimas tendencias.</p>
+        <div>
+          <a href="https://wa.me/542215047962?text=Hola,%20quiero%20consultar" class="btn-primario w-100 btn-link">
+            Consultar por WhatsApp
+          </a>
+        </div>
+      </div>
+      <button onclick="cerrarModalTienda('boutique')" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- ==================== WIDGETS ADICIONALES ==================== -->
+
+  <!-- Widget de Notificaciones -->
+  <div class="notification-popup hidden" id="notificationPopup">
+    <div class="notification-content">
+      <div class="notification-header-flex">
+        <span class="notification-icon">🔔</span>
+        <span class="notification-title">Notificaciones</span>
+      </div>
+      <p class="notification-text">
+        Recibe alertas sobre pedidos y actualizaciones
+      </p>
+      <button id="btnActivarNotif" class="btn-primario">
+        🔔 Activar
+      </button>
+    </div>
+  </div>
+
+  <!-- Widget Chatbot -->
+  <div class="chatbot-widget hidden" id="chatbotWidget">
+    <div class="chatbot-container">
+      <div class="chatbot-header-flex">
+        <div class="chatbot-info">
+          <span class="chatbot-avatar">🤖</span>
+          <div>
+            <h3 class="chatbot-name">Asistente YAvoy</h3>
+            <p class="chatbot-status">En línea 24/7</p>
+          </div>
+        </div>
+        <button id="btnCerrarChatbot" class="chatbot-close">✕</button>
+      </div>
+      <div id="chatbotMessages" class="chatbot-messages">
+      </div>
+      <div class="chatbot-input-container">
+        <input type="text" id="chatbotInput" class="chatbot-input" placeholder="Escribe tu pregunta..." />
+        <button id="btnEnviarChatbot" class="btn-primario chatbot-send">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-container hidden">
+    <div class="loading-content">
+      <div class="loading-spinner">
+      </div>
+      <p class="loading-text">Cargando...</p>
+    </div>
+  </div>
+
+  <!-- Splash Screen -->
+  <div id="splash-screen" class="splash-container hidden">
+    <img id="splash-icon" src="icons/icon-yavoy.png?v=11" alt="Logo de YAvoy animado" class="splash-icon" />
+    <p id="splash-text" class="splash-text">YAvoy... ¡Conectando tu pedido!</p>
+  </div>
+
+  <!-- Scroll to Top -->
+  <button id="scrollToTop" class="scroll-to-top" aria-label="Volver arriba">↑</button>
+
+  <!-- ==================== SCRIPTS EXTERNOS ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+  <script src="js/mercadopago-integration.js"></script>
+  <script src="js/soporte-chatbot.js"></script>
+
+  <!-- Scripts Modulares (ORDEN IMPORTANTE) -->
+  <script src="js/index-theme.js"></script>
+  <script src="js/index-modals.js"></script>
+  <script src="js/index-forms.js"></script>
+  <script src="js/index-main.js"></script>
+
+  <!-- CSS Animation for Spinner -->
+  <style>
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .form-registro label {
+      display: block;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .notification-popup {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 1500;
+      opacity: 1;
+      visibility: visible;
+      transition: var(--transition);
+    }
+
+    .notification-popup.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .chatbot-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1500;
+      opacity: 1;
+      visibility: visible;
+      transition: var(--transition);
+    }
+
+    .chatbot-widget.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  </style>
+
+</body>
+
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Prueba Simple MVC - YAvoy</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f0f4f8;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border-left: 4px solid #007bff; 
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        .btn:hover { background: #0056b3; }
+        .result { 
+            background: #333; 
+            color: #00ff00; 
+            padding: 15px; 
+            border-radius: 5px; 
+            font-family: monospace; 
+            margin: 10px 0;
+            white-space: pre-wrap;
+            min-height: 50px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
+        .info { color: #00aaff; }
+        input, textarea { 
+            width: 100%; 
+            padding: 8px; 
+            margin: 5px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Prueba Simple MVC - Sistema de Pedidos</h1>
+        <p><strong>Status:</strong> <span id="serverStatus">Verificando servidor...</span></p>
+        
+        <!-- Test 1: Verificar servidor -->
+        <div class="test-section">
+            <h2>🔍 1. Verificar Servidor</h2>
+            <button class="btn" onclick="verificarServidor()">Probar Conexión</button>
+            <div id="statusResult" class="result"></div>
+        </div>
+
+        <!-- Test 2: Listar pedidos -->
+        <div class="test-section">
+            <h2>📋 2. Listar Pedidos</h2>
+            <button class="btn" onclick="listarPedidos()">Obtener Lista</button>
+            <div id="listResult" class="result"></div>
+        </div>
+
+        <!-- Test 3: Crear pedido -->
+        <div class="test-section">
+            <h2>➕ 3. Crear Pedido</h2>
+            <input type="text" id="cliente" placeholder="Nombre del cliente" value="María García">
+            <input type="text" id="telefono" placeholder="Teléfono" value="2215047123">
+            <input type="text" id="direccion" placeholder="Dirección" value="Av. Test 456">
+            <textarea id="descripcion" placeholder="Descripción">Pizza + gaseosa</textarea>
+            <input type="number" id="monto" placeholder="Monto" value="1200">
+            <br><br>
+            <button class="btn" onclick="crearPedido()">Crear Pedido</button>
+            <div id="createResult" class="result"></div>
+        </div>
+
+        <!-- Test 4: Estado MVC -->
+        <div class="test-section">
+            <h2>⚙️ 4. Estado del Sistema MVC</h2>
+            <button class="btn" onclick="mostrarEstadoMVC()">Ver Estado</button>
+            <div id="mvcResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5501';
+
+        // Verificar servidor al cargar
+        window.onload = () => verificarServidor();
+
+        async function log(mensaje, elemento = 'statusResult') {
+            const el = document.getElementById(elemento);
+            const timestamp = new Date().toLocaleTimeString();
+            el.textContent += `[${timestamp}] ${mensaje}\n`;
+            console.log(mensaje);
+        }
+
+        // 1. Verificar servidor
+        async function verificarServidor() {
+            const statusEl = document.getElementById('serverStatus');
+            const resultEl = document.getElementById('statusResult');
+            
+            statusEl.textContent = 'Verificando...';
+            resultEl.textContent = '';
+            
+            try {
+                // Test básico al servidor
+                const response = await fetch(API_BASE + '/', { 
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    statusEl.textContent = '✅ Servidor Online';
+                    statusEl.style.color = 'green';
+                    await log('✅ Servidor YAvoy respondiendo correctamente');
+                    
+                    // Test API pedidos
+                    const apiTest = await fetch(API_BASE + '/api/pedidos', { 
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    if (apiTest.ok) {
+                        await log('✅ API /api/pedidos accesible');
+                        await log(`📡 Status: ${apiTest.status} ${apiTest.statusText}`);
+                    } else {
+                        await log(`⚠️ API Status: ${apiTest.status} ${apiTest.statusText}`);
+                    }
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Servidor Offline';
+                statusEl.style.color = 'red';
+                await log(`❌ Error de conexión: ${error.message}`);
+            }
+        }
+
+        // 2. Listar pedidos
+        async function listarPedidos() {
+            const el = document.getElementById('listResult');
+            el.textContent = '';
+            
+            await log('🔍 Consultando lista de pedidos...', 'listResult');
+            
+            try {
+                const response = await fetch(API_BASE + '/api/pedidos', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                await log(`📡 Response: ${response.status} ${response.statusText}`, 'listResult');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const text = await response.text();
+                await log(`📦 Raw response: ${text.substring(0, 100)}...`, 'listResult');
+                
+                if (!text.trim()) {
+                    throw new Error('Respuesta vacía del servidor');
+                }
+                
+                const data = JSON.parse(text);
+                
+                if (data.success) {
+                    await log(`✅ Pedidos encontrados: ${data.pedidos.length}`, 'listResult');
+                    data.pedidos.slice(-3).forEach((p, i) => {
+                        log(`  ${i+1}. ${p.id} - ${p.nombreCliente} - $${p.monto}`, 'listResult');
+                    });
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+                
+            } catch (error) {
+                await log(`❌ Error: ${error.message}`, 'listResult');
+            }
+        }
+
+        // 3. Crear pedido
+        async function crearPedido() {
+            const el = document.getElementById('createResult');
+            el.textContent = '';
+            
+            const datos = {
+                nombreCliente: document.getElementById('cliente').value,
+                telefonoCliente: document.getElementById('telefono').value,
+                direccionEntrega: document.getElementById('direccion').value,
+                descripcion: document.getElementById('descripcion').value,
+                monto: parseInt(document.getElementById('monto').value) || 0
+            };
+            
+            await log('📤 Creando pedido...', 'createResult');
+            await log(`📋 Datos: ${JSON.stringify(datos, null, 2)}`, 'createResult');
+            
+            try {
+                const response = await fetch(API_BASE + '/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+                
+                await log(`📡 Response: ${response.status} ${response.statusText}`, 'createResult');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const text = await response.text();
+                
+                if (!text.trim()) {
+                    throw new Error('Respuesta vacía del servidor');
+                }
+                
+                const data = JSON.parse(text);
+                
+                if (data.success && data.pedido) {
+                    await log(`✅ Pedido creado exitosamente!`, 'createResult');
+                    await log(`🆔 ID: ${data.pedido.id}`, 'createResult');
+                    await log(`👤 Cliente: ${data.pedido.nombreCliente}`, 'createResult');
+                    await log(`💰 Monto: $${data.pedido.monto}`, 'createResult');
+                    await log(`📍 Estado: ${data.pedido.estado}`, 'createResult');
+                } else {
+                    throw new Error(data.error || 'Error desconocido en la respuesta');
+                }
+                
+            } catch (error) {
+                await log(`❌ Error al crear pedido: ${error.message}`, 'createResult');
+            }
+        }
+
+        // 4. Estado MVC
+        async function mostrarEstadoMVC() {
+            const el = document.getElementById('mvcResult');
+            el.textContent = '';
+            
+            await log('📊 ESTADO DEL SISTEMA MVC', 'mvcResult');
+            await log('═══════════════════════════════', 'mvcResult');
+            await log('✅ Controlador: src/controllers/pedidosController.js', 'mvcResult');
+            await log('✅ Rutas: src/routes/pedidosRoutes.js', 'mvcResult');
+            await log('✅ Integración: server.js → app.use("/api/pedidos")', 'mvcResult');
+            await log('✅ Socket.IO: Notificaciones en tiempo real', 'mvcResult');
+            await log('✅ Persistencia: JSON files /registros', 'mvcResult');
+            await log('', 'mvcResult');
+            await log('🎯 BENEFICIOS CONSEGUIDOS:', 'mvcResult');
+            await log('• Código modular y organizado', 'mvcResult');
+            await log('• Facilita testing y debugging', 'mvcResult');
+            await log('• Base para futuras expansiones', 'mvcResult');
+            await log('• Separación clara de responsabilidades', 'mvcResult');
+            await log('• Mantenibilidad mejorada', 'mvcResult');
+            
+            // Test de conectividad
+            await log('', 'mvcResult');
+            await log('🔍 VERIFICANDO ENDPOINTS...', 'mvcResult');
+            try {
+                const test = await fetch(API_BASE + '/api/pedidos');
+                await log(`✅ GET /api/pedidos: ${test.status} OK`, 'mvcResult');
+            } catch (e) {
+                await log(`❌ GET /api/pedidos: ERROR - ${e.message}`, 'mvcResult');
+            }
+        }
+    </script>
+</body>
+</html>

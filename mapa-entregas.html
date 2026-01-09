@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Interactivo de Entregas - YaVoy 2026</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1724;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            height: 100vh;
+        }
+
+        /* Panel Lateral */
+        .sidebar {
+            background: #0b1220;
+            border-right: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+            background: #0f1724;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #06b6d4;
+        }
+
+        .stat-item .label {
+            font-size: 0.75em;
+            color: #ffffff;
+            margin-top: 2px;
+        }
+
+        .filters {
+            padding: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .filter-group {
+            margin-bottom: 10px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #0f1724;
+            color: #ffffff;
+        }
+
+        .deliveries-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .delivery-card {
+            background: #0f1724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid #06b6d4;
+        }
+
+        .delivery-card:hover {
+            background: #e8eaf6;
+            transform: translateX(5px);
+        }
+
+        .delivery-card.active {
+            background: #e8eaf6;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .delivery-card.en-preparacion {
+            border-left-color: #f59e0b;
+        }
+
+        .delivery-card.en-camino {
+            border-left-color: #3b82f6;
+        }
+
+        .delivery-card.entregado {
+            border-left-color: #10b981;
+        }
+
+        .delivery-card.cancelado {
+            border-left-color: #ef4444;
+        }
+
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .delivery-id {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .status-pendiente {
+            background: #0f1724;
+            color: #92400e;
+        }
+
+        .status-en-preparacion {
+            background: #0f1724;
+            color: #9a3412;
+        }
+
+        .status-en-camino {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-entregado {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelado {
+            background: #0f1724;
+            color: #991b1b;
+        }
+
+        .delivery-info {
+            font-size: 0.85em;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .delivery-info strong {
+            color: #ffffff;
+        }
+
+        .delivery-time {
+            font-size: 0.75em;
+            color: #cccccc;
+            margin-top: 8px;
+        }
+
+        /* Mapa */
+        .map-container {
+            position: relative;
+            height: 100vh;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: #0b1220;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+        }
+
+        .control-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #0f1724;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #0b1220;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+        }
+
+        .legend h4 {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .icon-comercio {
+            background: #06b6d4;
+        }
+
+        .icon-repartidor {
+            background: #10b981;
+        }
+
+        .icon-cliente {
+            background: #ef4444;
+        }
+
+        /* Custom Popup */
+        .custom-popup {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .custom-popup h3 {
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-size: 1.1em;
+        }
+
+        .custom-popup p {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #ffffff;
+        }
+
+        .custom-popup strong {
+            color: #ffffff;
+        }
+
+        .popup-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .popup-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .popup-btn-primary {
+            background: #06b6d4;
+            color: white;
+        }
+
+        .popup-btn-secondary {
+            background: #0f1724;
+            color: #ffffff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar.mobile-active {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                z-index: 2000;
+            }
+
+            .map-controls {
+                top: 10px;
+                right: 10px;
+            }
+
+            .legend {
+                bottom: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>🗺️ Entregas en Tiempo Real</h2>
+                <p>Seguimiento GPS de pedidos activos</p>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="number" id="statActivos">0</div>
+                    <div class="label">Activos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" id="statEnCamino">0</div>
+                    <div class="label">En Camino</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" id="statHoy">0</div>
+                    <div class="label">Hoy</div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Estado del Pedido</label>
+                    <select id="filterEstado">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en-preparacion">En Preparación</option>
+                        <option value="en-camino">En Camino</option>
+                        <option value="entregado">Entregado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Repartidor</label>
+                    <select id="filterRepartidor">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Buscar por ID o Dirección</label>
+                    <input type="text" id="searchInput" placeholder="Buscar...">
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="btn btn-primary" onclick="aplicarFiltros()">🔍 Filtrar</button>
+                    <button class="btn btn-secondary" onclick="limpiarFiltros()">🔄 Limpiar</button>
+                </div>
+            </div>
+
+            <div class="deliveries-list" id="deliveriesList">
+                <!-- Las entregas se cargarán aquí -->
+            </div>
+        </div>
+
+        <!-- Mapa -->
+        <div class="map-container">
+            <div id="map"></div>
+
+            <div class="map-controls">
+                <button class="control-btn active" onclick="toggleCapa('comercios')">
+                    🏪 Comercios
+                </button>
+                <button class="control-btn active" onclick="toggleCapa('repartidores')">
+                    🚴 Repartidores
+                </button>
+                <button class="control-btn active" onclick="toggleCapa('clientes')">
+                    📍 Destinos
+                </button>
+                <button class="control-btn active" onclick="toggleCapa('rutas')">
+                    🛣️ Rutas
+                </button>
+                <button class="control-btn" onclick="centrarMapa()">
+                    🎯 Centrar
+                </button>
+                <button class="control-btn" onclick="toggleTracking()">
+                    📡 Tracking
+                </button>
+            </div>
+
+            <div class="legend">
+                <h4>Leyenda</h4>
+                <div class="legend-item">
+                    <div class="legend-icon icon-comercio"></div>
+                    <span>Comercios</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon icon-repartidor"></div>
+                    <span>Repartidores</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon icon-cliente"></div>
+                    <span>Destinos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let markers = {
+            comercios: [],
+            repartidores: [],
+            clientes: [],
+            rutas: []
+        };
+        let capasVisibles = {
+            comercios: true,
+            repartidores: true,
+            clientes: true,
+            rutas: true
+        };
+        let trackingActivo = false;
+        let entregas = [];
+
+        // Coordenadas de Córdoba, Argentina (centro por defecto)
+        const CORDOBA_CENTER = [-31.4201, -64.1888];
+
+        // Inicializar mapa
+        window.addEventListener('DOMContentLoaded', () => {
+            inicializarMapa();
+            cargarEntregas();
+            iniciarActualizacionAutomatica();
+        });
+
+        function inicializarMapa() {
+            map = L.map('map').setView(CORDOBA_CENTER, 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            console.log('Mapa inicializado');
+        }
+
+        async function cargarEntregas() {
+            try {
+                // Intentar cargar desde servidor
+                const response = await fetch('http://localhost:5501/api/pedidos');
+                
+                if (response.ok) {
+                    const pedidos = await response.json();
+                    entregas = pedidos.map(p => generarEntregaConCoordenadas(p));
+                } else {
+                    throw new Error('Servidor no disponible');
+                }
+            } catch (error) {
+                console.log('Usando datos de ejemplo');
+                entregas = generarEntregasEjemplo();
+            }
+
+            actualizarMapa();
+            renderizarListaEntregas();
+            actualizarEstadisticas();
+        }
+
+        function generarEntregaConCoordenadas(pedido) {
+            // Generar coordenadas aleatorias en Córdoba
+            const latBase = -31.4201;
+            const lngBase = -64.1888;
+            const radio = 0.05; // ~5km
+
+            return {
+                id: pedido.id || Date.now(),
+                comercio: pedido.comercio || 'Comercio',
+                cliente: pedido.cliente || 'Cliente',
+                direccion: pedido.direccion || 'Dirección',
+                repartidor: pedido.repartidor || 'Sin asignar',
+                estado: pedido.estado || 'pendiente',
+                coordComercio: {
+                    lat: latBase + (Math.random() - 0.5) * radio,
+                    lng: lngBase + (Math.random() - 0.5) * radio
+                },
+                coordRepartidor: {
+                    lat: latBase + (Math.random() - 0.5) * radio,
+                    lng: lngBase + (Math.random() - 0.5) * radio
+                },
+                coordCliente: {
+                    lat: latBase + (Math.random() - 0.5) * radio,
+                    lng: lngBase + (Math.random() - 0.5) * radio
+                },
+                hora: new Date(pedido.createdAt || Date.now()).toLocaleTimeString('es-AR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                tiempoEstimado: Math.floor(Math.random() * 30) + 10
+            };
+        }
+
+        function generarEntregasEjemplo() {
+            return [
+                {
+                    id: 1,
+                    comercio: 'Kiosco Central',
+                    cliente: 'Juan Pérez',
+                    direccion: 'Av. Colón 1234',
+                    repartidor: 'Carlos Rodríguez',
+                    estado: 'en-camino',
+                    coordComercio: { lat: -31.4201, lng: -64.1888 },
+                    coordRepartidor: { lat: -31.4150, lng: -64.1850 },
+                    coordCliente: { lat: -31.4100, lng: -64.1800 },
+                    hora: '14:30',
+                    tiempoEstimado: 15
+                },
+                {
+                    id: 2,
+                    comercio: 'Panadería Don Pan',
+                    cliente: 'María García',
+                    direccion: 'San Martín 567',
+                    repartidor: 'Ana Martínez',
+                    estado: 'en-preparacion',
+                    coordComercio: { lat: -31.4250, lng: -64.1920 },
+                    coordRepartidor: { lat: -31.4250, lng: -64.1920 },
+                    coordCliente: { lat: -31.4180, lng: -64.1750 },
+                    hora: '14:45',
+                    tiempoEstimado: 25
+                },
+                {
+                    id: 3,
+                    comercio: 'Farmacia del Centro',
+                    cliente: 'Diego López',
+                    direccion: 'Independencia 890',
+                    repartidor: 'Pablo Gómez',
+                    estado: 'entregado',
+                    coordComercio: { lat: -31.4280, lng: -64.1950 },
+                    coordRepartidor: { lat: -31.4320, lng: -64.2000 },
+                    coordCliente: { lat: -31.4320, lng: -64.2000 },
+                    hora: '14:15',
+                    tiempoEstimado: 0
+                }
+            ];
+        }
+
+        function actualizarMapa() {
+            // Limpiar markers anteriores
+            Object.values(markers).forEach(group => {
+                group.forEach(marker => map.removeLayer(marker));
+            });
+            markers = { comercios: [], repartidores: [], clientes: [], rutas: [] };
+
+            entregas.forEach(entrega => {
+                // Marker Comercio
+                if (capasVisibles.comercios) {
+                    const markerComercio = L.marker([entrega.coordComercio.lat, entrega.coordComercio.lng], {
+                        icon: crearIcono('🏪', '#06b6d4')
+                    }).addTo(map);
+                    
+                    markerComercio.bindPopup(crearPopupComercio(entrega));
+                    markers.comercios.push(markerComercio);
+                }
+
+                // Marker Repartidor
+                if (capasVisibles.repartidores && entrega.estado !== 'pendiente' && entrega.estado !== 'cancelado') {
+                    const markerRepartidor = L.marker([entrega.coordRepartidor.lat, entrega.coordRepartidor.lng], {
+                        icon: crearIcono('🚴', '#10b981')
+                    }).addTo(map);
+                    
+                    markerRepartidor.bindPopup(crearPopupRepartidor(entrega));
+                    markers.repartidores.push(markerRepartidor);
+                }
+
+                // Marker Cliente
+                if (capasVisibles.clientes) {
+                    const markerCliente = L.marker([entrega.coordCliente.lat, entrega.coordCliente.lng], {
+                        icon: crearIcono('📍', '#ef4444')
+                    }).addTo(map);
+                    
+                    markerCliente.bindPopup(crearPopupCliente(entrega));
+                    markers.clientes.push(markerCliente);
+                }
+
+                // Dibujar ruta
+                if (capasVisibles.rutas && entrega.estado === 'en-camino') {
+                    const ruta = L.polyline([
+                        [entrega.coordRepartidor.lat, entrega.coordRepartidor.lng],
+                        [entrega.coordCliente.lat, entrega.coordCliente.lng]
+                    ], {
+                        color: '#3b82f6',
+                        weight: 3,
+                        opacity: 0.7,
+                        dashArray: '10, 5'
+                    }).addTo(map);
+                    
+                    markers.rutas.push(ruta);
+                }
+            });
+        }
+
+        function crearIcono(emoji, color) {
+            return L.divIcon({
+                html: `<div style="
+                    background: ${color};
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    border: 3px solid white;
+                ">${emoji}</div>`,
+                className: '',
+                iconSize: [35, 35]
+            });
+        }
+
+        function crearPopupComercio(entrega) {
+            return `
+                <div class="custom-popup">
+                    <h3>🏪 ${entrega.comercio}</h3>
+                    <p><strong>Pedido:</strong> #${entrega.id}</p>
+                    <p><strong>Estado:</strong> ${traducirEstado(entrega.estado)}</p>
+                    <p><strong>Cliente:</strong> ${entrega.cliente}</p>
+                    <div class="popup-actions">
+                        <button class="popup-btn popup-btn-primary" onclick="verDetallePedido(${entrega.id})">
+                            Ver Detalles
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function crearPopupRepartidor(entrega) {
+            return `
+                <div class="custom-popup">
+                    <h3>🚴 ${entrega.repartidor}</h3>
+                    <p><strong>Entregando:</strong> Pedido #${entrega.id}</p>
+                    <p><strong>Destino:</strong> ${entrega.direccion}</p>
+                    <p><strong>Tiempo estimado:</strong> ${entrega.tiempoEstimado} min</p>
+                    <div class="popup-actions">
+                        <button class="popup-btn popup-btn-primary" onclick="centrarEnRepartidor(${entrega.id})">
+                            Seguir
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function crearPopupCliente(entrega) {
+            return `
+                <div class="custom-popup">
+                    <h3>📍 ${entrega.direccion}</h3>
+                    <p><strong>Cliente:</strong> ${entrega.cliente}</p>
+                    <p><strong>Pedido:</strong> #${entrega.id}</p>
+                    <p><strong>Estado:</strong> ${traducirEstado(entrega.estado)}</p>
+                    ${entrega.estado === 'en-camino' ? 
+                        `<p><strong>Llega en:</strong> ${entrega.tiempoEstimado} minutos</p>` : ''}
+                </div>
+            `;
+        }
+
+        function renderizarListaEntregas() {
+            const lista = document.getElementById('deliveriesList');
+            
+            if (entregas.length === 0) {
+                lista.innerHTML = '<p style="color: #cccccc; text-align: center; padding: 20px;">No hay entregas activas</p>';
+                return;
+            }
+
+            lista.innerHTML = entregas.map(e => `
+                <div class="delivery-card ${e.estado}" onclick="seleccionarEntrega(${e.id})">
+                    <div class="delivery-header">
+                        <span class="delivery-id">Pedido #${e.id}</span>
+                        <span class="status-badge status-${e.estado}">${traducirEstado(e.estado)}</span>
+                    </div>
+                    <div class="delivery-info">
+                        <strong>Comercio:</strong> ${e.comercio}
+                    </div>
+                    <div class="delivery-info">
+                        <strong>Destino:</strong> ${e.direccion}
+                    </div>
+                    <div class="delivery-info">
+                        <strong>Repartidor:</strong> ${e.repartidor}
+                    </div>
+                    ${e.estado === 'en-camino' ? 
+                        `<div class="delivery-info" style="color: #3b82f6;">
+                            ⏱️ Llega en ${e.tiempoEstimado} minutos
+                        </div>` : ''}
+                    <div class="delivery-time">📅 ${e.hora}</div>
+                </div>
+            `).join('');
+        }
+
+        function actualizarEstadisticas() {
+            const activos = entregas.filter(e => e.estado !== 'entregado' && e.estado !== 'cancelado').length;
+            const enCamino = entregas.filter(e => e.estado === 'en-camino').length;
+            
+            document.getElementById('statActivos').textContent = activos;
+            document.getElementById('statEnCamino').textContent = enCamino;
+            document.getElementById('statHoy').textContent = entregas.length;
+        }
+
+        function seleccionarEntrega(id) {
+            const entrega = entregas.find(e => e.id === id);
+            if (!entrega) return;
+
+            // Resaltar en lista
+            document.querySelectorAll('.delivery-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Centrar en el mapa
+            if (entrega.estado === 'en-camino') {
+                map.setView([entrega.coordRepartidor.lat, entrega.coordRepartidor.lng], 15);
+            } else {
+                map.setView([entrega.coordComercio.lat, entrega.coordComercio.lng], 15);
+            }
+        }
+
+        function toggleCapa(capa) {
+            capasVisibles[capa] = !capasVisibles[capa];
+            event.target.classList.toggle('active');
+            actualizarMapa();
+        }
+
+        function centrarMapa() {
+            map.setView(CORDOBA_CENTER, 13);
+        }
+
+        function toggleTracking() {
+            trackingActivo = !trackingActivo;
+            event.target.classList.toggle('active');
+            
+            if (trackingActivo) {
+                alert('🔴 Tracking en vivo activado');
+            } else {
+                alert('⚫ Tracking en vivo desactivado');
+            }
+        }
+
+        function iniciarActualizacionAutomatica() {
+            setInterval(() => {
+                if (trackingActivo) {
+                    // Simular movimiento de repartidores
+                    entregas.forEach(e => {
+                        if (e.estado === 'en-camino') {
+                            // Mover repartidor hacia cliente
+                            const deltaLat = (e.coordCliente.lat - e.coordRepartidor.lat) * 0.1;
+                            const deltaLng = (e.coordCliente.lng - e.coordRepartidor.lng) * 0.1;
+                            
+                            e.coordRepartidor.lat += deltaLat;
+                            e.coordRepartidor.lng += deltaLng;
+                            
+                            // Reducir tiempo estimado
+                            if (e.tiempoEstimado > 0) {
+                                e.tiempoEstimado = Math.max(0, e.tiempoEstimado - 1);
+                            }
+                        }
+                    });
+                    
+                    actualizarMapa();
+                    renderizarListaEntregas();
+                }
+            }, 5000); // Actualizar cada 5 segundos
+        }
+
+        function traducirEstado(estado) {
+            const traducciones = {
+                'pendiente': 'Pendiente',
+                'en-preparacion': 'En Preparación',
+                'en-camino': 'En Camino',
+                'entregado': 'Entregado',
+                'cancelado': 'Cancelado'
+            };
+            return traducciones[estado] || estado;
+        }
+
+        function aplicarFiltros() {
+            // Implementar filtros
+            console.log('Aplicando filtros...');
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('filterEstado').value = '';
+            document.getElementById('filterRepartidor').value = '';
+            document.getElementById('searchInput').value = '';
+        }
+
+        function verDetallePedido(id) {
+            alert(`Ver detalles del pedido #${id}`);
+        }
+
+        function centrarEnRepartidor(id) {
+            const entrega = entregas.find(e => e.id === id);
+            if (entrega) {
+                map.setView([entrega.coordRepartidor.lat, entrega.coordRepartidor.lng], 16);
+            }
+        }
+    </script>
+</body>
+</html>

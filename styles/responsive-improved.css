@@ -1,0 +1,361 @@
+/* 📱 Responsive Mejorado para Tablets - YAvoy */
+
+/* === TABLET LANDSCAPE (1024px - 1366px) === */
+@media (min-width: 769px) and (max-width: 1366px) {
+  
+  /* Contenedor principal */
+  .contenedor {
+    max-width: 95%;
+    padding: 0 30px;
+  }
+
+  /* Hero section */
+  .hero-content {
+    padding: 60px 20px;
+  }
+
+  .hero-text h1 {
+    font-size: 2.8rem;
+  }
+
+  .hero-text p {
+    font-size: 1.3rem;
+  }
+
+  /* Role cards */
+  .role-selector {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+  }
+
+  .role-card {
+    padding: 35px 25px;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  /* Comercios grid */
+  .tiendas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  /* Modales */
+  .modal-contenido {
+    max-width: 600px;
+    margin: 5vh auto;
+  }
+
+  /* Formularios */
+  .formulario-grupo {
+    margin-bottom: 18px;
+  }
+
+  /* Navegación */
+  .menu-principal {
+    gap: 25px;
+  }
+
+  .menu-principal a {
+    font-size: 15px;
+  }
+}
+
+/* === TABLET PORTRAIT (768px - 1024px) === */
+@media (min-width: 481px) and (max-width: 768px) {
+  
+  /* Contenedor */
+  .contenedor {
+    max-width: 100%;
+    padding: 0 25px;
+  }
+
+  /* Hero */
+  .hero-text h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-text p {
+    font-size: 1.1rem;
+  }
+
+  /* Role cards en columna */
+  .role-selector {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .role-card {
+    padding: 30px;
+  }
+
+  .role-icon {
+    font-size: 3rem;
+  }
+
+  /* Stats 2 columnas */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .stat-numero {
+    font-size: 2.5rem;
+  }
+
+  /* Comercios 2 columnas */
+  .tiendas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .tienda-card {
+    padding: 25px;
+  }
+
+  /* Categorías scroll horizontal */
+  .categorias-barra {
+    overflow-x: auto;
+    /* -webkit-overflow-scrolling deprecated, removed for compatibility */
+    padding-bottom: 10px;
+  }
+
+  .categorias-barra::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .categorias-barra::-webkit-scrollbar-track {
+    background: var(--color-superficie);
+    border-radius: 4px;
+  }
+
+  .categorias-barra::-webkit-scrollbar-thumb {
+    background: var(--color-primario);
+    border-radius: 4px;
+  }
+
+  /* Botones táctiles más grandes */
+  .btn-primario,
+  .btn-secundario,
+  .btn-role {
+    min-height: 48px;
+    padding: 14px 28px;
+    font-size: 16px;
+  }
+
+  /* Inputs táctiles */
+  input,
+  textarea,
+  select {
+    min-height: 48px;
+    font-size: 16px; /* Evita zoom en iOS */
+  }
+
+  /* Modales */
+  .modal-contenido {
+    max-width: 90%;
+    margin: 3vh auto;
+    max-height: 90vh;
+  }
+
+  .modal-body {
+    max-height: 60vh;
+  }
+
+  /* Navegación */
+  .navegacion {
+    padding: 15px 25px;
+  }
+
+  /* Footer */
+  .pie-pagina-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    text-align: center;
+  }
+}
+
+/* === SMALL TABLET / LARGE PHONE (481px - 600px) === */
+@media (min-width: 481px) and (max-width: 600px) {
+  
+  .hero-text h1 {
+    font-size: 1.9rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tiendas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-selector {
+    max-width: 400px;
+  }
+}
+
+/* === LANDSCAPE MODE (altura < 500px) === */
+@media (max-height: 500px) and (orientation: landscape) {
+  
+  /* Hero más compacto */
+  .hero {
+    min-height: 400px; /* Valor específico en lugar de auto para compatibilidad Firefox */
+    padding: 40px 0;
+  }
+
+  .hero-text h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .hero-text p {
+    font-size: 1rem;
+  }
+
+  /* Role cards horizontales */
+  .role-selector {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  .role-card {
+    padding: 20px 15px;
+  }
+
+  .role-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+  }
+
+  .role-card h3 {
+    font-size: 1rem;
+  }
+
+  .role-card p {
+    font-size: 0.85rem;
+  }
+
+  /* Modales en landscape */
+  .modal-contenido {
+    margin: 2vh auto;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 15px 20px;
+  }
+
+  .modal-body {
+    max-height: 70vh;
+    padding: 15px 20px;
+  }
+
+  /* Stats compactos */
+  .stats-grid {
+    padding: 30px 0;
+  }
+
+  .stat-numero {
+    font-size: 2rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+  }
+}
+
+/* === TOUCH OPTIMIZATIONS === */
+@media (hover: none) and (pointer: coarse) {
+  
+  /* Áreas táctiles mínimas de 44x44px */
+  button,
+  a,
+  input[type="submit"],
+  input[type="button"],
+  .btn-primario,
+  .btn-secundario,
+  .btn-role {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Feedback táctil */
+  button:active,
+  .btn-primario:active,
+  .btn-secundario:active {
+    transform: scale(0.95);
+  }
+
+  /* Eliminar hover en touch */
+  .hover-lift:hover,
+  .hover-grow:hover,
+  .hover-glow:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Scrollbars más gruesos */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* === RETINA DISPLAYS === */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  
+  /* Textos más nítidos */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Bordes más definidos */
+  .tienda-card,
+  .modal-contenido,
+  .role-card {
+    border-width: 0.5px;
+  }
+}
+
+/* === iPAD SPECIFIC === */
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) 
+  and (-webkit-min-device-pixel-ratio: 2) {
+  
+  /* Optimizaciones para iPad */
+  .contenedor {
+    max-width: 90%;
+  }
+
+  .tiendas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  .modal-contenido {
+    max-width: 600px;
+  }
+}
+
+/* === SAFE AREAS (notch en móviles) === */
+@supports (padding: max(0px)) {
+  .navegacion,
+  .pie-pagina {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+
+  .modal-contenido {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+}

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat - YaVoy</title>
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/utilities.css">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .chat-header h2 {
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 300px;
+      background: white;
+      border-right: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .pedidos-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .pedido-item {
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .pedido-item:hover {
+      background: #f8f9fa;
+    }
+
+    .pedido-item.active {
+      background: #e8f0fe;
+      border-left: 4px solid #667eea;
+    }
+
+    .pedido-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .pedido-id {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .badge-notif {
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .pedido-info {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #e5ddd5;
+    }
+
+    .chat-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+    }
+
+    .chat-empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 60%;
+      padding: 10px 15px;
+      border-radius: 12px;
+      word-wrap: break-word;
+      animation: messageSlideIn 0.3s ease;
+    }
+
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.sent {
+      align-self: flex-end;
+      background: #dcf8c6;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.received {
+      align-self: flex-start;
+      background: white;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-header {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .message-text {
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: #999;
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    .input-container {
+      background: white;
+      padding: 15px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-container input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 24px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .input-container input:focus {
+      border-color: #667eea;
+    }
+
+    .btn-send {
+      background: #667eea;
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .btn-send:hover {
+      background: #5568d3;
+      transform: scale(1.05);
+    }
+
+    .btn-send:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .typing-indicator {
+      display: none;
+      padding: 10px 15px;
+      background: white;
+      border-radius: 12px;
+      max-width: 60px;
+      align-self: flex-start;
+    }
+
+    .typing-indicator.active {
+      display: block;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .typing-dots span {
+      width: 8px;
+      height: 8px;
+      background: #999;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 250px;
+      }
+
+      .message {
+        max-width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-header">
+    <h2>
+      <span>💬</span>
+      Chat en Tiempo Real
+    </h2>
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span id="statusText">Conectando...</span>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        Pedidos Activos
+      </div>
+      <div class="pedidos-list" id="pedidosList">
+        <div class="p-2xl text-center text-secondary">
+          Cargando pedidos...
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-main" id="chatMain">
+      <div class="chat-empty">
+        <div class="chat-empty-icon">💬</div>
+        <h3>Selecciona un pedido</h3>
+        <p>Elige un pedido de la lista para comenzar a chatear</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let socket;
+    let currentPedidoId = null;
+    let userId = 'CEO-01'; // Cambiar según el tipo de usuario
+    let userTipo = 'ceo'; // 'cliente', 'repartidor', 'ceo'
+    let mensajesNoLeidos = {};
+
+    // Inicializar Socket.IO
+    function inicializarSocket() {
+      socket = io('http://localhost:5501');
+
+      socket.on('connect', () => {
+        console.log('✅ Conectado a Socket.IO');
+        document.getElementById('statusText').textContent = 'Conectado';
+        
+        // Registrarse con ciudad y ubicación
+        socket.emit('registrar', {
+          userId: userId,
+          tipo: userTipo,
+          ciudad: localStorage.getItem('userCiudad') || 'Córdoba',
+          ubicacion: pedidoActual ? { 
+            lat: parseFloat(localStorage.getItem('userLat')) || -31.4201, 
+            lng: parseFloat(localStorage.getItem('userLng')) || -64.1888,
+            pedidoId: pedidoActual 
+          } : null
+        });
+      });
+
+      socket.on('conectado', (data) => {
+        console.log('📡 Registrado:', data);
+      });
+
+      // Nuevo mensaje recibido
+      socket.on('nuevoMensaje', (mensaje) => {
+        console.log('💬 Nuevo mensaje:', mensaje);
+        
+        if (mensaje.pedidoId === currentPedidoId) {
+          agregarMensaje(mensaje);
+          
+          // Marcar como leído
+          socket.emit('marcarLeido', {
+            pedidoId: mensaje.pedidoId,
+            mensajeId: mensaje.id
+          });
+        } else {
+          // Incrementar contador de no leídos
+          if (!mensajesNoLeidos[mensaje.pedidoId]) {
+            mensajesNoLeidos[mensaje.pedidoId] = 0;
+          }
+          mensajesNoLeidos[mensaje.pedidoId]++;
+          actualizarBadgeNotificacion(mensaje.pedidoId);
+        }
+      });
+
+      socket.on('disconnect', () => {
+        console.log('❌ Desconectado');
+        document.getElementById('statusText').textContent = 'Desconectado';
+      });
+    }
+
+    // Cargar pedidos activos
+    async function cargarPedidos() {
+      try {
+        const response = await fetch('http://localhost:5501/api/pedidos?estado=aceptado,en_camino');
+        const data = await response.json();
+
+        const pedidosList = document.getElementById('pedidosList');
+
+        if (data.pedidos && data.pedidos.length > 0) {
+          pedidosList.innerHTML = data.pedidos.map(pedido => `
+            <div class="pedido-item" onclick="seleccionarPedido('${pedido.id}')">
+              <div class="pedido-item-header">
+                <span class="pedido-id">📦 ${pedido.id}</span>
+                <span class="badge-notif" id="badge-${pedido.id}" style="display: none;">0</span>
+              </div>
+              <div class="pedido-info">${pedido.cliente?.nombre || 'Cliente'}</div>
+              <div class="pedido-info" style="font-size: 11px; color: #999;">${pedido.direccion || 'Sin dirección'}</div>
+            </div>
+          `).join('');
+        } else {
+          pedidosList.innerHTML = `
+            <div style="padding: 40px; text-align: center; color: #999;">
+              No hay pedidos activos
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error al cargar pedidos:', error);
+      }
+    }
+
+    // Seleccionar pedido
+    async function seleccionarPedido(pedidoId) {
+      currentPedidoId = pedidoId;
+
+      // Marcar como activo
+      document.querySelectorAll('.pedido-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.target.closest('.pedido-item').classList.add('active');
+
+      // Resetear contador
+      mensajesNoLeidos[pedidoId] = 0;
+      actualizarBadgeNotificacion(pedidoId);
+
+      // Unirse a la sala del pedido
+      socket.emit('unirseAPedido', pedidoId);
+
+      // Cargar historial de mensajes
+      await cargarMensajes(pedidoId);
+
+      // Mostrar interfaz de chat
+      mostrarChat(pedidoId);
+    }
+
+    // Cargar mensajes del pedido
+    async function cargarMensajes(pedidoId) {
+      try {
+        const response = await fetch(`http://localhost:5501/api/chat/${pedidoId}`);
+        const data = await response.json();
+
+        const messagesContainer = document.getElementById('messagesContainer');
+        messagesContainer.innerHTML = '';
+
+        if (data.mensajes && data.mensajes.length > 0) {
+          data.mensajes.forEach(mensaje => {
+            agregarMensaje(mensaje);
+          });
+        }
+
+        // Scroll al final
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      } catch (error) {
+        console.error('Error al cargar mensajes:', error);
+      }
+    }
+
+    // Mostrar interfaz de chat
+    function mostrarChat(pedidoId) {
+      const chatMain = document.getElementById('chatMain');
+      chatMain.innerHTML = `
+        <div class="messages-container" id="messagesContainer">
+          <!-- Mensajes aquí -->
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <div class="input-container">
+          <input 
+            type="text" 
+            id="messageInput" 
+            placeholder="Escribe un mensaje..." 
+            onkeypress="if(event.key==='Enter') enviarMensaje()"
+          >
+          <button class="btn-send" onclick="enviarMensaje()">
+            ✈️
+          </button>
+        </div>
+      `;
+
+      document.getElementById('messageInput').focus();
+    }
+
+    // Agregar mensaje al chat
+    function agregarMensaje(mensaje) {
+      const messagesContainer = document.getElementById('messagesContainer');
+      if (!messagesContainer) return;
+
+      const esMio = mensaje.remitenteId === userId;
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${esMio ? 'sent' : 'received'}`;
+
+      const fecha = new Date(mensaje.fecha);
+      const horaStr = `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
+
+      messageDiv.innerHTML = `
+        ${!esMio ? `<div class="message-header">${mensaje.remitente}</div>` : ''}
+        <div class="message-text">${mensaje.mensaje}</div>
+        <div class="message-time">${horaStr}</div>
+      `;
+
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Enviar mensaje
+    function enviarMensaje() {
+      const input = document.getElementById('messageInput');
+      const mensaje = input.value.trim();
+
+      if (!mensaje || !currentPedidoId) return;
+
+      // Enviar por Socket.IO
+      socket.emit('enviarMensaje', {
+        pedidoId: currentPedidoId,
+        mensaje: mensaje,
+        remitente: userTipo,
+        remitenteId: userId
+      });
+
+      input.value = '';
+      input.focus();
+    }
+
+    // Actualizar badge de notificación
+    function actualizarBadgeNotificacion(pedidoId) {
+      const badge = document.getElementById(`badge-${pedidoId}`);
+      if (badge) {
+        const count = mensajesNoLeidos[pedidoId] || 0;
+        if (count > 0) {
+          badge.textContent = count;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      // Obtener tipo de usuario desde URL o sessionStorage
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('userId')) {
+        userId = params.get('userId');
+      }
+      if (params.get('tipo')) {
+        userTipo = params.get('tipo');
+      }
+
+      inicializarSocket();
+      cargarPedidos();
+
+      // Recargar pedidos cada 30 segundos
+      setInterval(cargarPedidos, 30000);
+    });
+  </script>
+</body>
+</html>

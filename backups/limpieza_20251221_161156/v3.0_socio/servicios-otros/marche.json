@@ -1,0 +1,42 @@
+{
+  "id": "marche_demo_2025",
+  "nombre": "Marche",
+  "categoria": "Kiosco",
+  "whatsapp": "3513456789",
+  "direccion": "Av. Colón 1234, Centro",
+  "latitud": -31.4201,
+  "longitud": -64.1888,
+  "horarioApertura": "08:00",
+  "horarioCierre": "22:00",
+  "diasAtencion": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+  "activo": true,
+  "verificado": true,
+  "premium": false,
+  "rating": 4.8,
+  "totalPedidos": 127,
+  "montoFacturado": 450000,
+  "fechaRegistro": "2024-11-15T10:30:00.000Z",
+  "fechaCreacion": "2024-11-15T10:30:00.000Z",
+  "fotoPerfil": null,
+  "fotosProductos": [
+    {
+      "id": "foto_demo_1",
+      "url": null,
+      "precio": "$2500",
+      "descripcion": "Combo desayuno: café + medialunas",
+      "enlace": "https://wa.me/5493513456789?text=Hola!%20Quiero%20el%20combo%20desayuno",
+      "fecha": "2024-12-01T09:00:00.000Z"
+    },
+    {
+      "id": "foto_demo_2",
+      "url": null,
+      "precio": "$1500",
+      "descripcion": "Alfajores artesanales",
+      "enlace": "https://wa.me/5493513456789?text=Hola!%20Quiero%20alfajores",
+      "fecha": "2024-12-01T09:15:00.000Z"
+    }
+  ],
+  "metodosPago": ["Efectivo", "Transferencia", "MercadoPago"],
+  "descripcion": "Kiosco con productos de almacén, snacks y bebidas. Atención personalizada.",
+  "email": "marche.demo@yavoy.app"
+}

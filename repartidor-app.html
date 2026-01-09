@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YaVoy - App Repartidor</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/utilities.css">
+    <link rel="stylesheet" href="styles/animations-improved.css?v=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Colores YaVoy */
+            --color-fondo: #0f1724;
+            --color-superior: #0b1220;
+            --color-primario: #06b6d4;
+            --color-acento: #ff6b6b;
+            --color-texto: #ffffff;
+            --color-texto-claro: #ffffff;
+            --color-borde: #3a4a5c;
+            --color-superficie: #0b1220;
+            --color-card: #0b1220;
+            --color-exito: #10b981;
+            
+            /* Compatibilidad */
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ff6b6b;
+            --gray-50: #0f1724;
+            --gray-100: #0b1220;
+            --gray-200: #0b1220;
+            --gray-300: #3a4a5c;
+            --gray-600: #ffffff;
+            --gray-700: #ffffff;
+            --gray-900: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(180deg, var(--color-fondo), #071021);
+            overflow-x: hidden;
+        }
+
+        /* ===== PANTALLA DE LOGIN ===== */
+        #loginScreen {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--color-fondo), #071021);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-borde);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--color-primario), #0891b2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+        .login-card h1 {
+            color: var(--color-texto-claro);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-card p {
+            color: var(--color-texto);
+            margin-bottom: 30px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border 0.3s;
+            background: var(--color-superficie);
+            color: var(--color-texto);
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--color-primario);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--color-primario);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            background: #0891b2;
+            transform: translateY(-2px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* ===== APP PRINCIPAL ===== */
+        #appScreen {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--color-superior);
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--color-borde);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .repartidor-info h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .repartidor-info .status {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .btn-soporte-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-soporte-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--color-superficie);
+            border-bottom: 1px solid var(--color-borde);
+            position: sticky;
+            top: 70px;
+            z-index: 99;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--color-texto);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--color-primario);
+            border-bottom-color: var(--color-primario);
+        }
+
+        /* Contenido de tabs */
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tarjetas de pedidos */
+        .pedido-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-borde);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--color-primario);
+            position: relative;
+        }
+
+        .pedido-card.urgente {
+            border-left-color: var(--color-acento);
+        }
+
+        .pedido-card.en-curso {
+            border-left-color: var(--warning);
+        }
+
+        .pedido-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .pedido-id {
+            font-size: 12px;
+            color: var(--color-texto);
+            background: var(--color-superficie);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .pedido-precio {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-exito);
+        }
+
+        .pedido-info {
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: start;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-row .icon {
+            margin-right: 10px;
+            font-size: 18px;
+            width: 24px;
+        }
+
+        .info-row .label {
+            color: var(--color-texto);
+            margin-right: 5px;
+            opacity: 0.7;
+        }
+
+        .info-row .value {
+            color: var(--color-texto-claro);
+            font-weight: 500;
+        }
+
+        .distancia-tiempo {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 10px;
+            background: var(--color-superficie);
+            border-radius: 10px;
+            border: 1px solid var(--color-borde);
+        }
+
+        .distancia-tiempo div {
+            flex: 1;
+            text-align: center;
+        }
+
+        .distancia-tiempo .label {
+            font-size: 12px;
+            color: var(--color-texto);
+            display: block;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        .distancia-tiempo .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-texto-claro);
+        }
+
+        /* Botones de acción */
+        .pedido-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-texto);
+            border: 2px solid var(--color-borde);
+        }
+        
+        .btn-outline:hover {
+            background: var(--color-superficie);
+            border-color: var(--color-primario);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Mapa */
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-map {
+            flex: 1;
+            padding: 12px;
+            background: var(--color-card);
+            border: 2px solid var(--color-borde);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--color-texto);
+        }
+
+        .btn-map.active {
+            background: var(--color-primario);
+            color: white;
+            border-color: var(--color-primario);
+        }
+
+        /* Ruta info */
+        .ruta-info {
+            background: var(--color-card);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--color-borde);
+        }
+
+        .ruta-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--color-superficie);
+            color: var(--color-texto);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 20px;
+            border: 2px solid var(--color-borde);
+        }
+
+        .step.active .step-icon {
+            background: var(--color-primario);
+            color: white;
+            border-color: var(--color-primario);
+        }
+
+        .step.completed .step-icon {
+            background: var(--color-exito);
+            color: white;
+            border-color: var(--color-exito);
+        }
+
+        .step-line {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--color-borde);
+            z-index: -1;
+        }
+
+        .step.completed .step-line {
+            background: var(--color-exito);
+        }
+
+        .step:last-child .step-line {
+            display: none;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--color-texto);
+        }
+
+        /* Chat flotante */
+        .chat-button {
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--color-primario);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+            z-index: 1000;
+        }
+        
+        .chat-button:hover {
+            background: #0891b2;
+            transform: scale(1.1);
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .chat-badge-hidden {
+            display: none;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-superior);
+            border-top: 1px solid var(--color-borde);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+            color: var(--color-texto);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--color-primario);
+        }
+
+        .nav-item .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item .label {
+            font-size: 12px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            color: var(--color-texto-claro);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--color-texto);
+        }
+
+        /* Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--color-card);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid var(--color-borde);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-primario);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--color-texto);
+        }
+
+        /* Botón de Chat Flotante con Cliente */
+        .btn-chat-cliente {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            animation: pulse-chat 2s infinite;
+        }
+
+        .btn-chat-cliente.visible {
+            display: flex !important;
+        }
+
+        .btn-chat-cliente:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(6, 182, 212, 0.8);
+        }
+
+        .btn-chat-cliente:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes pulse-chat {
+            0%, 100% {
+                box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
+            }
+            50% {
+                box-shadow: 0 6px 35px rgba(6, 182, 212, 0.9);
+            }
+        }
+
+        /* Modal Perfil */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-perfil {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1724 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            color: #ef4444;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #ef4444;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .perfil-datos {
+            display: grid;
+            gap: 15px;
+        }
+
+        .dato-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .dato-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .dato-label {
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dato-valor {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .dato-left {
+            flex: 1;
+        }
+
+        .dato-right {
+            margin-left: 15px;
+        }
+
+        .btn-cobrar {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-cobrar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-cobrar:active {
+            transform: translateY(0);
+        }
+
+        .saldo-disponible {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .saldo-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .saldo-monto {
+            color: #ffffff;
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            margin: 20px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+
+            .pedido-precio {
+                font-size: 18px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-chat-cliente {
+                width: 55px;
+                height: 55px;
+                font-size: 24px;
+                bottom: 85px;
+                right: 15px;
+            }
+
+            .header-buttons {
+                gap: 5px;
+            }
+
+            .btn-soporte-header,
+            .btn-logout {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de Perfil -->
+    <div class="modal-overlay" id="modalPerfil" onclick="cerrarPerfil(event)">
+        <div class="modal-perfil" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>👤 Mi Perfil</h2>
+                <button class="modal-close" onclick="cerrarPerfil()">✕</button>
+            </div>
+            
+            <div class="saldo-disponible">
+                <div class="saldo-label">💰 Saldo Disponible</div>
+                <h1 class="saldo-monto" id="saldoDisponible">$0.00</h1>
+            </div>
+
+            <div class="perfil-datos">
+                <div class="dato-item">
+                    <div class="dato-left">
+                        <div class="dato-label">Nombre Completo</div>
+                        <div class="dato-valor" id="perfilNombre">-</div>
+                    </div>
+                </div>
+
+                <div class="dato-item">
+                    <div class="dato-left">
+                        <div class="dato-label">DNI</div>
+                        <div class="dato-valor" id="perfilDNI">-</div>
+                    </div>
+                </div>
+
+                <div class="dato-item">
+                    <div class="dato-left">
+                        <div class="dato-label">Teléfono</div>
+                        <div class="dato-valor" id="perfilTelefono">-</div>
+                    </div>
+                </div>
+
+                <div class="dato-item">
+                    <div class="dato-left">
+                        <div class="dato-label">Email</div>
+                        <div class="dato-valor" id="perfilEmail">-</div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="dato-item">
+                    <div class="dato-left">
+                        <div class="dato-label">🏦 ALIAS</div>
+                        <div class="dato-valor" id="perfilAlias">-</div>
+                    </div>
+                    <div class="dato-right">
+                        <button class="btn-cobrar" onclick="solicitarCobro('ALIAS')">Cobrar</button>
+                    </div>
+                </div>
+
+                <div class="dato-item">
+                    <div class="dato-left">
+                        <div class="dato-label">💳 CVU</div>
+                        <div class="dato-valor" id="perfilCVU">-</div>
+                    </div>
+                    <div class="dato-right">
+                        <button class="btn-cobrar" onclick="solicitarCobro('CVU')">Cobrar</button>
+                    </div>
+                </div>
+
+                <div class="dato-item">
+                    <div class="dato-left">
+                        <div class="dato-label">🏛️ CBU</div>
+                        <div class="dato-valor" id="perfilCBU">-</div>
+                    </div>
+                    <div class="dato-right">
+                        <button class="btn-cobrar" onclick="solicitarCobro('CBU')">Cobrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE LOGIN -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <div class="login-logo">🚴</div>
+            <h1>YaVoy Repartidor</h1>
+            <p>Ingresá tu WhatsApp para continuar</p>
+            <form class="login-form" id="loginForm">
+                <input 
+                    type="tel" 
+                    id="whatsappInput" 
+                    placeholder="Ej: 3512345678" 
+                    pattern="[0-9]{10}" 
+                    required
+                />
+                <button type="submit" class="btn-login">Ingresar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botón Flotante de Chat con Cliente (Fuera de appScreen) -->
+    <button class="btn-chat-cliente" id="btnChatCliente" onclick="abrirChatCliente()" title="Chat con Cliente">
+        💬
+    </button>
+
+    <!-- PANTALLA PRINCIPAL -->
+    <div id="appScreen">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-content">
+                <div class="repartidor-info">
+                    <h2 id="repartidorNombre">Cargando...</h2>
+                    <div class="status">
+                        <span class="status-badge"></span>
+                        <span id="repartidorEstado">En línea</span>
+                    </div>
+                </div>
+                <div class="header-buttons">
+                    <button class="btn-soporte-header" onclick="abrirSoporte()">📝 Soporte</button>
+                    <button class="btn-logout" onclick="logout()">Salir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('disponibles')">
+                Disponibles <span id="countDisponibles"></span>
+            </button>
+            <button class="tab" onclick="switchTab('activo')">
+                Activo
+            </button>
+            <button class="tab" onclick="switchTab('historial')">
+                Historial
+            </button>
+        </div>
+
+        <!-- Tab: Pedidos Disponibles -->
+        <div id="tabDisponibles" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statHoy">0</div>
+                    <div class="stat-label">Entregas hoy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statGanancias">$0</div>
+                    <div class="stat-label">Ganado hoy</div>
+                </div>
+            </div>
+
+            <div id="pedidosDisponiblesList"></div>
+        </div>
+
+        <!-- Tab: Pedido Activo -->
+        <div id="tabActivo" class="tab-content">
+            <div id="pedidoActivoContent"></div>
+        </div>
+
+        <!-- Tab: Historial -->
+        <div id="tabHistorial" class="tab-content">
+            <div id="historialList"></div>
+        </div>
+
+        <!-- Botón Chat -->
+        <button class="chat-button" onclick="abrirChat()">
+            💬
+            <div class="chat-badge chat-badge-hidden" id="chatBadge">0</div>
+        </button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('disponibles')">
+                <div class="icon">🏠</div>
+                <div class="label">Inicio</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('activo')">
+                <div class="icon">📦</div>
+                <div class="label">Activo</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('historial')">
+                <div class="icon">📊</div>
+                <div class="label">Historial</div>
+            </div>
+            <div class="nav-item" onclick="abrirPerfil()">
+                <div class="icon">👤</div>
+                <div class="label">Perfil</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Variables globales
+        let repartidorData = null;
+        let pedidoActivo = null;
+        let map = null;
+        let repartidorMarker = null;
+        let rutaPolyline = null;
+        let trackingInterval = null;
+
+        // API URL
+        const API_URL = 'http://localhost:5501';
+
+        // ===== LOGIN =====
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const whatsapp = document.getElementById('whatsappInput').value;
+            await login(whatsapp);
+        });
+
+        async function login(whatsapp) {
+            if (!whatsapp || whatsapp.length < 8) {
+                alert('❌ Por favor ingresá un número de WhatsApp válido');
+                return;
+            }
+
+            try {
+                // Buscar repartidor en la API
+                const response = await fetch(`${API_URL}/api/repartidores`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const repartidores = Array.isArray(data) ? data : [];
+                    
+                    const repartidor = repartidores.find(r => 
+                        r.whatsapp === whatsapp || 
+                        r.telefono === whatsapp || 
+                        r.celular === whatsapp
+                    );
+                    
+                    if (repartidor) {
+                        repartidorData = {
+                            nombre: repartidor.nombre || 'Repartidor',
+                            whatsapp: whatsapp,
+                            id: repartidor.id || whatsapp
+                        };
+                        localStorage.setItem('repartidorId', repartidorData.id);
+                        mostrarApp();
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error login:', error);
+            }
+            
+            // Modo demo - permitir acceso con cualquier número
+            repartidorData = {
+                nombre: 'Repartidor ' + whatsapp.slice(-4),
+                whatsapp: whatsapp,
+                id: whatsapp
+            };
+            localStorage.setItem('repartidorId', whatsapp);
+            mostrarApp();
+        }
+
+        function mostrarApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            document.getElementById('repartidorNombre').textContent = repartidorData.nombre || 'Repartidor';
+            cargarDatos();
+            iniciarActualizacionAutomatica();
+        }
+
+        function logout() {
+            localStorage.removeItem('repartidorId');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('btnChatCliente').classList.remove('visible');
+            if (trackingInterval) clearInterval(trackingInterval);
+        }
+
+        // ===== FUNCIONES DE SOPORTE Y CHAT =====
+        function abrirSoporte() {
+            const emailSoporte = 'yavoyen5@gmail.com';
+            const asunto = encodeURIComponent('Soporte - Repartidor: ' + repartidorData.nombre);
+            const cuerpo = encodeURIComponent(
+                'Hola equipo de YaVoy,\n\n' +
+                'Necesito ayuda con:\n\n' +
+                '[Describe tu problema aquí]\n\n' +
+                'Mis datos:\n' +
+                'Nombre: ' + repartidorData.nombre + '\n' +
+                'WhatsApp: ' + repartidorData.whatsapp + '\n\n' +
+                'Gracias.'
+            );
+            
+            // Abrir cliente de email
+            window.location.href = `mailto:${emailSoporte}?subject=${asunto}&body=${cuerpo}`;
+        }
+
+        function abrirChatCliente() {
+            // Obtener datos del pedido activo
+            const pedidoActivo = pedidosData.activo;
+            
+            if (!pedidoActivo) {
+                alert('❌ No tenés un pedido activo en este momento.\n\nEl botón de chat se activa cuando aceptás un pedido.');
+                return;
+            }
+            
+            const telefonoCliente = pedidoActivo.telefonoCliente || pedidoActivo.cliente?.telefono;
+            
+            if (!telefonoCliente) {
+                alert('❌ No se encontró el número del cliente.');
+                return;
+            }
+            
+            // Abrir WhatsApp con el cliente
+            const mensaje = encodeURIComponent(
+                `Hola! Soy ${repartidorData.nombre}, tu repartidor de YaVoy.\n\n` +
+                `Estoy en camino con tu pedido #${pedidoActivo.id}.\n\n` +
+                `¿Necesitás algo?`
+            );
+            
+            window.open(`https://wa.me/${telefonoCliente}?text=${mensaje}`, '_blank');
+        }
+
+        // ===== CARGAR DATOS =====
+        async function cargarDatos() {
+            await Promise.all([
+                cargarPedidosDisponibles(),
+                cargarPedidoActivo(),
+                cargarHistorial(),
+                cargarEstadisticas()
+            ]);
+        }
+
+        async function cargarPedidosDisponibles() {
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos`);
+                const pedidos = await response.json();
+                
+                // Filtrar pedidos sin asignar
+                const disponibles = pedidos.filter(p => !p.repartidorId && p.estado === 'pendiente');
+                
+                // Guardar en localStorage para verDetalle()
+                localStorage.setItem('pedidosDisponibles', JSON.stringify(disponibles));
+                
+                document.getElementById('countDisponibles').textContent = disponibles.length > 0 ? `(${disponibles.length})` : '';
+                
+                const container = document.getElementById('pedidosDisponiblesList');
+                
+                if (disponibles.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📦</div>
+                            <h3>No hay pedidos disponibles</h3>
+                            <p>Te avisaremos cuando haya nuevos pedidos</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = disponibles.map(pedido => `
+                    <div class="pedido-card ${pedido.prioridad === 'urgente' ? 'urgente' : ''}">
+                        <div class="pedido-header">
+                            <span class="pedido-id">#${pedido.id || '0000'}</span>
+                            <span class="pedido-precio">$${pedido.precio || '300'}</span>
+                        </div>
+                        <div class="pedido-info">
+                            <div class="info-row">
+                                <span class="icon">🏪</span>
+                                <span class="value">${pedido.comercio || 'Comercio'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="icon">📍</span>
+                                <span class="label">Origen:</span>
+                                <span class="value">${pedido.direccionOrigen || 'Sin dirección'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="icon">🎯</span>
+                                <span class="label">Destino:</span>
+                                <span class="value">${pedido.direccionDestino || 'Sin dirección'}</span>
+                            </div>
+                        </div>
+                        <div class="distancia-tiempo">
+                            <div>
+                                <span class="label">Distancia</span>
+                                <span class="value">${calcularDistancia(pedido)} km</span>
+                            </div>
+                            <div>
+                                <span class="label">Tiempo est.</span>
+                                <span class="value">${calcularTiempo(pedido)} min</span>
+                            </div>
+                        </div>
+                        <div class="pedido-actions">
+                            <button class="btn btn-outline" onclick="verDetalle('${pedido.id}')">Ver mapa</button>
+                            <button class="btn btn-primary" onclick="aceptarPedido('${pedido.id}')">Aceptar</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error cargar pedidos:', error);
+                mostrarPedidosDemo();
+            }
+        }
+
+        async function cargarPedidoActivo() {
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos`);
+                const pedidos = await response.json();
+                
+                // Buscar pedido activo del repartidor
+                const activo = pedidos.find(p => 
+                    p.repartidorId === repartidorData.id && 
+                    (p.estado === 'en-camino' || p.estado === 'aceptado')
+                );
+                
+                pedidoActivo = activo;
+                
+                const container = document.getElementById('pedidoActivoContent');
+                
+                if (!activo) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">🚴</div>
+                            <h3>No tenés pedidos activos</h3>
+                            <p>Aceptá un pedido para comenzar</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Mostrar pedido activo con mapa
+                container.innerHTML = `
+                    <div class="ruta-info">
+                        <div class="ruta-steps">
+                            <div class="step ${activo.estado === 'aceptado' || activo.estado === 'en-camino' || activo.estado === 'entregado' ? 'completed' : ''}">
+                                <div class="step-icon">✓</div>
+                                <div class="step-label">Aceptado</div>
+                                <div class="step-line"></div>
+                            </div>
+                            <div class="step ${activo.estado === 'en-camino' || activo.estado === 'entregado' ? 'active' : ''}">
+                                <div class="step-icon">🚴</div>
+                                <div class="step-label">En camino</div>
+                                <div class="step-line"></div>
+                            </div>
+                            <div class="step ${activo.estado === 'entregado' ? 'completed' : ''}">
+                                <div class="step-icon">📦</div>
+                                <div class="step-label">Entregado</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-controls">
+                        <button class="btn-map active" onclick="centrarMapa()">
+                            📍 Centrar mapa
+                        </button>
+                        <button class="btn-map" onclick="activarNavegacion()">
+                            🧭 Navegación
+                        </button>
+                    </div>
+
+                    <div id="map"></div>
+
+                    <div class="pedido-card en-curso">
+                        <div class="pedido-header">
+                            <span class="pedido-id">#${activo.id}</span>
+                            <span class="pedido-precio">$${activo.precio || '300'}</span>
+                        </div>
+                        <div class="pedido-info">
+                            <div class="info-row">
+                                <span class="icon">🏪</span>
+                                <span class="value">${activo.comercio}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="icon">📞</span>
+                                <span class="value">${activo.whatsappCliente || 'Sin teléfono'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="icon">🎯</span>
+                                <span class="value">${activo.direccionDestino}</span>
+                            </div>
+                        </div>
+                        <div class="distancia-tiempo">
+                            <div>
+                                <span class="label">Tiempo restante</span>
+                                <span class="value" id="tiempoRestante">15 min</span>
+                            </div>
+                            <div>
+                                <span class="label">Distancia</span>
+                                <span class="value" id="distanciaRestante">2.5 km</span>
+                            </div>
+                        </div>
+                        <div class="pedido-actions">
+                            ${activo.estado === 'aceptado' ? `
+                                <button class="btn btn-warning" onclick="iniciarEntrega()">
+                                    🚴 Iniciar entrega
+                                </button>
+                            ` : ''}
+                            ${activo.estado === 'en-camino' ? `
+                                <button class="btn btn-success" onclick="completarEntrega()">
+                                    ✓ Marcar como entregado
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-outline" onclick="abrirChat()">
+                                💬 Chat
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Inicializar mapa
+                setTimeout(() => inicializarMapa(activo), 100);
+                
+            } catch (error) {
+                console.error('Error cargar pedido activo:', error);
+            }
+        }
+
+        async function cargarHistorial() {
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos`);
+                const pedidos = await response.json();
+                
+                // Filtrar pedidos completados del repartidor
+                const historial = pedidos.filter(p => 
+                    p.repartidorId === repartidorData.id && 
+                    p.estado === 'entregado'
+                );
+                
+                const container = document.getElementById('historialList');
+                
+                if (historial.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📋</div>
+                            <h3>No tenés entregas anteriores</h3>
+                            <p>Tu historial aparecerá aquí</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = historial.map(pedido => `
+                    <div class="pedido-card">
+                        <div class="pedido-header">
+                            <span class="pedido-id">#${pedido.id}</span>
+                            <span class="pedido-precio">$${pedido.precio}</span>
+                        </div>
+                        <div class="pedido-info">
+                            <div class="info-row">
+                                <span class="icon">📅</span>
+                                <span class="value">${new Date(pedido.fechaEntrega).toLocaleDateString()}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="icon">🏪</span>
+                                <span class="value">${pedido.comercio}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="icon">🎯</span>
+                                <span class="value">${pedido.direccionDestino}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error cargar historial:', error);
+            }
+        }
+
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos`);
+                const pedidos = await response.json();
+                
+                const hoy = new Date().toDateString();
+                const entregasHoy = pedidos.filter(p => 
+                    p.repartidorId === repartidorData.id && 
+                    p.estado === 'entregado' &&
+                    new Date(p.fechaEntrega).toDateString() === hoy
+                );
+                
+                const gananciaHoy = entregasHoy.reduce((sum, p) => sum + (parseFloat(p.precio) || 300), 0);
+                
+                document.getElementById('statHoy').textContent = entregasHoy.length;
+                document.getElementById('statGanancias').textContent = `$${gananciaHoy}`;
+                
+            } catch (error) {
+                console.error('Error cargar estadísticas:', error);
+            }
+        }
+
+        // ===== ACCIONES DE PEDIDOS =====
+        async function aceptarPedido(pedidoId) {
+            if (pedidoActivo) {
+                alert('Ya tenés un pedido activo. Completalo antes de aceptar otro.');
+                return;
+            }
+
+            if (!confirm('¿Querés aceptar este pedido?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos/${pedidoId}/estado`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        estado: 'aceptado',
+                        repartidorId: repartidorData.id
+                    })
+                });
+
+                if (response.ok) {
+                    alert('¡Pedido aceptado! 🎉');
+                    // Mostrar botón de chat con cliente
+                    document.getElementById('btnChatCliente').classList.add('visible');
+                    await cargarDatos();
+                    switchTab('activo');
+                } else {
+                    alert('Error al aceptar pedido');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Modo demo
+                alert('Pedido aceptado (modo demo)');
+                document.getElementById('btnChatCliente').classList.add('visible');
+                switchTab('activo');
+            }
+        }
+
+        async function iniciarEntrega() {
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos/${pedidoActivo.id}/estado`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ estado: 'en-camino' })
+                });
+
+                if (response.ok) {
+                    alert('¡Entrega iniciada! 🚴');
+                    await cargarPedidoActivo();
+                    iniciarTracking();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Entrega iniciada (modo demo)');
+                pedidoActivo.estado = 'en-camino';
+                cargarPedidoActivo();
+            }
+        }
+
+        async function completarEntrega() {
+            if (!confirm('¿Confirmar que entregaste el pedido?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos/${pedidoActivo.id}/estado`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        estado: 'entregado',
+                        fechaEntrega: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    alert('¡Entrega completada! ✓ +$' + (pedidoActivo.precio || '300'));
+                    // Ocultar botón de chat cuando se completa el pedido
+                    document.getElementById('btnChatCliente').classList.remove('visible');
+                    pedidoActivo = null;
+                    await cargarDatos();
+                    switchTab('disponibles');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Entrega completada (modo demo)');
+                document.getElementById('btnChatCliente').classList.remove('visible');
+                pedidoActivo = null;
+                cargarDatos();
+                switchTab('disponibles');
+            }
+        }
+
+        // ===== MAPA =====
+        function inicializarMapa(pedido) {
+            if (map) {
+                map.remove();
+            }
+
+            // Coordenadas de Córdoba (centro por defecto)
+            const cordobaCenter = [-31.4201, -64.1888];
+            
+            // Simular coordenadas de origen y destino
+            const origen = pedido.coordsOrigen || [-31.4201 + Math.random() * 0.02, -64.1888 + Math.random() * 0.02];
+            const destino = pedido.coordsDestino || [-31.4201 + Math.random() * 0.02, -64.1888 + Math.random() * 0.02];
+            
+            map = L.map('map').setView(cordobaCenter, 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Marker origen (comercio)
+            L.marker(origen, {
+                icon: L.divIcon({
+                    html: '🏪',
+                    className: 'emoji-marker',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map).bindPopup('<b>Origen:</b> ' + pedido.comercio);
+
+            // Marker destino
+            L.marker(destino, {
+                icon: L.divIcon({
+                    html: '🎯',
+                    className: 'emoji-marker',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map).bindPopup('<b>Destino:</b> ' + pedido.direccionDestino);
+
+            // Marker repartidor
+            repartidorMarker = L.marker(origen, {
+                icon: L.divIcon({
+                    html: '🚴',
+                    className: 'emoji-marker',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map).bindPopup('Tu ubicación');
+
+            // Ruta
+            rutaPolyline = L.polyline([origen, destino], {
+                color: '#06b6d4',
+                weight: 4,
+                opacity: 0.7
+            }).addTo(map);
+
+            // Ajustar vista
+            map.fitBounds(rutaPolyline.getBounds(), { padding: [50, 50] });
+        }
+
+        function centrarMapa() {
+            if (map && rutaPolyline) {
+                map.fitBounds(rutaPolyline.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        function activarNavegacion() {
+            if (pedidoActivo && pedidoActivo.coordsDestino) {
+                const lat = pedidoActivo.coordsDestino[0];
+                const lng = pedidoActivo.coordsDestino[1];
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+            } else {
+                alert('Dirección de destino no disponible');
+            }
+        }
+
+        function iniciarTracking() {
+            if (trackingInterval) clearInterval(trackingInterval);
+            
+            // Simular movimiento del repartidor
+            trackingInterval = setInterval(() => {
+                if (pedidoActivo && repartidorMarker) {
+                    const currentPos = repartidorMarker.getLatLng();
+                    const destino = pedidoActivo.coordsDestino || [-31.4201, -64.1888];
+                    
+                    // Mover gradualmente hacia el destino
+                    const newLat = currentPos.lat + (destino[0] - currentPos.lat) * 0.1;
+                    const newLng = currentPos.lng + (destino[1] - currentPos.lng) * 0.1;
+                    
+                    repartidorMarker.setLatLng([newLat, newLng]);
+                    
+                    // Actualizar distancia/tiempo
+                    const distancia = calcularDistanciaEntrePuntos(currentPos.lat, currentPos.lng, destino[0], destino[1]);
+                    const tiempo = Math.ceil(distancia / 0.3); // ~18 km/h promedio
+                    
+                    if (document.getElementById('distanciaRestante')) {
+                        document.getElementById('distanciaRestante').textContent = distancia.toFixed(1) + ' km';
+                        document.getElementById('tiempoRestante').textContent = tiempo + ' min';
+                    }
+                }
+            }, 5000);
+        }
+
+        // ===== UTILIDADES =====
+        function calcularDistancia(pedido) {
+            return (Math.random() * 3 + 1).toFixed(1);
+        }
+
+        function calcularTiempo(pedido) {
+            return Math.ceil(parseFloat(calcularDistancia(pedido)) / 0.3);
+        }
+
+        function calcularDistanciaEntrePuntos(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radio de la Tierra en km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                     Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function switchTab(tabName) {
+            // Actualizar tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            const activeTab = Array.from(document.querySelectorAll('.tab')).find(t => 
+                t.textContent.toLowerCase().includes(tabName)
+            );
+            if (activeTab) activeTab.classList.add('active');
+            
+            document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+            
+            // Actualizar bottom nav
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (tabName === 'disponibles') document.querySelectorAll('.nav-item')[0].classList.add('active');
+            if (tabName === 'activo') document.querySelectorAll('.nav-item')[1].classList.add('active');
+            if (tabName === 'historial') document.querySelectorAll('.nav-item')[2].classList.add('active');
+        }
+
+        function abrirChat() {
+            alert('Chat en desarrollo. Se abrirá el sistema de mensajería.');
+            // TODO: Integrar con chat-sistema.html
+        }
+
+        async function abrirPerfil() {
+            try {
+                // Cargar datos del repartidor desde el servidor
+                const response = await fetch(`${API_URL}/api/repartidores`);
+                if (response.ok) {
+                    const repartidores = await response.json();
+                    const repartidor = repartidores.find(r => 
+                        r.whatsapp === repartidorData.whatsapp || 
+                        r.id === repartidorData.id
+                    );
+                    
+                    if (repartidor) {
+                        // Actualizar datos en el modal
+                        document.getElementById('perfilNombre').textContent = 
+                            (repartidor.nombre || repartidorData.nombre) + ' ' + (repartidor.apellido || '');
+                        document.getElementById('perfilDNI').textContent = repartidor.dni || 'No registrado';
+                        document.getElementById('perfilTelefono').textContent = repartidor.whatsapp || repartidorData.whatsapp;
+                        document.getElementById('perfilEmail').textContent = repartidor.email || 'No registrado';
+                        document.getElementById('perfilAlias').textContent = repartidor.alias || 'No configurado';
+                        document.getElementById('perfilCVU').textContent = repartidor.cvu || 'No configurado';
+                        document.getElementById('perfilCBU').textContent = repartidor.cbu || 'No configurado';
+                        
+                        // Calcular saldo disponible (comisiones acumuladas)
+                        const saldo = repartidor.saldoDisponible || 0;
+                        document.getElementById('saldoDisponible').textContent = 
+                            '$' + saldo.toLocaleString('es-AR', {minimumFractionDigits: 2});
+                    } else {
+                        // Modo demo - datos por defecto
+                        document.getElementById('perfilNombre').textContent = repartidorData.nombre;
+                        document.getElementById('perfilDNI').textContent = 'Demo Mode';
+                        document.getElementById('perfilTelefono').textContent = repartidorData.whatsapp;
+                        document.getElementById('perfilEmail').textContent = 'demo@yavoy.com';
+                        document.getElementById('perfilAlias').textContent = 'yavoy.demo';
+                        document.getElementById('perfilCVU').textContent = '0000003100000000000000';
+                        document.getElementById('perfilCBU').textContent = '0000000000000000000000';
+                        document.getElementById('saldoDisponible').textContent = '$0.00';
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando perfil:', error);
+                // Modo demo en caso de error
+                document.getElementById('perfilNombre').textContent = repartidorData.nombre;
+                document.getElementById('perfilTelefono').textContent = repartidorData.whatsapp;
+                document.getElementById('saldoDisponible').textContent = '$0.00';
+            }
+            
+            // Mostrar modal
+            document.getElementById('modalPerfil').classList.add('active');
+        }
+
+        function cerrarPerfil(event) {
+            if (!event || event.target.id === 'modalPerfil') {
+                document.getElementById('modalPerfil').classList.remove('active');
+            }
+        }
+
+        function solicitarCobro(metodo) {
+            const saldoTexto = document.getElementById('saldoDisponible').textContent;
+            const saldo = parseFloat(saldoTexto.replace('$', '').replace(',', ''));
+            
+            if (saldo <= 0) {
+                alert('❌ No tenés saldo disponible para retirar.\n\nCompletá entregas para acumular comisiones.');
+                return;
+            }
+            
+            const metodoDato = document.getElementById('perfil' + metodo).textContent;
+            
+            if (metodoDato === 'No configurado' || metodoDato === '-') {
+                alert('❌ No tenés configurado tu ' + metodo + '.\n\nContactá a soporte para actualizar tus datos bancarios.');
+                return;
+            }
+            
+            const confirmar = confirm(
+                '💰 Solicitud de Cobro\n\n' +
+                'Método: ' + metodo + '\n' +
+                'Dato: ' + metodoDato + '\n' +
+                'Monto: ' + saldoTexto + '\n\n' +
+                '¿Confirmar solicitud de retiro?'
+            );
+            
+            if (confirmar) {
+                // Aquí se enviaría la solicitud al servidor
+                alert('✅ Solicitud enviada!\n\nTu retiro será procesado en 24-48 horas.\n\nRecibirás una notificación cuando se complete.');
+                
+                // En producción, aquí iría:
+                // fetch(`${API_URL}/api/repartidores/cobrar`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ 
+                //         repartidorId: repartidorData.id, 
+                //         monto: saldo, 
+                //         metodo: metodo,
+                //         dato: metodoDato
+                //     })
+                // });
+                
+                cerrarPerfil();
+            }
+        }
+
+        function abrirSoporte() {
+            const emailSoporte = 'yavoyen5@gmail.com';
+            const asunto = encodeURIComponent('Soporte - Repartidor: ' + repartidorData.nombre);
+            const cuerpo = encodeURIComponent(
+                'Hola equipo de YaVoy,\n\n' +
+                'Necesito ayuda con:\n\n' +
+                '[Describe tu problema aquí]\n\n' +
+                'Mis datos:\n' +
+                'Nombre: ' + repartidorData.nombre + '\n' +
+                'WhatsApp: ' + repartidorData.whatsapp + '\n\n' +
+                'Gracias.'
+            );
+            
+            // Abrir cliente de email
+            window.location.href = `mailto:${emailSoporte}?subject=${asunto}&body=${cuerpo}`;
+        }
+
+        function abrirChatCliente() {
+            // Obtener datos del pedido activo
+            if (!pedidoActivo) {
+                alert('❌ No tenés un pedido activo en este momento.\n\nEl botón de chat se activa cuando aceptás un pedido.');
+                return;
+            }
+            
+            const telefonoCliente = pedidoActivo.telefonoCliente || pedidoActivo.cliente?.telefono;
+            
+            if (!telefonoCliente) {
+                alert('❌ No se encontró el número del cliente.');
+                return;
+            }
+            
+            // Abrir WhatsApp con el cliente
+            const mensaje = encodeURIComponent(
+                `Hola! Soy ${repartidorData.nombre}, tu repartidor de YaVoy.\n\n` +
+                `Estoy en camino con tu pedido #${pedidoActivo.id}.\n\n` +
+                `¿Necesitás algo?`
+            );
+            
+            window.open(`https://wa.me/${telefonoCliente}?text=${mensaje}`, '_blank');
+        }
+
+        function verDetalle(pedidoId) {
+            // Buscar el pedido en los disponibles
+            const pedidosDisponibles = JSON.parse(localStorage.getItem('pedidosDisponibles') || '[]');
+            const pedido = pedidosDisponibles.find(p => p.id === pedidoId);
+            
+            if (!pedido) {
+                alert('❌ No se encontró el pedido');
+                return;
+            }
+            
+            // Abrir Google Maps con navegación al destino
+            const direccion = encodeURIComponent(pedido.direccionEntrega || pedido.direccion || '');
+            
+            if (direccion) {
+                // Usar Google Maps con la dirección
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${direccion}&travelmode=driving`, '_blank');
+            } else if (pedido.coordsDestino) {
+                // Usar coordenadas si están disponibles
+                const lat = pedido.coordsDestino[0];
+                const lng = pedido.coordsDestino[1];
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`, '_blank');
+            } else {
+                alert('❌ No hay información de ubicación para este pedido');
+            }
+        }
+
+        function iniciarActualizacionAutomatica() {
+            // Actualizar cada 30 segundos
+            setInterval(() => {
+                if (document.getElementById('appScreen').style.display !== 'none') {
+                    cargarDatos();
+                }
+            }, 30000);
+        }
+
+        function mostrarPedidosDemo() {
+            document.getElementById('pedidosDisponiblesList').innerHTML = `
+                <div class="pedido-card urgente">
+                    <div class="pedido-header">
+                        <span class="pedido-id">#DEMO001</span>
+                        <span class="pedido-precio">$350</span>
+                    </div>
+                    <div class="pedido-info">
+                        <div class="info-row">
+                            <span class="icon">🏪</span>
+                            <span class="value">Supermercado Central</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="icon">📍</span>
+                            <span class="label">Origen:</span>
+                            <span class="value">Av. Colón 500, Centro</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="icon">🎯</span>
+                            <span class="label">Destino:</span>
+                            <span class="value">Av. Vélez Sarsfield 100, Alberdi</span>
+                        </div>
+                    </div>
+                    <div class="distancia-tiempo">
+                        <div>
+                            <span class="label">Distancia</span>
+                            <span class="value">2.3 km</span>
+                        </div>
+                        <div>
+                            <span class="label">Tiempo est.</span>
+                            <span class="value">12 min</span>
+                        </div>
+                    </div>
+                    <div class="pedido-actions">
+                        <button class="btn btn-outline" onclick="alert('Modo demo')">Ver mapa</button>
+                        <button class="btn btn-primary" onclick="alert('Modo demo - Pedido aceptado')">Aceptar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Auto-login si hay sesión guardada
+        window.addEventListener('load', () => {
+            const savedId = localStorage.getItem('repartidorId');
+            if (savedId) {
+                // Auto-login con el ID guardado
+                login(savedId);
+            }
+        });
+    </script>
+</body>
+</html>

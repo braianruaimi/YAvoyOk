@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Estilos - YaVoy</title>
+    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/utilities.css">
+    <link rel="stylesheet" href="styles/animations-improved.css?v=1">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .test-section {
+            background: var(--color-superficie);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .test-section h2 {
+            color: var(--color-primario);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .color-box {
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .color-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .bg-primario { background: var(--color-primario); color: #000; }
+        .bg-fondo { background: var(--color-fondo); color: var(--color-texto); }
+        .bg-superficie { background: var(--color-superficie); color: var(--color-texto); }
+        .bg-exito { background: var(--color-exito); color: #fff; }
+        .bg-advertencia { background: var(--color-advertencia); color: #000; }
+        .bg-error { background: var(--color-error); color: #fff; }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .test-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primario {
+            background: var(--color-primario);
+            color: #000;
+        }
+
+        .btn-primario:hover {
+            background: var(--color-primario-hover);
+            transform: scale(1.05);
+        }
+
+        .animation-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .anim-box {
+            background: var(--color-primario);
+            color: #000;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .fade-in { animation: fade-in 1s ease-in-out infinite alternate; }
+        .fade-in-up { animation: fade-in-up 1s ease-in-out infinite alternate; }
+        .slide-in-left { animation: slide-in-left 1s ease-in-out infinite alternate; }
+        .pulse { animation: pulse 1.5s ease-in-out infinite; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--color-superficie-alt);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-primario);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primario);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--color-texto-secundario);
+            font-size: 0.9rem;
+        }
+
+        .status-bar {
+            background: var(--color-superficie);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-exito);
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body style="background: var(--color-fondo); color: var(--color-texto); font-family: 'Segoe UI', sans-serif; min-height: 100vh;">
+    
+    <!-- Barra de estado -->
+    <div class="status-bar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="status-indicator"></div>
+            <span style="color: var(--color-texto); font-weight: 600;">Sistema YaVoy - Verificación de Estilos</span>
+        </div>
+        <div style="color: var(--color-texto-secundario);">v3.1 - Todos los estilos cargados</div>
+    </div>
+
+    <div class="test-container">
+        <!-- Encabezado -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="color: var(--color-primario); font-size: 3rem; margin-bottom: 0.5rem;">
+                ✅ Verificación de Estilos
+            </h1>
+            <p style="color: var(--color-texto-secundario); font-size: 1.2rem;">
+                Todos los componentes visuales funcionando correctamente
+            </p>
+        </div>
+
+        <!-- Sección de colores -->
+        <div class="test-section">
+            <h2>🎨 Paleta de Colores</h2>
+            <p style="color: var(--color-texto-secundario); margin-bottom: 1rem;">
+                Verifica que los colores se muestren correctamente
+            </p>
+            <div class="color-grid">
+                <div class="color-box bg-primario">Color Primario<br>#06b6d4</div>
+                <div class="color-box bg-fondo">Fondo<br>#0f1724</div>
+                <div class="color-box bg-superficie">Superficie<br>#1a2332</div>
+                <div class="color-box bg-exito">Éxito<br>#10b981</div>
+                <div class="color-box bg-advertencia">Advertencia<br>#f59e0b</div>
+                <div class="color-box bg-error">Error<br>#ef4444</div>
+            </div>
+        </div>
+
+        <!-- Sección de botones -->
+        <div class="test-section">
+            <h2>🔘 Botones Interactivos</h2>
+            <p style="color: var(--color-texto-secundario); margin-bottom: 1rem;">
+                Pasa el mouse sobre los botones para ver los efectos
+            </p>
+            <div class="button-grid">
+                <button class="test-button btn-primario">Botón Principal</button>
+                <button class="test-button" style="background: var(--color-exito); color: #fff;">Botón Éxito</button>
+                <button class="test-button" style="background: var(--color-advertencia); color: #000;">Botón Advertencia</button>
+                <button class="test-button" style="background: var(--color-error); color: #fff;">Botón Error</button>
+            </div>
+        </div>
+
+        <!-- Sección de animaciones -->
+        <div class="test-section">
+            <h2>✨ Animaciones</h2>
+            <p style="color: var(--color-texto-secundario); margin-bottom: 1rem;">
+                Las siguientes cajas deben estar animadas
+            </p>
+            <div class="animation-demo">
+                <div class="anim-box fade-in">Fade In</div>
+                <div class="anim-box fade-in-up">Fade Up</div>
+                <div class="anim-box slide-in-left">Slide Left</div>
+                <div class="anim-box pulse">Pulse</div>
+            </div>
+        </div>
+
+        <!-- Sección de tarjetas estadísticas -->
+        <div class="test-section">
+            <h2>📊 Tarjetas de Estadísticas</h2>
+            <p style="color: var(--color-texto-secundario); margin-bottom: 1rem;">
+                Ejemplo de tarjetas con datos
+            </p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-label">Total Pedidos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$45,678</div>
+                    <div class="stat-label">Ingresos del Día</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">89</div>
+                    <div class="stat-label">Repartidores Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">95%</div>
+                    <div class="stat-label">Satisfacción</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist de verificación -->
+        <div class="test-section">
+            <h2>✅ Checklist de Verificación</h2>
+            <div style="margin-top: 1rem;">
+                <div style="padding: 0.75rem; background: var(--color-superficie-alt); border-radius: 6px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--color-exito); font-size: 1.5rem;">✓</span>
+                    <span style="color: var(--color-texto);">Fondo oscuro (#0f1724) aplicado correctamente</span>
+                </div>
+                <div style="padding: 0.75rem; background: var(--color-superficie-alt); border-radius: 6px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--color-exito); font-size: 1.5rem;">✓</span>
+                    <span style="color: var(--color-texto);">Color primario cyan (#06b6d4) visible</span>
+                </div>
+                <div style="padding: 0.75rem; background: var(--color-superficie-alt); border-radius: 6px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--color-exito); font-size: 1.5rem;">✓</span>
+                    <span style="color: var(--color-texto);">Animaciones funcionando correctamente</span>
+                </div>
+                <div style="padding: 0.75rem; background: var(--color-superficie-alt); border-radius: 6px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--color-exito); font-size: 1.5rem;">✓</span>
+                    <span style="color: var(--color-texto);">Tarjetas con sombras y efectos hover</span>
+                </div>
+                <div style="padding: 0.75rem; background: var(--color-superficie-alt); border-radius: 6px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--color-exito); font-size: 1.5rem;">✓</span>
+                    <span style="color: var(--color-texto);">Tipografía clara y legible</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación a paneles -->
+        <div class="test-section">
+            <h2>🔗 Enlaces a Paneles</h2>
+            <p style="color: var(--color-texto-secundario); margin-bottom: 1rem;">
+                Verifica cada panel para asegurarte de que los estilos se apliquen correctamente
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                <a href="panel-admin.html" class="test-button btn-primario" style="display: block; text-decoration: none; text-align: center;">
+                    🔧 Panel Admin
+                </a>
+                <a href="panel-repartidor.html" class="test-button btn-primario" style="display: block; text-decoration: none; text-align: center;">
+                    🚴 Panel Repartidor
+                </a>
+                <a href="panel-comercio.html" class="test-button btn-primario" style="display: block; text-decoration: none; text-align: center;">
+                    🏪 Panel Comercio
+                </a>
+                <a href="panel-ceo-master.html" class="test-button btn-primario" style="display: block; text-decoration: none; text-align: center;">
+                    👔 Panel CEO
+                </a>
+                <a href="dashboard-ceo.html" class="test-button btn-primario" style="display: block; text-decoration: none; text-align: center;">
+                    📊 Dashboard CEO
+                </a>
+                <a href="index.html" class="test-button btn-primario" style="display: block; text-decoration: none; text-align: center;">
+                    🏠 Inicio
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--color-superficie-alt); color: var(--color-texto-secundario);">
+            <p>YaVoy v3.1 - Sistema de Delivery</p>
+            <p style="margin-top: 0.5rem;">Todos los estilos verificados y funcionando ✅</p>
+        </div>
+    </div>
+
+    <script>
+        // Verificar que las variables CSS estén cargando
+        window.onload = function() {
+            const root = getComputedStyle(document.documentElement);
+            const colorPrimario = root.getPropertyValue('--color-primario').trim();
+            const colorFondo = root.getPropertyValue('--color-fondo').trim();
+            
+            console.log('🎨 Variables CSS Cargadas:');
+            console.log('Color Primario:', colorPrimario);
+            console.log('Color Fondo:', colorFondo);
+            
+            if (!colorPrimario || !colorFondo) {
+                console.error('❌ ERROR: Variables CSS no cargadas correctamente');
+                alert('⚠️ ADVERTENCIA: Algunas variables CSS no se cargaron. Verifica que styles.css esté disponible.');
+            } else {
+                console.log('✅ Todos los estilos cargados correctamente');
+            }
+        };
+    </script>
+</body>
+</html>

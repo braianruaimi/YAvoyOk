@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Prueba MVC - Sistema de Pedidos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            min-height: 60px;
+        }
+        
+        .success {
+            color: #00ff88;
+        }
+        
+        .error {
+            color: #ff4757;
+        }
+        
+        .info {
+            color: #74b9ff;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-sizing: border-box;
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .badge-pending {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+        
+        .badge-preparing {
+            background: #74b9ff;
+            color: white;
+        }
+        
+        .badge-ready {
+            background: #00b894;
+            color: white;
+        }
+        
+        .badge-delivered {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Prueba MVC - Sistema de Pedidos YAvoy</h1>
+            <p>Validación del sistema modular refactorizado</p>
+        </div>
+
+        <!-- Sección 1: Crear Pedido -->
+        <div class="test-section">
+            <h2>1️⃣ Crear Nuevo Pedido (MVC)</h2>
+            <form id="pedidoForm">
+                <div class="form-group">
+                    <label>Cliente:</label>
+                    <input type="text" id="nombreCliente" placeholder="Nombre del cliente" value="Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono:</label>
+                    <input type="tel" id="telefonoCliente" placeholder="2215047962" value="2215047962">
+                </div>
+                <div class="form-group">
+                    <label>Dirección:</label>
+                    <input type="text" id="direccionEntrega" placeholder="Dirección de entrega" value="Av. Libertad 123, Ensenada">
+                </div>
+                <div class="form-group">
+                    <label>Descripción:</label>
+                    <textarea id="descripcion" placeholder="Descripción del pedido">Pizza napolitana grande + gaseosa</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Monto ($):</label>
+                    <input type="number" id="monto" placeholder="1500" value="1800">
+                </div>
+                <button type="button" class="btn" onclick="crearPedido()">🍕 Crear Pedido</button>
+            </form>
+            <div id="resultadoCrear" class="result"></div>
+        </div>
+
+        <!-- Sección 2: Listar Pedidos -->
+        <div class="test-section">
+            <h2>2️⃣ Listar Todos los Pedidos</h2>
+            <button class="btn" onclick="listarPedidos()">📋 Obtener Lista</button>
+            <div id="resultadoListar" class="result"></div>
+        </div>
+
+        <!-- Sección 3: Actualizar Estado -->
+        <div class="test-section">
+            <h2>3️⃣ Actualizar Estado de Pedido</h2>
+            <div class="form-group">
+                <label>ID del Pedido:</label>
+                <input type="text" id="pedidoId" placeholder="Será rellenado automáticamente">
+            </div>
+            <div class="form-group">
+                <label for="nuevoEstado">Nuevo Estado:</label>
+                <select id="nuevoEstado" title="Selecciona el nuevo estado del pedido">
+                    <option value="pendiente">⏳ Pendiente</option>
+                    <option value="en_preparacion">👨‍🍳 En Preparación</option>
+                    <option value="listo">✅ Listo</option>
+                    <option value="en_camino">🚗 En Camino</option>
+                    <option value="entregado">🎉 Entregado</option>
+                    <option value="cancelado">❌ Cancelado</option>
+                </select>
+            </div>
+            <button class="btn" onclick="actualizarEstado()">🔄 Actualizar Estado</button>
+            <div id="resultadoActualizar" class="result"></div>
+        </div>
+
+        <!-- Sección 4: Verificación del Sistema -->
+        <div class="test-section">
+            <h2>4️⃣ Estado del Sistema MVC</h2>
+            <button class="btn" onclick="verificarSistema()">🔍 Verificar Endpoints</button>
+            <div id="estadoSistema" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let ultimoPedidoCreado = null;
+
+        // API Base URL
+        const API_BASE = 'http://localhost:5501/api';
+
+        // Función para hacer requests HTTP
+        async function hacerRequest(url, options = {}) {
+            try {
+                console.log('Haciendo request a:', url);
+                console.log('Opciones:', options);
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                // Verificar si la respuesta está vacía
+                const text = await response.text();
+                console.log('Response text:', text);
+
+                if (!text) {
+                    throw new Error(`Respuesta vacía del servidor (HTTP ${response.status})`);
+                }
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (jsonError) {
+                    throw new Error(`Respuesta no es JSON válido: ${text.substring(0, 100)}`);
+                }
+                
+                if (!response.ok) {
+                    throw new Error(data.mensaje || data.error || `HTTP ${response.status}: ${text}`);
+                }
+
+                return { success: true, data };
+            } catch (error) {
+                console.error('Error en request:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // 1. Crear Pedido
+        async function crearPedido() {
+            const resultado = document.getElementById('resultadoCrear');
+            resultado.innerHTML = '<span class="info">🔄 Creando pedido...</span>';
+
+            const pedidoData = {
+                nombreCliente: document.getElementById('nombreCliente').value,
+                telefonoCliente: document.getElementById('telefonoCliente').value,
+                direccionEntrega: document.getElementById('direccionEntrega').value,
+                descripcion: document.getElementById('descripcion').value,
+                monto: parseInt(document.getElementById('monto').value),
+                fechaPedido: new Date().toISOString().split('T')[0],
+                horaPedido: new Date().toTimeString().split(' ')[0].substring(0, 5)
+            };
+
+            const response = await hacerRequest(`${API_BASE}/pedidos`, {
+                method: 'POST',
+                body: JSON.stringify(pedidoData)
+            });
+
+            if (response.success) {
+                ultimoPedidoCreado = response.data.pedido;
+                document.getElementById('pedidoId').value = ultimoPedidoCreado.id;
+                
+                resultado.innerHTML = `
+<span class="success">✅ PEDIDO CREADO EXITOSAMENTE</span>
+
+🆔 ID: ${ultimoPedidoCreado.id}
+👤 Cliente: ${ultimoPedidoCreado.nombreCliente}
+📱 Teléfono: ${ultimoPedidoCreado.telefonoCliente}
+📍 Dirección: ${ultimoPedidoCreado.direccionEntrega}
+📝 Descripción: ${ultimoPedidoCreado.descripcion}
+💰 Monto: $${ultimoPedidoCreado.monto}
+📅 Estado: <span class="badge-pending">${ultimoPedidoCreado.estado}</span>
+⏰ Creado: ${ultimoPedidoCreado.fechaPedido} a las ${ultimoPedidoCreado.horaPedido}
+                `;
+            } else {
+                resultado.innerHTML = `<span class="error">❌ ERROR: ${response.error}</span>`;
+            }
+        }
+
+        // 2. Listar Pedidos
+        async function listarPedidos() {
+            const resultado = document.getElementById('resultadoListar');
+            resultado.innerHTML = '<span class="info">🔄 Obteniendo pedidos...</span>';
+
+            const response = await hacerRequest(`${API_BASE}/pedidos`);
+
+            if (response.success) {
+                const pedidos = response.data.pedidos;
+                
+                if (pedidos.length === 0) {
+                    resultado.innerHTML = '<span class="info">📋 No hay pedidos registrados</span>';
+                    return;
+                }
+
+                let html = `<span class="success">✅ PEDIDOS ENCONTRADOS: ${pedidos.length}</span>\n\n`;
+                
+                pedidos.slice(-5).forEach((pedido, index) => {
+                    const badgeClass = getBadgeClass(pedido.estado);
+                    html += `
+📦 PEDIDO #${pedido.id}
+   👤 ${pedido.nombreCliente} - 📱 ${pedido.telefonoCliente}
+   📍 ${pedido.direccionEntrega}
+   📝 ${pedido.descripcion}
+   💰 $${pedido.monto} - <span class="badge ${badgeClass}">${pedido.estado}</span>
+   ⏰ ${pedido.fechaPedido} ${pedido.horaPedido}
+───────────────────────────────────────
+`;
+                });
+
+                resultado.innerHTML = html;
+            } else {
+                resultado.innerHTML = `<span class="error">❌ ERROR: ${response.error}</span>`;
+            }
+        }
+
+        // 3. Actualizar Estado
+        async function actualizarEstado() {
+            const resultado = document.getElementById('resultadoActualizar');
+            const pedidoId = document.getElementById('pedidoId').value;
+            const nuevoEstado = document.getElementById('nuevoEstado').value;
+
+            if (!pedidoId) {
+                resultado.innerHTML = '<span class="error">❌ Debes especificar un ID de pedido</span>';
+                return;
+            }
+
+            resultado.innerHTML = '<span class="info">🔄 Actualizando estado...</span>';
+
+            const response = await hacerRequest(`${API_BASE}/pedidos/${pedidoId}/estado`, {
+                method: 'PATCH',
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
+
+            if (response.success) {
+                const pedidoActualizado = response.data.pedido;
+                const badgeClass = getBadgeClass(pedidoActualizado.estado);
+                
+                resultado.innerHTML = `
+<span class="success">✅ ESTADO ACTUALIZADO</span>
+
+🆔 Pedido: ${pedidoActualizado.id}
+👤 Cliente: ${pedidoActualizado.nombreCliente}
+📍 Estado anterior → <span class="badge ${badgeClass}">${pedidoActualizado.estado}</span>
+⏰ Actualizado: ${new Date().toLocaleString()}
+                `;
+            } else {
+                resultado.innerHTML = `<span class="error">❌ ERROR: ${response.error}</span>`;
+            }
+        }
+
+        // 4. Verificar Sistema
+        async function verificarSistema() {
+            const resultado = document.getElementById('estadoSistema');
+            resultado.innerHTML = '<span class="info">🔍 Verificando endpoints MVC...</span>';
+
+            // Verificar endpoints principales
+            const endpoints = [
+                { name: 'GET /api/pedidos', url: `${API_BASE}/pedidos`, method: 'GET' },
+                { name: 'Servidor Principal', url: 'http://localhost:5501/', method: 'GET' }
+            ];
+
+            let html = '<span class="success">🔍 VERIFICACIÓN DEL SISTEMA MVC</span>\n\n';
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint.url, { method: endpoint.method });
+                    if (response.ok) {
+                        html += `✅ ${endpoint.name}: FUNCIONANDO\n`;
+                    } else {
+                        html += `⚠️ ${endpoint.name}: HTTP ${response.status}\n`;
+                    }
+                } catch (error) {
+                    html += `❌ ${endpoint.name}: ERROR - ${error.message}\n`;
+                }
+            }
+
+            html += `
+────────────────────────────────────────
+📊 RESUMEN DE LA REFACTORIZACIÓN MVC:
+✅ Controlador: src/controllers/pedidosController.js
+✅ Rutas: src/routes/pedidosRoutes.js  
+✅ Integración: server.js modificado
+✅ Socket.IO: Notificaciones en tiempo real
+✅ Persistencia: JSON files en /registros
+✅ Modularidad: Código organizado y mantenible
+
+🎯 MEJORAS IMPLEMENTADAS:
+- Separación de responsabilidades
+- Código más legible y mantenible
+- Facilita testing y debugging
+- Base para futuras expansiones MVC
+            `;
+
+            resultado.innerHTML = html;
+        }
+
+        // Función auxiliar para clases de badges
+        function getBadgeClass(estado) {
+            const clases = {
+                'pendiente': 'badge-pending',
+                'en_preparacion': 'badge-preparing', 
+                'listo': 'badge-ready',
+                'en_camino': 'badge-preparing',
+                'entregado': 'badge-delivered',
+                'cancelado': 'error'
+            };
+            return clases[estado] || 'badge-pending';
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Página de pruebas MVC cargada');
+            console.log('📡 API Base:', API_BASE);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmar Entrega - YAvoy</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #2d3748;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .pedido-info {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+      text-align: left;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: #718096;
+      font-weight: 600;
+    }
+
+    .info-value {
+      color: #2d3748;
+      font-weight: 700;
+    }
+
+    .qr-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 15px;
+      color: white;
+    }
+
+    .qr-section h3 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .qr-image {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      display: inline-block;
+      margin: 15px 0;
+    }
+
+    .qr-image img {
+      width: 250px;
+      height: 250px;
+      display: block;
+    }
+
+    .costo-total {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 10px 0;
+      transition: all 0.3s;
+    }
+
+    .btn-confirmar {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .btn-confirmar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-confirmar:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .rating-section {
+      margin: 30px 0;
+      padding: 25px;
+      background: #fef3c7;
+      border-radius: 15px;
+      display: none;
+    }
+
+    .rating-section.active {
+      display: block;
+    }
+
+    .rating-section h3 {
+      color: #92400e;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .star {
+      font-size: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      filter: grayscale(100%);
+    }
+
+    .star:hover,
+    .star.selected {
+      filter: grayscale(0%);
+      transform: scale(1.2);
+    }
+
+    textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+      margin: 15px 0;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .success-message {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .success-message.active {
+      display: block;
+    }
+
+    .loading {
+      display: none;
+      margin: 20px 0;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 4px solid #f3f4f6;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    .error-message.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">📦</div>
+    <h1>Confirmación de Entrega</h1>
+    <p style="color: #718096; margin-bottom: 20px;">Pedido #<span id="pedidoId">Cargando...</span></p>
+
+    <div class="pedido-info" id="pedidoInfo">
+      <div class="info-item">
+        <span class="info-label">Repartidor:</span>
+        <span class="info-value" id="repartidorNombre">-</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Distancia:</span>
+        <span class="info-value" id="distancia">-</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Descripción:</span>
+        <span class="info-value" id="descripcion">-</span>
+      </div>
+    </div>
+
+    <div class="loading active" id="loadingQR">
+      <div class="spinner"></div>
+      <p style="margin-top: 15px; color: #667eea;">Generando código QR...</p>
+    </div>
+
+    <div class="qr-section" id="qrSection" style="display: none;">
+      <h3>💳 Escanea para Pagar el Envío</h3>
+      <div class="qr-image">
+        <img id="qrImage" src="" alt="Código QR de Pago">
+      </div>
+      <div class="costo-total">$<span id="costoTotal">0</span></div>
+      <p style="font-size: 14px; opacity: 0.9;">Costo base: $<span id="costoBase">0</span> + $<span id="costoPorKm">0</span>/km</p>
+    </div>
+
+    <div class="error-message" id="errorMessage"></div>
+
+    <button class="btn btn-confirmar" id="btnConfirmar" onclick="confirmarRecepcion()">
+      ✅ Recibí mi Pedido
+    </button>
+
+    <div class="success-message" id="successMessage">
+      ✅ ¡Confirmación registrada exitosamente!
+    </div>
+
+    <div class="rating-section" id="ratingSection">
+      <h3>⭐ Califica el Servicio de Envío</h3>
+      <p style="color: #78350f; margin-bottom: 15px;">¿Cómo fue tu experiencia?</p>
+      
+      <div class="stars" id="starsContainer">
+        <span class="star" data-rating="1" onclick="seleccionarEstrellas(1)">⭐</span>
+        <span class="star" data-rating="2" onclick="seleccionarEstrellas(2)">⭐</span>
+        <span class="star" data-rating="3" onclick="seleccionarEstrellas(3)">⭐</span>
+        <span class="star" data-rating="4" onclick="seleccionarEstrellas(4)">⭐</span>
+        <span class="star" data-rating="5" onclick="seleccionarEstrellas(5)">⭐</span>
+      </div>
+
+      <textarea id="comentario" placeholder="Cuéntanos sobre tu experiencia (opcional)"></textarea>
+
+      <button class="btn btn-confirmar" onclick="enviarCalificacion()">
+        📨 Enviar Calificación
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let pedidoActual = null;
+    let calificacionSeleccionada = 0;
+
+    // Obtener ID del pedido desde la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const pedidoId = urlParams.get('pedido');
+
+    if (!pedidoId) {
+      alert('❌ No se especificó un pedido');
+      window.location.href = 'index.html';
+    }
+
+    document.getElementById('pedidoId').textContent = pedidoId;
+
+    // Cargar información del pedido y generar QR
+    async function cargarPedido() {
+      try {
+        // Obtener información del pedido
+        const response = await fetch(`/api/pedidos/${pedidoId}`);
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error('Pedido no encontrado');
+        }
+
+        pedidoActual = data.pedido;
+
+        // Llenar información
+        document.getElementById('repartidorNombre').textContent = pedidoActual.repartidor?.nombre || 'Sin asignar';
+        document.getElementById('descripcion').textContent = pedidoActual.descripcion || 'Sin descripción';
+
+        // Simular cálculo de distancia (en producción usar API real)
+        const distanciaKm = Math.floor(Math.random() * 10) + 3; // 3-12 km
+        document.getElementById('distancia').textContent = distanciaKm + ' km';
+
+        // Generar QR de pago
+        await generarQRPago(distanciaKm);
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('errorMessage').textContent = '❌ Error al cargar el pedido: ' + error.message;
+        document.getElementById('errorMessage').classList.add('active');
+        document.getElementById('loadingQR').classList.remove('active');
+      }
+    }
+
+    // Generar código QR para pago
+    async function generarQRPago(distanciaKm) {
+      try {
+        const response = await fetch(`/api/pedidos/${pedidoId}/generar-qr-pago`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ distancia: distanciaKm })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('qrImage').src = data.pago.qrImage;
+          document.getElementById('costoTotal').textContent = data.pago.costoTotal;
+          document.getElementById('costoBase').textContent = data.pago.costoBase;
+          document.getElementById('costoPorKm').textContent = data.pago.costoPorKm;
+          
+          document.getElementById('loadingQR').classList.remove('active');
+          document.getElementById('qrSection').style.display = 'block';
+        } else {
+          throw new Error(data.error || 'Error al generar QR');
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('errorMessage').textContent = '❌ Error al generar QR: ' + error.message;
+        document.getElementById('errorMessage').classList.add('active');
+        document.getElementById('loadingQR').classList.remove('active');
+      }
+    }
+
+    // Confirmar que recibió el pedido
+    async function confirmarRecepcion() {
+      if (!confirm('¿Confirmas que recibiste tu pedido?')) {
+        return;
+      }
+
+      const btnConfirmar = document.getElementById('btnConfirmar');
+      btnConfirmar.disabled = true;
+      btnConfirmar.textContent = 'Confirmando...';
+
+      try {
+        const response = await fetch(`/api/pedidos/${pedidoId}/cliente-confirma`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('successMessage').classList.add('active');
+          document.getElementById('ratingSection').classList.add('active');
+          btnConfirmar.style.display = 'none';
+        } else {
+          throw new Error(data.error || 'Error al confirmar');
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al confirmar recepción: ' + error.message);
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = '✅ Recibí mi Pedido';
+      }
+    }
+
+    // Seleccionar estrellas
+    function seleccionarEstrellas(rating) {
+      calificacionSeleccionada = rating;
+      
+      const stars = document.querySelectorAll('.star');
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.add('selected');
+        } else {
+          star.classList.remove('selected');
+        }
+      });
+    }
+
+    // Enviar calificación
+    async function enviarCalificacion() {
+      if (calificacionSeleccionada === 0) {
+        alert('⭐ Por favor, selecciona una calificación');
+        return;
+      }
+
+      try {
+        const comentario = document.getElementById('comentario').value;
+
+        const response = await fetch(`/api/pedidos/${pedidoId}/calificar-envio`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            calificacion: calificacionSeleccionada,
+            comentario: comentario
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('⭐ ¡Gracias por tu calificación!');
+          document.getElementById('ratingSection').style.display = 'none';
+          
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          throw new Error(data.error || 'Error al enviar calificación');
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al enviar calificación: ' + error.message);
+      }
+    }
+
+    // Cargar pedido al iniciar
+    cargarPedido();
+  </script>
+</body>
+</html>

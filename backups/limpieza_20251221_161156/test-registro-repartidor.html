@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Registro Repartidor - YaVoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .test-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .btn-test {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+        .resultado {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fecaca;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .codigo-verificacion {
+            margin-top: 20px;
+            display: none;
+        }
+        .codigo-input {
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 5px;
+            font-weight: bold;
+        }
+        .titulo-test {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .subtitulo-test {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .titulo-codigo {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="titulo-test">
+            🚀 Prueba Registro de Repartidor
+        </h1>
+        
+        <p class="subtitulo-test">
+            Prueba el sistema de registro con confirmación por email
+        </p>
+
+        <form id="formRegistro">
+            <div class="form-group">
+                <label for="nombre">Nombre Completo</label>
+                <input type="text" id="nombre" value="Juan Carlos Pérez" placeholder="Ingresa tu nombre completo" title="Nombre completo del repartidor" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" value="yavoyen5@gmail.com" placeholder="correo@ejemplo.com" title="Email para recibir código de verificación" required>
+            </div>
+
+            <div class="form-group">
+                <label for="whatsapp">WhatsApp</label>
+                <input type="tel" id="whatsapp" value="3815551234" placeholder="3815551234" title="Número de WhatsApp" required>
+            </div>
+
+            <div class="form-group">
+                <label for="vehiculo">Vehículo</label>
+                <select id="vehiculo" title="Selecciona tu vehículo de reparto" required>
+                    <option value="moto">🏍️ Moto</option>
+                    <option value="bicicleta">🚴 Bicicleta</option>
+                    <option value="auto">🚗 Auto</option>
+                    <option value="pie">🚶 A pie</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-test">
+                📧 Registrarse y Enviar Email de Confirmación
+            </button>
+        </form>
+
+        <div id="resultado" class="resultado"></div>
+
+        <div id="codigoVerificacion" class="codigo-verificacion">
+            <h3 class="titulo-codigo">Ingresa el código de verificación:</h3>
+            <div class="form-group">
+                <input type="text" id="codigoInput" class="codigo-input" placeholder="000000" maxlength="6">
+            </div>
+            <button type="button" class="btn-test" onclick="verificarCodigo()">
+                ✅ Verificar Código
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let registroTemporal = null;
+
+        document.getElementById('formRegistro').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('whatsapp').value, // Usar telefono en lugar de whatsapp
+                vehiculo: document.getElementById('vehiculo').value,
+                dni: "12345678", // DNI de prueba
+                documentos: {
+                    dniFrente: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDX/9k=", // Base64 mínimo de prueba
+                    dniDorso: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDX/9k="
+                },
+                aceptaTerminos: true
+            };
+
+            try {
+                // Mostrar loading
+                mostrarResultado('⏳ Registrando y enviando email...', 'success');
+                
+                // Enviar datos de registro
+                const response = await fetch('/api/repartidores', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    registroTemporal = resultado;
+                    if (resultado.emailEnviado) {
+                        mostrarResultado('✅ Registro exitoso! Revisa tu email para el código de verificación.', 'success');
+                    } else {
+                        mostrarResultado(`✅ Registro exitoso! Código de verificación: ${resultado.codigoDesarrollo}`, 'success');
+                    }
+                    document.getElementById('codigoVerificacion').style.display = 'block';
+                } else {
+                    mostrarResultado('❌ Error: ' + resultado.error, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarResultado('❌ Error de conexión: ' + error.message, 'error');
+            }
+        });
+
+        function mostrarResultado(mensaje, tipo) {
+            const resultado = document.getElementById('resultado');
+            resultado.textContent = mensaje;
+            resultado.className = `resultado ${tipo}`;
+            resultado.style.display = 'block';
+        }
+
+        async function verificarCodigo() {
+            const codigo = document.getElementById('codigoInput').value;
+            
+            if (!codigo || codigo.length !== 6) {
+                mostrarResultado('❌ Ingresa un código de 6 dígitos', 'error');
+                return;
+            }
+
+            try {
+                mostrarResultado('⏳ Verificando código...', 'success');
+
+                // Enviar código de verificación
+                const response = await fetch('/api/verificar-codigo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        codigo: codigo
+                    })
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    mostrarResultado('🎉 ¡Verificación exitosa! Repartidor registrado correctamente.', 'success');
+                    document.getElementById('codigoVerificacion').style.display = 'none';
+                } else {
+                    mostrarResultado('❌ Error: ' + resultado.error, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarResultado('❌ Error de verificación: ' + error.message, 'error');
+            }
+        }
+
+        // Permitir solo números en el código
+        document.getElementById('codigoInput').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

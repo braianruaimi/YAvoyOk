@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="YAvoy - La plataforma de delivery más rápida. Pide, vende o reparte con nosotros.">
+    <!-- Theme color compatible -->
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-yavoy.png">
+    <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+    <!-- YAvoy Universal Theme Color Polyfill -->
+    <link rel="stylesheet" href="css/theme-enhancement.css">
+    <script src="js/theme-color-polyfill.js" defer></script>
+    <title>YAvoy — Delivery Inteligente</title>
+
+    <style>
+        /* ==========================================
+           YAVOY v3.1 ENTERPRISE - LANDING MINIMALISTA
+           ========================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0f1724;
+            --bg-card: rgba(11, 18, 32, 0.85);
+            --cyan: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.3);
+            --gold: #fbbf24;
+            --gold-glow: rgba(251, 191, 36, 0.3);
+            --white: #ffffff;
+            --gray: #94a3b8;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--white);
+        }
+
+        /* ==================== FONDO ANIMADO ==================== */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--cyan-glow);
+            top: -200px;
+            right: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--gold-glow);
+            bottom: -100px;
+            left: -100px;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(16, 185, 129, 0.2);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            25% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+
+            50% {
+                transform: translate(-30px, 30px) scale(0.95);
+            }
+
+            75% {
+                transform: translate(40px, 20px) scale(1.05);
+            }
+        }
+
+        /* ==================== CONTENEDOR PRINCIPAL ==================== */
+        .landing-container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ==================== LOGO Y HEADER ==================== */
+        .brand {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .brand-logo {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 30px var(--cyan-glow));
+            animation: pulse-glow 3s infinite;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 30px var(--cyan-glow));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 50px var(--cyan));
+            }
+        }
+
+        .brand-name {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cyan), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+
+        .brand-tagline {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== TARJETAS CTA ==================== */
+        .cta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1100px;
+            width: 100%;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cta-card {
+            background: var(--bg-card);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 35px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .cta-card:hover::before {
+            opacity: 1;
+        }
+
+        .cta-card:hover {
+            transform: translateY(-12px);
+            border-color: var(--cyan);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.4),
+                0 0 40px var(--cyan-glow);
+        }
+
+        /* Variantes de color para cada tarjeta */
+        .cta-card.cliente:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--cyan-glow);
+        }
+
+        .cta-card.comercio:hover {
+            border-color: var(--gold);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--gold-glow);
+        }
+
+        .cta-card.comercio::before {
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .cta-card.repartidor:hover {
+            border-color: var(--success);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(16, 185, 129, 0.3);
+        }
+
+        .cta-card.repartidor::before {
+            background: linear-gradient(90deg, transparent, var(--success), transparent);
+        }
+
+        .cta-icon {
+            font-size: 4rem;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .cta-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--white);
+        }
+
+        .cta-description {
+            color: var(--gray);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button.cyan {
+            background: linear-gradient(135deg, var(--cyan), #0891b2);
+            color: var(--white);
+            box-shadow: 0 8px 25px var(--cyan-glow);
+        }
+
+        .cta-button.gold {
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            color: #1a1a1a;
+            box-shadow: 0 8px 25px var(--gold-glow);
+        }
+
+        .cta-button.green {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: var(--white);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        /* ==================== FOOTER MINIMALISTA ==================== */
+        .landing-footer {
+            margin-top: 80px;
+            text-align: center;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--cyan);
+        }
+
+        .footer-copy {
+            color: rgba(148, 163, 184, 0.5);
+            font-size: 0.8rem;
+        }
+
+        .footer-copy a {
+            color: rgba(148, 163, 184, 0.7);
+            text-decoration: none;
+        }
+
+        .footer-copy a:hover {
+            color: var(--cyan);
+        }
+
+        /* ==================== ESTADÍSTICAS RÁPIDAS ==================== */
+        .stats-bar {
+            display: flex;
+            gap: 60px;
+            justify-content: center;
+            margin-top: 50px;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--cyan);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 900px) {
+            .cta-grid {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+            }
+
+            .brand-name {
+                font-size: 3rem;
+            }
+
+            .brand-logo {
+                font-size: 4rem;
+            }
+
+            .stats-bar {
+                gap: 30px;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .brand-name {
+                font-size: 2.5rem;
+            }
+
+            .brand-tagline {
+                font-size: 1rem;
+            }
+
+            .cta-card {
+                padding: 35px 25px;
+            }
+
+            .cta-title {
+                font-size: 1.5rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* ==================== CHATBOT WIDGET ==================== */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+        }
+
+        .chatbot-toggle {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), #0891b2);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 30px var(--cyan-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px var(--cyan-glow);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Fondo Animado -->
+    <div class="background-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Contenedor Principal -->
+    <div class="landing-container">
+        <!-- Marca -->
+        <header class="brand">
+            <div class="brand-logo">🚀</div>
+            <h1 class="brand-name">YAvoy</h1>
+            <p class="brand-tagline">Delivery inteligente para tu ciudad</p>
+        </header>
+
+        <!-- 3 CTAs Principales -->
+        <div class="cta-grid">
+            <!-- CTA Cliente -->
+            <div class="cta-card cliente" onclick="window.location.href='pedidos.html'">
+                <span class="cta-icon">🛍️</span>
+                <h2 class="cta-title">Pedir Ahora</h2>
+                <p class="cta-description">
+                    Encuentra tus comercios favoritos y recibe todo en minutos. Fácil, rápido y seguro.
+                </p>
+                <button class="cta-button cyan">Hacer Pedido →</button>
+            </div>
+
+            <!-- CTA Comercio -->
+            <div class="cta-card comercio" onclick="window.location.href='panel-comercio.html'">
+                <span class="cta-icon">🏪</span>
+                <h2 class="cta-title">Unirse como Socio</h2>
+                <p class="cta-description">
+                    Aumenta tus ventas con nuestra red de repartidores. Sin costos ocultos.
+                </p>
+                <button class="cta-button gold">Registrar Comercio →</button>
+            </div>
+
+            <!-- CTA Repartidor -->
+            <div class="cta-card repartidor" onclick="window.location.href='panel-repartidor.html'">
+                <span class="cta-icon">🚴</span>
+                <h2 class="cta-title">Ganar con YAvoy</h2>
+                <p class="cta-description">
+                    Sé tu propio jefe. Gana dinero extra haciendo entregas cuando quieras.
+                </p>
+                <button class="cta-button green">Empezar a Ganar →</button>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="statPedidos">1,247</div>
+                <div class="stat-label">Entregas Realizadas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="statComercios">89</div>
+                <div class="stat-label">Comercios Activos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="statRepartidores">156</div>
+                <div class="stat-label">Repartidores</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="footer-links">
+                <a href="faq.html" class="footer-link">Preguntas Frecuentes</a>
+                <a href="privacidad.html" class="footer-link">Privacidad</a>
+                <a href="acerca-de.html" class="footer-link">Acerca de</a>
+            </div>
+            <p class="footer-copy">
+                © 2026 YAvoy Enterprise ·
+                <a href="dashboard-ceo.html">Acceso Administración</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <button class="chatbot-toggle" id="btnChatbot" title="Asistente YAvoy">
+            💬
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/chatbot-holografico.js"></script>
+    <script>
+        // Cargar estadísticas reales desde la API
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch('/api/dashboard/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        document.getElementById('statPedidos').textContent =
+                            data.stats.totalPedidos?.toLocaleString() || '1,247';
+                        document.getElementById('statComercios').textContent =
+                            data.stats.totalComercios?.toLocaleString() || '89';
+                        document.getElementById('statRepartidores').textContent =
+                            data.stats.totalRepartidores?.toLocaleString() || '156';
+                    }
+                }
+            } catch (error) {
+                console.log('Usando estadísticas de demostración');
+            }
+        }
+
+        // Inicializar chatbot
+        document.getElementById('btnChatbot').addEventListener('click', () => {
+            if (typeof toggleChatbot === 'function') {
+                toggleChatbot();
+            } else {
+                alert('Asistente en mantenimiento. ¿En qué podemos ayudarte?');
+            }
+        });
+
+        // Cargar al iniciar
+        document.addEventListener('DOMContentLoaded', cargarEstadisticas);
+    </script>
+</body>
+
+</html>

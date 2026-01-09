@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple - YAvoy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        .test-box {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .test-box h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .result.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            font-size: 12px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-badge.online {
+            background: #28a745;
+            color: white;
+        }
+        .status-badge.offline {
+            background: #dc3545;
+            color: white;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Simple - YAvoy</h1>
+        
+        <div class="info-box">
+            <strong>📋 INSTRUCCIONES:</strong> Sigue los pasos en orden (1 → 2 → 3 → 4 → 5 → 6)
+        </div>
+
+        <!-- PASO 1: Verificar Servidor -->
+        <div class="test-box">
+            <h2>
+                <span class="step-number">1</span>
+                Verificar Servidor
+                <span id="serverStatus" class="status-badge offline">Offline</span>
+            </h2>
+            <button class="btn" onclick="verificarServidor()">🔄 Verificar Servidor</button>
+            <div id="serverResult" class="result"></div>
+        </div>
+
+        <!-- PASO 2: Registrar Repartidor -->
+        <div class="test-box">
+            <h2><span class="step-number">2</span> Registrar Repartidor</h2>
+            <button class="btn" onclick="registrarRepartidor()">🚴 Registrar Repartidor Test</button>
+            <button class="btn" onclick="listarRepartidores()">📋 Ver Repartidores</button>
+            <div id="repartidorResult" class="result"></div>
+        </div>
+
+        <!-- PASO 3: Registrar Comercio -->
+        <div class="test-box">
+            <h2><span class="step-number">3</span> Registrar Comercio</h2>
+            <button class="btn" onclick="registrarComercio()">🏪 Registrar Comercio Test</button>
+            <button class="btn" onclick="listarComercios()">📋 Ver Comercios</button>
+            <div id="comercioResult" class="result"></div>
+        </div>
+
+        <!-- PASO 4: Crear Pedido -->
+        <div class="test-box">
+            <h2><span class="step-number">4</span> Crear Pedido</h2>
+            <button class="btn" id="btnCrearPedido" onclick="crearPedido()" disabled>📦 Crear Pedido Test</button>
+            <button class="btn" onclick="listarPedidos()">📋 Ver Pedidos</button>
+            <div id="pedidoResult" class="result"></div>
+        </div>
+
+        <!-- PASO 5: Probar Panel Repartidor -->
+        <div class="test-box">
+            <h2><span class="step-number">5</span> Panel Repartidor</h2>
+            <button class="btn" id="btnPanelRepartidor" onclick="abrirPanelRepartidor()" disabled>
+                🚴 Abrir Panel Repartidor
+            </button>
+            <div id="panelRepartidorResult" class="result"></div>
+        </div>
+
+        <!-- PASO 6: Probar Sistema de Pagos -->
+        <div class="test-box">
+            <h2><span class="step-number">6</span> Sistema de Pagos</h2>
+            <button class="btn" onclick="verificarMercadoPago()">💳 Verificar MercadoPago</button>
+            <button class="btn" id="btnPagarPedido" onclick="abrirPagarPedido()" disabled>
+                💰 Abrir Página de Pago
+            </button>
+            <div id="pagoResult" class="result"></div>
+        </div>
+    </div>
+
+    <!-- Script de compatibilidad cross-browser -->
+    <script src="js/compatibility.js"></script>
+    
+    <script>
+        let ultimoRepartidorId = null;
+        let ultimoComercioId = null;
+        let ultimoPedidoId = null;
+
+        // Auto-verificar al cargar
+        window.addEventListener('DOMContentLoaded', () => {
+            verificarServidor();
+        });
+
+        // PASO 1: Verificar Servidor
+        async function verificarServidor() {
+            const resultDiv = document.getElementById('serverResult');
+            const statusBadge = document.getElementById('serverStatus');
+            
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Verificando conexión...';
+            
+            try {
+                const response = await fetch('/api/repartidores');
+                const data = await response.json();
+                
+                statusBadge.className = 'status-badge online';
+                statusBadge.textContent = 'Online';
+                
+                resultDiv.className = 'result show success';
+                resultDiv.innerHTML = `
+                    <strong>✅ Servidor funcionando correctamente</strong><br>
+                    Puerto: 5501<br>
+                    Repartidores en sistema: ${data.length}<br>
+                    <em>Puedes continuar con el paso 2</em>
+                `;
+            } catch (error) {
+                statusBadge.className = 'status-badge offline';
+                statusBadge.textContent = 'Offline';
+                
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Error de conexión</strong><br>
+                    ${error.message}<br><br>
+                    <strong>Solución:</strong> Asegúrate de que el servidor esté corriendo:<br>
+                    <code>node server.js</code>
+                `;
+            }
+        }
+
+        // PASO 2: Registrar Repartidor
+        async function registrarRepartidor() {
+            const resultDiv = document.getElementById('repartidorResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Registrando repartidor...';
+            
+            const repartidor = {
+                nombre: 'Juan Test',
+                apellido: 'Prueba',
+                dni: '12345678',
+                telefono: '1112345678',
+                email: 'juan.test@yavoy.com',
+                vehiculo: 'moto'
+            };
+            
+            try {
+                const response = await fetch('/api/repartidores', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(repartidor)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    ultimoRepartidorId = data.repartidor.id;
+                    
+                    // Habilitar botón de panel
+                    const btnPanel = document.getElementById('btnPanelRepartidor');
+                    btnPanel.disabled = false;
+                    btnPanel.innerHTML = `🚴 Abrir Panel (ID: ${ultimoRepartidorId})`;
+                    
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Repartidor registrado exitosamente</strong><br>
+                        ID: ${data.repartidor.id}<br>
+                        Nombre: ${data.repartidor.nombre} ${data.repartidor.apellido}<br><br>
+                        <em>Ahora puedes abrir el panel repartidor (paso 5)</em>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function listarRepartidores() {
+            const resultDiv = document.getElementById('repartidorResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Cargando repartidores...';
+            
+            try {
+                const response = await fetch('/api/repartidores');
+                const repartidores = await response.json();
+                
+                resultDiv.className = 'result show success';
+                resultDiv.innerHTML = `
+                    <strong>📋 Total: ${repartidores.length} repartidor(es)</strong>
+                    <pre>${JSON.stringify(repartidores, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        // PASO 3: Registrar Comercio
+        async function registrarComercio() {
+            const resultDiv = document.getElementById('comercioResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Registrando comercio...';
+            
+            const comercio = {
+                nombre: 'Pizzería La Nonna',
+                direccion: 'Av. Corrientes 1234',
+                telefono: '1123456789',
+                categoria: 'Pizzería',
+                email: 'lanonna@test.com',
+                horarioApertura: '18:00',
+                horarioCierre: '00:00',
+                descripcion: 'Las mejores pizzas al molde'
+            };
+            
+            try {
+                const response = await fetch('/api/guardar-comercio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(comercio)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    ultimoComercioId = data.id;
+                    
+                    // Habilitar botón de crear pedido
+                    const btnPedido = document.getElementById('btnCrearPedido');
+                    btnPedido.disabled = false;
+                    btnPedido.textContent = '📦 Crear Pedido Test (Comercio listo)';
+                    
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Comercio registrado exitosamente</strong><br>
+                        ID: ${data.id}<br>
+                        Nombre: ${comercio.nombre}<br><br>
+                        <em>Continúa con el paso 4 (crear pedido)</em>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function listarComercios() {
+            const resultDiv = document.getElementById('comercioResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Cargando comercios...';
+            
+            try {
+                const response = await fetch('/api/listar-comercios');
+                const data = await response.json();
+                
+                resultDiv.className = 'result show success';
+                resultDiv.innerHTML = `
+                    <strong>📋 Total: ${data.comercios.length} comercio(s)</strong>
+                    <pre>${JSON.stringify(data.comercios, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        // PASO 4: Crear Pedido
+        async function crearPedido() {
+            if (!ultimoComercioId) {
+                alert('⚠️ Primero registra un comercio (paso 3)');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('pedidoResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Creando pedido...';
+            
+            const pedidoId = 'pedido-' + Date.now();
+            
+            const pedido = {
+                id: pedidoId,
+                comercioId: ultimoComercioId,
+                comercioNombre: 'Pizzería La Nonna',
+                clienteNombre: 'María García',
+                clienteTelefono: '1198765432',
+                clienteEmail: 'maria@test.com',
+                direccionEntrega: 'Av. Rivadavia 5678, Piso 3, Dpto B',
+                items: [
+                    { nombre: 'Pizza Mozzarella', precio: 2500, cantidad: 1 },
+                    { nombre: 'Coca Cola 1.5L', precio: 800, cantidad: 1 }
+                ],
+                subtotal: 3300,
+                costoEnvio: 500,
+                total: 3800,
+                formaPago: 'mercadopago',
+                estado: 'pendiente',
+                notasAdicionales: 'Timbre 3B, sin aceitunas en la pizza'
+            };
+            
+            try {
+                const response = await fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pedido)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    ultimoPedidoId = pedidoId;
+                    
+                    // Habilitar botón de pago
+                    const btnPago = document.getElementById('btnPagarPedido');
+                    btnPago.disabled = false;
+                    btnPago.innerHTML = `💰 Abrir Página de Pago (${pedidoId})`;
+                    
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Pedido creado exitosamente</strong><br>
+                        ID: ${pedidoId}<br>
+                        Total: $${pedido.total}<br>
+                        Estado: ${pedido.estado}<br><br>
+                        <em>Ahora puedes probar el sistema de pagos (paso 6)</em>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function listarPedidos() {
+            const resultDiv = document.getElementById('pedidoResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Cargando pedidos...';
+            
+            try {
+                const response = await fetch('/api/pedidos');
+                const pedidos = await response.json();
+                
+                resultDiv.className = 'result show success';
+                resultDiv.innerHTML = `
+                    <strong>📋 Total: ${pedidos.length} pedido(s)</strong>
+                    <pre>${JSON.stringify(pedidos, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        // PASO 5: Panel Repartidor
+        function abrirPanelRepartidor() {
+            if (!ultimoRepartidorId) {
+                alert('⚠️ Primero registra un repartidor (paso 2)');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('panelRepartidorResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = `
+                <strong>🚴 Abriendo panel de repartidor...</strong><br>
+                ID: ${ultimoRepartidorId}<br><br>
+                <strong>Instrucciones:</strong><br>
+                1. Se abrirá el panel en una nueva pestaña<br>
+                2. Ingresa el ID: <code>${ultimoRepartidorId}</code><br>
+                3. Podrás ver los pedidos disponibles
+            `;
+            
+            // Guardar ID en sessionStorage para auto-login
+            sessionStorage.setItem('repartidorId', ultimoRepartidorId);
+            
+            // Abrir panel
+            window.open('/panel-repartidor.html', '_blank');
+        }
+
+        // PASO 6: Sistema de Pagos
+        async function verificarMercadoPago() {
+            const resultDiv = document.getElementById('pagoResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = '<span class="loading"></span> Verificando MercadoPago...';
+            
+            try {
+                const response = await fetch('/api/mercadopago/public-key');
+                const data = await response.json();
+                
+                if (data.publicKey && data.publicKey !== 'NO_CONFIGURADA') {
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ MercadoPago configurado</strong><br>
+                        Public Key: ${data.publicKey.substring(0, 30)}...<br><br>
+                        <em>Puedes abrir la página de pago</em>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <strong>⚠️ MercadoPago NO configurado</strong><br><br>
+                        <strong>Para configurar:</strong><br>
+                        1. Obtén credenciales en https://www.mercadopago.com.ar/developers<br>
+                        2. Crea archivo .env con:<br>
+                        <code>MP_ACCESS_TOKEN=tu_token<br>
+                        MP_PUBLIC_KEY=tu_public_key</code><br><br>
+                        <em>Aún puedes probar la interfaz, pero el QR no funcionará</em>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        function abrirPagarPedido() {
+            if (!ultimoPedidoId) {
+                alert('⚠️ Primero crea un pedido (paso 4)');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('pagoResult');
+            resultDiv.className = 'result show info';
+            resultDiv.innerHTML = `
+                <strong>💰 Abriendo página de pago...</strong><br>
+                Pedido ID: ${ultimoPedidoId}<br><br>
+                <strong>Se abrirá en una nueva pestaña</strong><br>
+                Si ves errores en la consola del navegador (F12), cópialos y pégalos aquí.
+            `;
+            
+            window.open(`/pagar-pedido.html?pedido=${ultimoPedidoId}`, '_blank');
+        }
+    </script>
+</body>
+</html>

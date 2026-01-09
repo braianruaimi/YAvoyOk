@@ -1,0 +1,521 @@
+/**
+ * 🔌 ENDPOINTS NUEVOS - YaVoy Pro Features
+ * Calificaciones, Logros, Geolocalización, Promociones
+ * 
+ * NOTA: Estos endpoints deben agregarse a server.js después de las línea ~1850
+ */
+
+// ============================================
+// CALIFICACIONES Y RESEÑAS
+// ============================================
+
+/**
+ * POST /api/calificaciones
+ * Crear nueva calificación para un pedido
+ */
+app.post('/api/calificaciones', async (req, res) => {
+  try {
+    const {
+      pedidoId,
+      repartidorId,
+      clienteId,
+      estrellas,
+      comentario,
+      imagenes,
+      aspecto
+    } = req.body;
+
+    // Validar
+    if (!pedidoId || !repartidorId || estrellas < 1 || estrellas > 5) {
+      return res.status(400).json({ success: false, error: 'Datos inválidos' });
+    }
+
+    const calificacion = {
+      id: `RAT-${Date.now()}`,
+      pedidoId,
+      repartidorId,
+      clienteId,
+      estrellas,
+      comentario,
+      imagenes: imagenes || [],
+      aspecto: aspecto || {
+        puntualidad: 5,
+        amabilidad: 5,
+        limpieza: 5,
+        exactitud: 5
+      },
+      fecha: new Date().toISOString(),
+      verificada: false,
+      utiles: 0,
+      respuesta: null
+    };
+
+    // Guardar en archivo
+    const ratingsPath = path.join(BASE_DIR, 'calificaciones');
+    await fs.mkdir(ratingsPath, { recursive: true });
+    
+    const ratingFile = path.join(ratingsPath, `${repartidorId}.json`);
+    let ratings = [];
+    
+    try {
+      const data = await fs.readFile(ratingFile, 'utf-8');
+      ratings = JSON.parse(data);
+    } catch (e) {}
+    
+    ratings.push(calificacion);
+    await fs.writeFile(ratingFile, JSON.stringify(ratings, null, 2));
+
+    // Emitir actualización de promedio
+    const promedio = calcularPromedioRepartidor(ratings);
+    io.emit('promedioActualizado', {
+      repartidorId,
+      promedio,
+      estrellas,
+      total: ratings.length
+    });
+
+    // Notificar al repartidor
+    notificarRepartidor(repartidorId, 'nuevaCalificacion', {
+      estrellas,
+      comentario: comentario?.substring(0, 100),
+      fecha: new Date().toLocaleString('es-AR')
+    });
+
+    res.json({ success: true, calificacion });
+  } catch (error) {
+    console.error('Error al crear calificación:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * GET /api/repartidores/:repartidorId/calificaciones
+ * Obtener todas las calificaciones de un repartidor
+ */
+app.get('/api/repartidores/:repartidorId/calificaciones', async (req, res) => {
+  try {
+    const { repartidorId } = req.params;
+    const { ordenar = 'reciente', filtro = null } = req.query;
+
+    const ratingFile = path.join(BASE_DIR, 'calificaciones', `${repartidorId}.json`);
+    let calificaciones = [];
+
+    try {
+      const data = await fs.readFile(ratingFile, 'utf-8');
+      calificaciones = JSON.parse(data);
+    } catch (e) {}
+
+    // Filtrar
+    if (filtro) {
+      calificaciones = calificaciones.filter(r => r.estrellas === parseInt(filtro));
+    }
+
+    // Ordenar
+    switch (ordenar) {
+      case 'util':
+        calificaciones.sort((a, b) => b.utiles - a.utiles);
+        break;
+      case 'puntuacion':
+        calificaciones.sort((a, b) => b.estrellas - a.estrellas);
+        break;
+      case 'reciente':
+      default:
+        calificaciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    }
+
+    const promedio = calcularPromedioRepartidor(calificaciones);
+
+    res.json({
+      success: true,
+      calificaciones,
+      estadisticas: promedio
+    });
+  } catch (error) {
+    console.error('Error al obtener calificaciones:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Función auxiliar para calcular promedio de repartidor
+ */
+function calcularPromedioRepartidor(calificaciones) {
+  if (calificaciones.length === 0) {
+    return {
+      promedio: 0,
+      total: 0,
+      distribucion: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+    };
+  }
+
+  const suma = calificaciones.reduce((acc, r) => acc + r.estrellas, 0);
+  const promedio = (suma / calificaciones.length).toFixed(1);
+
+  const distribucion = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  calificaciones.forEach(r => {
+    distribucion[r.estrellas]++;
+  });
+
+  // Calcular aspectos
+  const aspectos = { puntualidad: 0, amabilidad: 0, limpieza: 0, exactitud: 0 };
+  calificaciones.forEach(r => {
+    if (r.aspecto) {
+      Object.keys(aspectos).forEach(key => {
+        aspectos[key] += r.aspecto[key] || 0;
+      });
+    }
+  });
+
+  Object.keys(aspectos).forEach(key => {
+    aspectos[key] = (aspectos[key] / calificaciones.length).toFixed(1);
+  });
+
+  return {
+    promedio: parseFloat(promedio),
+    total: calificaciones.length,
+    distribucion,
+    aspectos
+  };
+}
+
+/**
+ * GET /api/repartidores/ranking/top
+ * Obtener ranking de mejores repartidores
+ */
+app.get('/api/repartidores/ranking/top', async (req, res) => {
+  try {
+    const { limite = 10 } = req.query;
+    const ratingsPath = path.join(BASE_DIR, 'calificaciones');
+
+    let ranking = [];
+
+    try {
+      const files = await fs.readdir(ratingsPath);
+      
+      for (const file of files) {
+        const repartidorId = file.replace('.json', '');
+        const data = await fs.readFile(path.join(ratingsPath, file), 'utf-8');
+        const calificaciones = JSON.parse(data);
+        const promedio = calcularPromedioRepartidor(calificaciones);
+
+        ranking.push({
+          repartidorId,
+          ...promedio,
+          nombre: repartidores.find(r => r.id === repartidorId)?.nombre || repartidorId
+        });
+      }
+    } catch (e) {}
+
+    ranking.sort((a, b) => b.promedio - a.promedio);
+    ranking = ranking.slice(0, parseInt(limite));
+
+    res.json({ success: true, ranking });
+  } catch (error) {
+    console.error('Error al obtener ranking:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================
+// LOGROS Y BADGES
+// ============================================
+
+/**
+ * POST /api/logros/desbloquear
+ * Desbloquear logro para un repartidor
+ */
+app.post('/api/logros/desbloquear', async (req, res) => {
+  try {
+    const { repartidorId, logro } = req.body;
+
+    const logrosPath = path.join(BASE_DIR, 'logros');
+    await fs.mkdir(logrosPath, { recursive: true });
+
+    const logroFile = path.join(logrosPath, `${repartidorId}.json`);
+    let logros = [];
+
+    try {
+      const data = await fs.readFile(logroFile, 'utf-8');
+      logros = JSON.parse(data);
+    } catch (e) {}
+
+    // Verificar si ya existe
+    if (!logros.some(l => l.id === logro.id)) {
+      logros.push({
+        ...logro,
+        desbloqueado: new Date().toISOString()
+      });
+
+      await fs.writeFile(logroFile, JSON.stringify(logros, null, 2));
+
+      // Notificar
+      notificarRepartidor(repartidorId, 'logroDesbloqueado', logro);
+
+      // Emitir evento global
+      io.emit('logroGlobal', {
+        repartidorId,
+        logro: logro.nombre,
+        icono: logro.icono
+      });
+    }
+
+    res.json({ success: true, logros });
+  } catch (error) {
+    console.error('Error al desbloquear logro:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * GET /api/logros/:repartidorId
+ * Obtener logros de un repartidor
+ */
+app.get('/api/logros/:repartidorId', async (req, res) => {
+  try {
+    const { repartidorId } = req.params;
+    const logroFile = path.join(BASE_DIR, 'logros', `${repartidorId}.json`);
+
+    let logros = [];
+    try {
+      const data = await fs.readFile(logroFile, 'utf-8');
+      logros = JSON.parse(data);
+    } catch (e) {}
+
+    res.json({ success: true, logros });
+  } catch (error) {
+    console.error('Error al obtener logros:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================
+// GEOLOCALIZACIÓN
+// ============================================
+
+/**
+ * POST /api/ubicacion/actualizar
+ * Actualizar ubicación de repartidor en tiempo real
+ */
+app.post('/api/ubicacion/actualizar', async (req, res) => {
+  try {
+    const { repartidorId, lat, lng, accuracy } = req.body;
+
+    if (!repartidorId || lat === undefined || lng === undefined) {
+      return res.status(400).json({ success: false, error: 'Datos inválidos' });
+    }
+
+    const ubicacion = {
+      repartidorId,
+      lat: parseFloat(lat),
+      lng: parseFloat(lng),
+      accuracy: accuracy || 0,
+      timestamp: Date.now()
+    };
+
+    // Emitir a todos los clientes interesados
+    io.emit('ubicacionActualizada', ubicacion);
+
+    // Guardar historial
+    const historialPath = path.join(BASE_DIR, 'historial-ubicaciones');
+    await fs.mkdir(historialPath, { recursive: true });
+
+    const fecha = new Date().toISOString().split('T')[0];
+    const historialFile = path.join(historialPath, `${repartidorId}-${fecha}.json`);
+
+    let historial = [];
+    try {
+      const data = await fs.readFile(historialFile, 'utf-8');
+      historial = JSON.parse(data);
+    } catch (e) {}
+
+    historial.push(ubicacion);
+    await fs.writeFile(historialFile, JSON.stringify(historial, null, 2));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error al actualizar ubicación:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * GET /api/ubicacion/:repartidorId/historial
+ * Obtener historial de ubicaciones
+ */
+app.get('/api/ubicacion/:repartidorId/historial', async (req, res) => {
+  try {
+    const { repartidorId } = req.params;
+    const { fecha } = req.query;
+
+    const historialPath = path.join(BASE_DIR, 'historial-ubicaciones');
+    const fechaActual = fecha || new Date().toISOString().split('T')[0];
+    const historialFile = path.join(historialPath, `${repartidorId}-${fechaActual}.json`);
+
+    let historial = [];
+    try {
+      const data = await fs.readFile(historialFile, 'utf-8');
+      historial = JSON.parse(data);
+    } catch (e) {}
+
+    res.json({ success: true, historial });
+  } catch (error) {
+    console.error('Error al obtener historial:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================
+// PROMOCIONES Y CUPONES
+// ============================================
+
+/**
+ * POST /api/promociones
+ * CEO crea nueva promoción
+ */
+app.post('/api/promociones', async (req, res) => {
+  try {
+    const {
+      nombre,
+      tipo, // 'descuento', 'envio_gratis', 'combo'
+      valor,
+      codigo,
+      descripcion,
+      vigencia,
+      usoMaximo
+    } = req.body;
+
+    const promocion = {
+      id: `PROMO-${Date.now()}`,
+      nombre,
+      tipo,
+      valor,
+      codigo: codigo || generarCodigoCupon(),
+      descripcion,
+      vigencia,
+      usoMaximo,
+      usoActual: 0,
+      creada: new Date().toISOString(),
+      activa: true
+    };
+
+    // Guardar
+    const promocionesPath = path.join(BASE_DIR, 'promociones');
+    await fs.mkdir(promocionesPath, { recursive: true });
+
+    const promocionesFile = path.join(promocionesPath, 'promociones.json');
+    let promociones = [];
+
+    try {
+      const data = await fs.readFile(promocionesFile, 'utf-8');
+      promociones = JSON.parse(data);
+    } catch (e) {}
+
+    promociones.push(promocion);
+    await fs.writeFile(promocionesFile, JSON.stringify(promociones, null, 2));
+
+    // Notificar a todos
+    io.emit('nuevaPromocion', promocion);
+
+    res.json({ success: true, promocion });
+  } catch (error) {
+    console.error('Error al crear promoción:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * GET /api/promociones/activas
+ * Obtener promociones activas
+ */
+app.get('/api/promociones/activas', async (req, res) => {
+  try {
+    const promocionesPath = path.join(BASE_DIR, 'promociones');
+    const promocionesFile = path.join(promocionesPath, 'promociones.json');
+
+    let promociones = [];
+    try {
+      const data = await fs.readFile(promocionesFile, 'utf-8');
+      promociones = JSON.parse(data);
+    } catch (e) {}
+
+    // Filtrar activas y vigentes
+    const ahora = new Date();
+    const promocionesActivas = promociones.filter(p => {
+      return p.activa && 
+             p.usoActual < p.usoMaximo &&
+             new Date(p.vigencia.hasta) > ahora;
+    });
+
+    res.json({ success: true, promociones: promocionesActivas });
+  } catch (error) {
+    console.error('Error al obtener promociones:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * POST /api/promociones/:codigo/validar
+ * Validar código de promoción
+ */
+app.post('/api/promociones/:codigo/validar', async (req, res) => {
+  try {
+    const { codigo } = req.params;
+
+    const promocionesPath = path.join(BASE_DIR, 'promociones');
+    const promocionesFile = path.join(promocionesPath, 'promociones.json');
+
+    let promociones = [];
+    try {
+      const data = await fs.readFile(promocionesFile, 'utf-8');
+      promociones = JSON.parse(data);
+    } catch (e) {}
+
+    const promocion = promociones.find(p => p.codigo === codigo.toUpperCase());
+
+    if (!promocion) {
+      return res.status(404).json({ success: false, error: 'Código no válido' });
+    }
+
+    if (!promocion.activa || promocion.usoActual >= promocion.usoMaximo) {
+      return res.status(400).json({ success: false, error: 'Promoción no disponible' });
+    }
+
+    const ahora = new Date();
+    if (new Date(promocion.vigencia.hasta) < ahora) {
+      return res.status(400).json({ success: false, error: 'Promoción expirada' });
+    }
+
+    // Incrementar uso
+    promocion.usoActual++;
+    await fs.writeFile(promocionesFile, JSON.stringify(promociones, null, 2));
+
+    res.json({ success: true, promocion });
+  } catch (error) {
+    console.error('Error al validar promoción:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================
+// UTILIDADES
+// ============================================
+
+function generarCodigoCupon() {
+  return 'YAVOY' + Math.random().toString(36).substr(2, 8).toUpperCase();
+}
+
+function notificarRepartidor(repartidorId, evento, data) {
+  io.to(`repartidor-${repartidorId}`).emit(evento, data);
+}
+
+function notificarCEO(evento, data) {
+  io.to('ceo').emit(evento, data);
+}
+
+function notificarCliente(clienteId, evento, data) {
+  io.to(`cliente-${clienteId}`).emit(evento, data);
+}
+
+function notificarTodos(evento, data) {
+  io.emit(evento, data);
+}

@@ -1,0 +1,97 @@
+/* 🎨 Animaciones para Notificaciones - YAvoy */
+
+/* Slide in desde la derecha */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Barra de progreso (8 segundos) */
+@keyframes progress-bar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Pulse para notificaciones importantes */
+@keyframes pulse-scale {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Shake para alertas críticas */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Fade in suave */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Clases de utilidad */
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-progress-bar {
+  animation: progress-bar 8s linear forwards;
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 2s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-in;
+}
+
+/* Transiciones suaves */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Backdrop blur para notificaciones */
+.backdrop-blur-notification {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}

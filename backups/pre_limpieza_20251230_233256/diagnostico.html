@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico YaVoy - Debug</title>
+    <link rel="stylesheet" href="styles/premium-system.css">
+    <style>
+        .debug-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .debug-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+        }
+        .test-card {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        .test-button {
+            background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
+            color: #020617;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .color-test {
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            margin: 10px;
+            border-radius: 12px;
+        }
+        .bg-profundo { background: #020617; }
+        .bg-oro { background: #fbbf24; }
+        .bg-glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1 style="color: #fbbf24; font-size: 3rem;">🔍 Diagnóstico YaVoy v3.1</h1>
+        
+        <div class="debug-section">
+            <h2 style="color: #fff;">1. Test de Colores</h2>
+            <div class="color-test bg-profundo"></div>
+            <div class="color-test bg-oro"></div>
+            <div class="color-test bg-glass" style="border: 1px solid #fbbf24;"></div>
+            <p style="color: #fff;">Si ves 3 cuadrados (azul oscuro, dorado, azul translúcido), los colores funcionan.</p>
+        </div>
+
+        <div class="debug-section">
+            <h2 style="color: #fff;">2. Test de Tipografía</h2>
+            <h1 class="heading-hero">Título Hero Grande</h1>
+            <h2 class="heading-section">Título de Sección</h2>
+            <p class="text-premium">Texto premium regular con <span class="text-accent">acento dorado</span>.</p>
+        </div>
+
+        <div class="debug-section">
+            <h2 style="color: #fff;">3. Test de Tarjetas Glassmorphism</h2>
+            <div class="test-card">
+                <h3 style="color: #fbbf24;">Tarjeta de Prueba</h3>
+                <p style="color: rgba(255,255,255,0.8);">Esta tarjeta debe tener fondo translúcido, desenfoque y borde dorado.</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2 style="color: #fff;">4. Test de Botones</h2>
+            <button class="test-button">Botón Dorado</button>
+            <button class="btn-premium">Botón Premium Class</button>
+            <button class="btn-glass">Botón Glass</button>
+        </div>
+
+        <div class="debug-section">
+            <h2 style="color: #fff;">5. CSS Variables Check</h2>
+            <div id="varCheck"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2 style="color: #fff;">6. Info del Sistema</h2>
+            <ul id="sysInfo" style="color: #fff; line-height: 2;"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Check CSS Variables
+        const root = getComputedStyle(document.documentElement);
+        const varCheck = document.getElementById('varCheck');
+        
+        const vars = [
+            '--color-profundo',
+            '--color-oro-liquido',
+            '--glass-bg',
+            '--blur-fuerte'
+        ];
+
+        let html = '<ul style="color: #fff;">';
+        vars.forEach(v => {
+            const value = root.getPropertyValue(v);
+            html += `<li><strong>${v}:</strong> ${value || '❌ NO DEFINIDA'}</li>`;
+        });
+        html += '</ul>';
+        varCheck.innerHTML = html;
+
+        // System Info
+        const sysInfo = document.getElementById('sysInfo');
+        sysInfo.innerHTML = `
+            <li><strong>User Agent:</strong> ${navigator.userAgent}</li>
+            <li><strong>Viewport:</strong> ${window.innerWidth} x ${window.innerHeight}</li>
+            <li><strong>Idioma:</strong> ${navigator.language}</li>
+            <li><strong>Online:</strong> ${navigator.onLine ? '✅ Sí' : '❌ No'}</li>
+        `;
+
+        console.log('🔍 Diagnóstico YaVoy v3.1');
+        console.log('CSS Variables:', vars.map(v => ({
+            variable: v,
+            value: root.getPropertyValue(v)
+        })));
+    </script>
+</body>
+</html>

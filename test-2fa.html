@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 YAvoy 2FA - Pruebas de Autenticación</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #050810 0%, #0a0f1a 50%, #0d1117 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Partículas animadas de fondo */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(6, 182, 212, 0.5);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            33% { transform: translateY(-20px) translateX(10px) rotate(120deg); }
+            66% { transform: translateY(10px) translateX(-10px) rotate(240deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #06b6d4 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+            display: block;
+            margin: 0 auto;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(6, 182, 212, 0.5);
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+        }
+
+        .btn-test:active {
+            transform: translateY(0);
+        }
+
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .result-success {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.1) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .result-error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .qr-section {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .qr-code img {
+            max-width: 250px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(6, 182, 212, 0.3);
+            padding: 10px;
+            background: white;
+        }
+
+        .secret-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .secret-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            margin-top: 10px;
+            word-break: break-all;
+            text-align: center;
+            color: #fbbf24;
+        }
+
+        .data-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .data-section pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .success-title {
+            color: #22c55e;
+        }
+
+        .error-title {
+            color: #ef4444;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(6, 182, 212, 0.3);
+            border-radius: 50%;
+            border-top-color: #06b6d4;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-success {
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .status-error {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Partículas animadas -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Pruebas de Autenticación 2FA</h1>
+            <p>Sistema de verificación en dos pasos para YAvoy Enterprise<br>
+               Genera códigos QR y prueba la integración con Google Authenticator</p>
+        </div>
+
+        <div class="test-card">
+            <button id="testButton" class="btn-test">
+                🚀 Iniciar Prueba 2FA
+            </button>
+            
+            <div id="resultado" class="results-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // Crear partículas animadas
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            document.getElementById('testButton').addEventListener('click', test2FA);
+        });
+
+        async function test2FA() {
+            console.log('🧪 Probando endpoint 2FA...');
+            
+            const resultDiv = document.getElementById('resultado');
+            const button = document.getElementById('testButton');
+            
+            // Mostrar loading
+            button.innerHTML = '<div class="loading"></div> Procesando...';
+            button.disabled = true;
+            
+            try {
+                // Paso 1: Generar secreto
+                const response = await fetch('/api/security/2fa/setup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: 'Braian.R',
+                        userEmail: 'yavoyen5@gmail.com'
+                    })
+                });
+
+                console.log('📡 Response status:', response.status);
+                const data = await response.json();
+                console.log('📦 Response data:', data);
+
+                if (data.success) {
+                    // Paso 2: Generar QR Code
+                    console.log('🎨 Generando código QR...');
+                    const qrResponse = await fetch('/api/security/2fa/qrcode', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            otpauthUrl: data.qrCodeData
+                        })
+                    });
+
+                    const qrData = await qrResponse.json();
+                    console.log('🎨 QR Data:', qrData);
+
+                    if (qrData.success) {
+                        resultDiv.innerHTML = 
+                            '<div class="result-success">' +
+                                '<div class="section-title success-title">' +
+                                    '<span class="status-indicator status-success"></span>' +
+                                    '✅ ¡Autenticación 2FA Configurada Exitosamente!' +
+                                '</div>' +
+                                
+                                '<div class="qr-section">' +
+                                    '<h4>📱 Escanea con Google Authenticator</h4>' +
+                                    '<div class="qr-code">' +
+                                        '<img src="' + qrData.qrCodeImage + '" alt="Código QR 2FA">' +
+                                    '</div>' +
+                                    '<p style="color: rgba(255, 255, 255, 0.7); margin-top: 10px;">Escanea este código con tu app de autenticación</p>' +
+                                '</div>' +
+                                
+                                '<div class="secret-section">' +
+                                    '<h4 style="color: #fbbf24;">🔑 Código Secreto Manual</h4>' +
+                                    '<p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">Si no puedes escanear, ingresa este código manualmente:</p>' +
+                                    '<div class="secret-code">' + data.secret + '</div>' +
+                                '</div>' +
+                                
+                                '<div class="data-section">' +
+                                    '<h4 style="color: #8b5cf6;">📋 Detalles Técnicos</h4>' +
+                                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>' +
+                                '</div>' +
+                            '</div>';
+                    } else {
+                        throw new Error('Error generando QR: ' + qrData.message);
+                    }
+                } else {
+                    throw new Error('Error en setup: ' + data.message);
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.innerHTML = 
+                    '<div class="result-error">' +
+                        '<div class="section-title error-title">' +
+                            '<span class="status-indicator status-error"></span>' +
+                            '❌ Error en la Configuración' +
+                        '</div>' +
+                        '<p style="color: #fca5a5; font-size: 1.1rem; margin-top: 15px;">' + error.message + '</p>' +
+                        '<p style="color: rgba(255, 255, 255, 0.7); margin-top: 10px;">Revisa la consola del navegador para más detalles</p>' +
+                    '</div>';
+            } finally {
+                // Restaurar botón
+                button.innerHTML = '🚀 Iniciar Prueba 2FA';
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

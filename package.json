@@ -1,0 +1,71 @@
+{
+  "name": "yavoy-app",
+  "version": "3.1.0-enterprise",
+  "description": "YAvoy v3.1 Enterprise - Sistema de delivery con PostgreSQL, WebSockets optimizados y arquitectura empresarial",
+  "main": "server-enterprise.js",
+  "scripts": {
+    "start": "node server-enterprise.js",
+    "dev": "nodemon server-enterprise.js",
+    "enterprise": "node vscode-master.js dev",
+    "master": "node vscode-master.js",
+    "init": "node vscode-master.js init",
+    "status": "node vscode-master.js status",
+    "deploy": "node vscode-master.js deploy",
+    "migrate": "node migrate-json-to-db.js",
+    "migrate:postgresql": "node migrate-to-postgresql.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "prod": "NODE_ENV=production node server-enterprise.js",
+    "logs:clean": "node -e \"const{cleanupOldLogs}=require('./src/config/logger');cleanupOldLogs();\""
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "nodemon": "^3.0.2",
+    "prettier": "^3.7.3"
+  },
+  "author": "YAvoy Dev Team",
+  "license": "MIT",
+  "keywords": [
+    "delivery",
+    "logistics",
+    "repartidores",
+    "comercios",
+    "yavoy",
+    "postgresql",
+    "enterprise",
+    "websockets"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "chalk": "^4.1.2",
+    "chart.js": "^4.5.1",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.1",
+    "geoip-lite": "^1.4.10",
+    "helmet": "^8.1.0",
+    "idb": "^8.0.3",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.0",
+    "nodemailer": "^7.0.11",
+    "pg": "^8.16.3",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1",
+    "speakeasy": "^2.0.0",
+    "ua-parser-js": "^1.0.41",
+    "web-push": "^3.6.7",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1"
+  }
+}

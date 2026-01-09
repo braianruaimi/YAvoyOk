@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test MVC Pedidos - YAvoy</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .result {
+            background: #e9ecef;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .status-200 { background: #d4edda; color: #155724; }
+        .status-404 { background: #f8d7da; color: #721c24; }
+        .status-500 { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Debug Test MVC Pedidos System</h1>
+        <p>Testing YAvoy v3.1 - Arquitectura MVC Modular</p>
+        
+        <div class="endpoint">
+            <h3>1️⃣ GET /api/pedidos</h3>
+            <button onclick="testGetPedidos()">Test Listar Pedidos</button>
+            <div id="result1" class="result"></div>
+        </div>
+
+        <div class="endpoint">
+            <h3>2️⃣ POST /api/pedidos</h3>
+            <button onclick="testPostPedido()">Test Crear Pedido</button>
+            <div id="result2" class="result"></div>
+        </div>
+
+        <div class="endpoint">
+            <h3>3️⃣ GET /api/pedidos/test-123</h3>
+            <button onclick="testGetPedidoEspecifico()">Test Obtener Pedido Específico</button>
+            <div id="result3" class="result"></div>
+        </div>
+
+        <div class="endpoint">
+            <h3>4️⃣ Router Registration Check</h3>
+            <button onclick="testRouterStatus()">Check Router Status</button>
+            <div id="result4" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const baseURL = 'http://localhost:5501';
+
+        async function makeRequest(endpoint, method = 'GET', body = null) {
+            const resultDiv = arguments[2] || 'result1';
+            const resultElement = document.getElementById(resultDiv);
+            resultElement.textContent = 'Cargando...';
+
+            try {
+                console.log(`🚀 Testing: ${method} ${endpoint}`);
+                
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+
+                const startTime = Date.now();
+                const response = await fetch(baseURL + endpoint, options);
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                let responseData;
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    responseData = await response.json();
+                } else {
+                    responseData = await response.text();
+                }
+
+                const status = response.status;
+                const statusClass = status === 200 ? 'status-200' : 
+                                  status === 404 ? 'status-404' : 'status-500';
+                
+                const result = `
+🌐 Endpoint: ${method} ${endpoint}
+🕒 Response Time: ${responseTime}ms
+📊 Status: ${status} ${response.statusText}
+📋 Headers: ${response.headers.get('content-type')}
+📄 Response:
+${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}
+                `;
+                
+                resultElement.innerHTML = `<div class="status ${statusClass}">Status: ${status}</div>${result}`;
+                
+                // Log detallado en consola
+                console.log('📊 Response Details:', {
+                    endpoint: endpoint,
+                    method: method,
+                    status: status,
+                    responseTime: responseTime,
+                    contentType: contentType,
+                    data: responseData
+                });
+                
+            } catch (error) {
+                const errorResult = `
+❌ ERROR: ${error.message}
+🔍 Type: ${error.name}
+📍 Stack: ${error.stack}
+                `;
+                resultElement.innerHTML = `<div class="status status-500">Error</div>${errorResult}`;
+                console.error('❌ Request Error:', error);
+            }
+        }
+
+        function testGetPedidos() {
+            makeRequest('/api/pedidos', 'GET', 'result1');
+        }
+
+        function testPostPedido() {
+            const testPedido = {
+                nombreCliente: 'Test Cliente MVC',
+                telefonoCliente: '+5491144332211',
+                direccionEntrega: 'Test Address 123, Debug City',
+                descripcion: 'Test pedido desde MVC router',
+                monto: 1500.00,
+                email: 'test@debug.com',
+                notas: 'Test desde arquitectura MVC modular'
+            };
+            makeRequest('/api/pedidos', 'POST', testPedido, 'result2');
+        }
+
+        function testGetPedidoEspecifico() {
+            makeRequest('/api/pedidos/test-123', 'GET', 'result3');
+        }
+
+        function testRouterStatus() {
+            // Test múltiples endpoints para ver el routing
+            const endpoints = [
+                '/api/pedidos',
+                '/api/pedidos/',
+                '/api/pedidos/123',
+                '/api/pedidos/test'
+            ];
+            
+            let resultText = '🔍 Testing Router Registration:\n\n';
+            document.getElementById('result4').textContent = 'Testing multiple endpoints...';
+            
+            Promise.all(endpoints.map(async (endpoint) => {
+                try {
+                    const response = await fetch(baseURL + endpoint);
+                    return {
+                        endpoint: endpoint,
+                        status: response.status,
+                        statusText: response.statusText,
+                        contentType: response.headers.get('content-type')
+                    };
+                } catch (error) {
+                    return {
+                        endpoint: endpoint,
+                        error: error.message
+                    };
+                }
+            })).then(results => {
+                results.forEach(result => {
+                    if (result.error) {
+                        resultText += `❌ ${result.endpoint}: ERROR - ${result.error}\n`;
+                    } else {
+                        const icon = result.status === 200 ? '✅' : 
+                                   result.status === 404 ? '❌' : '⚠️';
+                        resultText += `${icon} ${result.endpoint}: ${result.status} ${result.statusText} (${result.contentType})\n`;
+                    }
+                });
+                document.getElementById('result4').textContent = resultText;
+            });
+        }
+
+        // Auto-run basic test on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🔧 Auto-running basic connectivity test...');
+                testRouterStatus();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

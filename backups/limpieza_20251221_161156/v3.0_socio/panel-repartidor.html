@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Repartidor - YaVoy</title>
+  <link rel="stylesheet" href="styles.css?v=13">
+  <style>
+    .panel-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .panel-header {
+      background: var(--color-superficie);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Estilos para tarjeta de verificación */
+    .verificacion-card {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 16px;
+      padding: 30px;
+      margin: 20px 0;
+      animation: slideDown 0.3s ease;
+    }
+
+    .verificacion-card.verificacion-completa {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border-color: #10b981;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .verificacion-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .verificacion-icono {
+      font-size: 36px;
+    }
+
+    .verificacion-header h3 {
+      margin: 0;
+      color: #92400e;
+      font-size: 24px;
+    }
+
+    .verificacion-completa .verificacion-header h3 {
+      color: #065f46;
+    }
+
+    .verificacion-descripcion {
+      color: #78350f;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .verificacion-completa .verificacion-descripcion {
+      color: #064e3b;
+    }
+
+    .verificacion-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .verificacion-step {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-icon {
+      font-size: 24px;
+    }
+
+    .step-text {
+      flex: 1;
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 14px;
+    }
+
+    .step-status {
+      font-size: 20px;
+    }
+
+    .btn-verificar {
+      width: 100%;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-verificar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .verificacion-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .stat-item {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 24px;
+      font-weight: bold;
+      color: #059669;
+    }
+
+    .repartidor-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-card {
+      background: var(--color-fondo);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--color-borde);
+    }
+
+    .info-card h4 {
+      margin: 0 0 10px 0;
+      color: var(--color-primario);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-card p {
+      margin: 5px 0;
+      font-size: 18px;
+      color: var(--color-texto-claro);
+    }
+
+    .estado-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .estado-disponible {
+      background: #10b981;
+      color: white;
+    }
+
+    .estado-ocupado {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .pedidos-section {
+      background: var(--color-superficie);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .pedido-card {
+      background: var(--color-fondo);
+      border: 1px solid var(--color-borde);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .pedido-card:hover {
+      border-color: var(--color-primario);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+    }
+
+    .pedido-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--color-borde);
+    }
+
+    .pedido-id {
+      font-weight: 700;
+      color: var(--color-primario);
+      font-size: 16px;
+    }
+
+    .pedido-monto {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-exito);
+    }
+
+    .pedido-detalles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .detalle-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .detalle-label {
+      font-size: 12px;
+      color: var(--color-texto);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detalle-valor {
+      font-size: 15px;
+      color: var(--color-texto-claro);
+      font-weight: 500;
+    }
+
+    .pedido-acciones {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-tomar {
+      background: var(--color-primario);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-tomar:hover {
+      background: var(--color-primario-oscuro);
+      transform: translateY(-1px);
+    }
+
+    .btn-completar {
+      background: var(--color-exito);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-completar:hover {
+      opacity: 0.9;
+    }
+
+    .login-form {
+      max-width: 500px;
+      margin: 100px auto;
+      background: var(--color-superficie);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--color-texto-claro);
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--color-borde);
+      border-radius: 6px;
+      background: var(--color-fondo);
+      color: var(--color-texto-claro);
+      font-size: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--color-texto);
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loginSection" class="login-form">
+    <h2 class="repartidor-login-title">Acceso Repartidor 🚴</h2>
+    <form id="formLogin">
+      <div class="form-group">
+        <label for="repartidorId">ID de Repartidor</label>
+        <input type="text" id="repartidorId" placeholder="Ej: REP-1234567890" required>
+      </div>
+      <button type="submit" class="btn-primario repartidor-btn-full">Ingresar al Panel</button>
+    </form>
+    <p class="repartidor-login-footer">
+      ¿No tienes cuenta? <a href="index.html#repartidores" class="repartidor-login-link">Regístrate aquí</a>
+    </p>
+  </div>
+
+  <div id="panelSection" class="panel-section-hidden">
+    <div class="panel-container">
+      <!-- Header con info del repartidor -->
+      <div class="panel-header">
+        <div class="repartidor-header-flex">
+          <h1 class="repartidor-header-title">Panel de Repartidor</h1>
+          <div class="repartidor-header-right">
+            <div class="repartidor-saldo-container">
+              <div class="repartidor-saldo-label">Saldo Total</div>
+              <div id="saldoTotal" class="repartidor-saldo-monto">$0.00</div>
+              <button onclick="toggleHistorial()" class="repartidor-btn-historial">Ver Historial 📋</button>
+              <button onclick="window.location.href='billetera-astropay.html'" class="repartidor-btn-billetera bg-gradient-secondary text-white border-none p-md rounded cursor-pointer font-semibold mt-sm">💰 Billetera AstroPay</button>
+            </div>
+            <button onclick="abrirEditarPerfil()" class="btn-secundario" style="margin-right: 10px;">⚙️ Editar Perfil</button>
+            <button onclick="cerrarSesion()" class="btn-primario">Cerrar Sesión</button>
+          </div>
+        </div>
+        
+        <!-- Tarjeta de Verificación -->
+        <div id="tarjetaVerificacion" class="verificacion-card d-none">
+          <div class="verificacion-header">
+            <span class="verificacion-icono">🔐</span>
+            <h3>Completa tu Verificación</h3>
+          </div>
+          <p class="verificacion-descripcion">
+            Para recibir pagos, necesitas completar tu verificación de identidad y configurar tu método de pago.
+          </p>
+          <div class="verificacion-steps">
+            <div class="verificacion-step" id="stepEmail">
+              <span class="step-icon">📧</span>
+              <span class="step-text">Email Verificado</span>
+              <span class="step-status" id="statusEmail">❌</span>
+            </div>
+            <div class="verificacion-step" id="stepIdentidad">
+              <span class="step-icon">👤</span>
+              <span class="step-text">Identidad Verificada</span>
+              <span class="step-status" id="statusIdentidad">❌</span>
+            </div>
+            <div class="verificacion-step" id="stepCBU">
+              <span class="step-icon">💳</span>
+              <span class="step-text">CBU Configurado</span>
+              <span class="step-status" id="statusCBU">❌</span>
+            </div>
+          </div>
+          <button onclick="window.location.href='configurar-pago.html'" class="btn-verificar">
+            Configurar Método de Pago →
+          </button>
+        </div>
+
+        <!-- Tarjeta de Verificación Completa -->
+        <div id="tarjetaVerificada" class="verificacion-card verificacion-completa d-none">
+          <div class="verificacion-header">
+            <span class="verificacion-icono">✅</span>
+            <h3>Cuenta Verificada</h3>
+          </div>
+          <p class="verificacion-descripcion">
+            ¡Todo listo! Ya puedes recibir pagos en tu cuenta <strong id="cbuMostrado"></strong>
+          </p>
+          <div class="verificacion-stats">
+            <div class="stat-item">
+              <span class="stat-label">Comisiones Retenidas</span>
+              <span class="stat-value" id="comisionesRetenidas">$0.00</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Pedidos Completados</span>
+              <span class="stat-value" id="pedidosCompletados">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historial Desplegable -->
+        <div id="historialPedidos" class="repartidor-historial-container">
+          <div class="repartidor-historial-header">
+            <h3 class="repartidor-historial-title">Historial de Pedidos Entregados</h3>
+            <button onclick="toggleHistorial()" class="repartidor-btn-cerrar-historial">Cerrar ✕</button>
+          </div>
+          <div id="listaHistorial" class="repartidor-historial-lista">
+            <div class="repartidor-historial-empty">No hay pedidos entregados aún</div>
+          </div>
+        </div>
+
+        <!-- Modal Editar Perfil -->
+        <div id="modalEditarPerfil" class="repartidor-historial-container" style="display: none;">
+          <div class="repartidor-historial-header">
+            <h3 class="repartidor-historial-title">⚙️ Editar Perfil</h3>
+            <button onclick="cerrarEditarPerfil()" class="repartidor-btn-cerrar-historial">Cerrar ✕</button>
+          </div>
+          <div style="padding: 30px; background: white; border-radius: 12px; margin: 20px;">
+            <form id="formEditarPerfil" onsubmit="guardarPerfil(event)">
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2d3748;">Nombre Completo</label>
+                <input type="text" id="editNombre" required style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2d3748;">Teléfono</label>
+                <input type="tel" id="editTelefono" required style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2d3748;">Email</label>
+                <input type="email" id="editEmail" required style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2d3748;">Vehículo</label>
+                <select id="editVehiculo" required style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                  <option value="Moto">Moto</option>
+                  <option value="Bicicleta">Bicicleta</option>
+                  <option value="Auto">Auto</option>
+                  <option value="A pie">A pie</option>
+                </select>
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2d3748;">DNI</label>
+                <input type="text" id="editDni" required style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2d3748;">📸 Foto de Perfil</label>
+                <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                  <div id="previsualizacionFotoRep" style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid #e2e8f0; display: none;">
+                    <img id="imagenPreviaRep" src="" alt="Vista previa" style="width: 100%; height: 100%; object-fit: cover;">
+                  </div>
+                  <input type="file" id="inputFotoPerfilRep" accept="image/*" style="display: none;" onchange="previsualizarFotoRep(event)">
+                  <button type="button" class="btn-secundario" onclick="document.getElementById('inputFotoPerfilRep').click()" style="width: 100%; padding: 12px;">
+                    📷 Seleccionar Foto
+                  </button>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn-primario" style="width: 100%; padding: 15px; font-size: 18px; margin-top: 10px;">
+                💾 Guardar Cambios
+              </button>
+            </form>
+          </div>
+        </div>
+        
+        <div class="repartidor-info">
+          <div class="info-card">
+            <h4>Nombre</h4>
+            <p id="repNombre">-</p>
+          </div>
+          <div class="info-card">
+            <h4>ID</h4>
+            <p id="repId">-</p>
+          </div>
+          <div class="info-card">
+            <h4>Estado</h4>
+            <p>
+              <span id="repEstado" class="estado-badge estado-disponible">Disponible</span>
+            </p>
+            <button id="btnCambiarEstado" class="btn-primario repartidor-btn-full" onclick="cambiarEstadoDisponibilidad()">
+              Cambiar a Inactivo
+            </button>
+          </div>
+          <div class="info-card">
+            <h4>Vehículo</h4>
+            <p id="repVehiculo">-</p>
+          </div>
+          <div class="info-card">
+            <h4>Pedidos Activos</h4>
+            <p id="repPedidosActivos">0</p>
+          </div>
+          <div class="info-card">
+            <h4>Pedidos Completados</h4>
+            <p id="repPedidosCompletados">0</p>
+          </div>
+          <div class="info-card">
+            <h4>Ganancia Promedio</h4>
+            <p id="repGananciaPromedio" class="repartidor-ganancia-promedio">$0.00</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedidos Disponibles -->
+      <div class="pedidos-section">
+        <h2 class="repartidor-section-title">Pedidos Disponibles 📦</h2>
+        <div id="pedidosDisponibles">
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>No hay pedidos disponibles en este momento</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mis Pedidos Activos -->
+      <div class="pedidos-section">
+        <h2 class="repartidor-section-title">Mis Pedidos Activos 🚴</h2>
+        <div id="pedidosActivos">
+          <div class="empty-state">
+            <div class="empty-state-icon">✅</div>
+            <p>No tienes pedidos activos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let repartidorActual = null;
+
+    // Login
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('repartidorId').value.trim();
+
+      try {
+        const response = await fetch('/api/repartidores');
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+        
+        const data = JSON.parse(text);
+        
+        const repartidor = data.repartidores.find(r => r.id === id);
+        
+        if (repartidor) {
+          repartidorActual = repartidor;
+          localStorage.setItem('repartidorId', id);
+          mostrarPanel();
+        } else {
+          alert('ID de repartidor no encontrado. Verifica que sea correcto.');
+        }
+      } catch (error) {
+        alert('Error al verificar el ID: ' + error.message);
+      }
+    });
+
+    // Mostrar panel
+    function mostrarPanel() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('panelSection').style.display = 'block';
+      
+      cargarDatosRepartidor();
+      cargarPedidos();
+      
+      // Actualizar cada 10 segundos
+      setInterval(cargarPedidos, 10000);
+    }
+
+    // Toggle historial
+    function toggleHistorial() {
+      const historial = document.getElementById('historialPedidos');
+      if (historial.style.display === 'none') {
+        historial.style.display = 'block';
+        cargarHistorial();
+      } else {
+        historial.style.display = 'none';
+      }
+    }
+
+    // Cargar historial de pedidos
+    async function cargarHistorial() {
+      try {
+        const response = await fetch('/api/pedidos');
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+        
+        const data = JSON.parse(text);
+        
+        const entregados = data.pedidos.filter(p => 
+          p.repartidorId === repartidorActual.id && p.estado === 'entregado'
+        );
+        
+        const listaHistorial = document.getElementById('listaHistorial');
+        
+        if (entregados.length === 0) {
+          listaHistorial.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--color-texto);">No hay pedidos entregados aún</div>';
+          return;
+        }
+        
+        listaHistorial.innerHTML = entregados.map((pedido, index) => `
+          <div style="padding: 15px; margin-bottom: 10px; background: var(--color-superficie); border-radius: 6px; border-left: 4px solid var(--color-exito);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-weight: 600; color: var(--color-texto-claro);">#${index + 1} - ${pedido.id}</span>
+              <span style="font-size: 18px; font-weight: 700; color: var(--color-exito);">$${pedido.monto || '0.00'}</span>
+            </div>
+            <div style="font-size: 13px; color: var(--color-texto); line-height: 1.6;">
+              <div>📦 ${pedido.descripcion}</div>
+              <div>👤 ${pedido.nombreCliente}</div>
+              <div>📍 ${pedido.direccionEntrega}</div>
+              <div>📅 ${new Date(pedido.timestamp).toLocaleString('es-AR')}</div>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error al cargar historial:', error);
+      }
+    }
+
+    // Cargar datos del repartidor
+    async function cargarDatosRepartidor() {
+      document.getElementById('repNombre').textContent = repartidorActual.nombre;
+      document.getElementById('repId').textContent = repartidorActual.id;
+      document.getElementById('repVehiculo').textContent = repartidorActual.vehiculo || 'No especificado';
+      document.getElementById('repPedidosActivos').textContent = repartidorActual.pedidosActivos || 0;
+      document.getElementById('repPedidosCompletados').textContent = repartidorActual.pedidosCompletados || 0;
+      
+      actualizarEstadoBadge();
+      await calcularSaldoTotal();
+      verificarEstadoVerificacion();
+    }
+
+    // Verificar estado de verificación
+    function verificarEstadoVerificacion() {
+      const configPago = repartidorActual.configPago;
+      
+      // Si no tiene configPago, mostrar tarjeta de verificación pendiente
+      if (!configPago || !configPago.emailVerificado || !configPago.identidadVerificada || !configPago.cbu) {
+        document.getElementById('tarjetaVerificacion').style.display = 'block';
+        document.getElementById('tarjetaVerificada').style.display = 'none';
+        
+        // Actualizar estados individuales
+        if (configPago) {
+          if (configPago.emailVerificado) {
+            document.getElementById('statusEmail').textContent = '✅';
+            document.getElementById('stepEmail').style.borderLeft = '4px solid #10b981';
+          }
+          if (configPago.identidadVerificada) {
+            document.getElementById('statusIdentidad').textContent = '✅';
+            document.getElementById('stepIdentidad').style.borderLeft = '4px solid #10b981';
+          }
+          if (configPago.cbu || configPago.alias) {
+            document.getElementById('statusCBU').textContent = '✅';
+            document.getElementById('stepCBU').style.borderLeft = '4px solid #10b981';
+          }
+        }
+      } else {
+        // Todo verificado, mostrar tarjeta de éxito
+        document.getElementById('tarjetaVerificacion').style.display = 'none';
+        document.getElementById('tarjetaVerificada').style.display = 'block';
+        
+        // Mostrar información
+        const cbuDisplay = configPago.alias || `${configPago.cbu.substring(0, 8)}...${configPago.cbu.substring(18)}`;
+        document.getElementById('cbuMostrado').textContent = cbuDisplay;
+        document.getElementById('comisionesRetenidas').textContent = `$${(repartidorActual.comisionesRetenidas || 0).toFixed(2)}`;
+        document.getElementById('pedidosCompletados').textContent = repartidorActual.pedidosCompletados || 0;
+      }
+    }
+    
+    // Calcular saldo total
+    async function calcularSaldoTotal() {
+      try {
+        const response = await fetch('/api/pedidos');
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+        
+        const data = JSON.parse(text);
+        
+        const entregados = data.pedidos.filter(p => 
+          p.repartidorId === repartidorActual.id && p.estado === 'entregado'
+        );
+        
+        const total = entregados.reduce((sum, p) => sum + (parseFloat(p.monto) || 0), 0);
+        const promedio = entregados.length > 0 ? total / entregados.length : 0;
+        
+        document.getElementById('saldoTotal').textContent = '$' + total.toFixed(2);
+        document.getElementById('repGananciaPromedio').textContent = '$' + promedio.toFixed(2);
+        document.getElementById('repPedidosCompletados').textContent = entregados.length;
+      } catch (error) {
+        console.error('Error al calcular saldo:', error);
+      }
+    }
+
+    // Actualizar badge de estado
+    function actualizarEstadoBadge() {
+      const estadoBadge = document.getElementById('repEstado');
+      const btnCambiarEstado = document.getElementById('btnCambiarEstado');
+      
+      if (repartidorActual.disponible) {
+        estadoBadge.className = 'estado-badge estado-disponible';
+        estadoBadge.textContent = 'Disponible';
+        btnCambiarEstado.textContent = 'Cambiar a Inactivo';
+      } else {
+        estadoBadge.className = 'estado-badge estado-ocupado';
+        estadoBadge.textContent = 'Inactivo';
+        btnCambiarEstado.textContent = 'Cambiar a Disponible';
+      }
+    }
+
+    // Cambiar estado de disponibilidad
+    async function cambiarEstadoDisponibilidad() {
+      const nuevoEstado = !repartidorActual.disponible;
+      
+      try {
+        const response = await fetch(`/api/repartidores/${repartidorActual.id}/disponibilidad`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ disponible: nuevoEstado })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+        
+        const data = JSON.parse(text);
+        
+        if (data.success) {
+          repartidorActual.disponible = nuevoEstado;
+          actualizarEstadoBadge();
+          alert(nuevoEstado ? '✅ Ahora estás disponible para recibir pedidos' : '⏸️ Te has marcado como inactivo');
+        } else {
+          alert('Error al cambiar estado: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error de conexión: ' + error.message);
+      }
+    }
+
+    // Cargar pedidos
+    async function cargarPedidos() {
+      try {
+        const response = await fetch('/api/pedidos');
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          console.warn('Respuesta vacía del servidor');
+          return;
+        }
+        
+        const data = JSON.parse(text);
+        
+        const disponibles = data.pedidos.filter(p => p.estado === 'pendiente');
+        const activos = data.pedidos.filter(p => 
+          p.repartidorId === repartidorActual.id && 
+          (p.estado === 'en-camino' || p.estado === 'recogido')
+        );
+        
+        mostrarPedidosDisponibles(disponibles);
+        mostrarPedidosActivos(activos);
+      } catch (error) {
+        console.error('Error al cargar pedidos:', error);
+      }
+    }
+
+    // Mostrar pedidos disponibles
+    function mostrarPedidosDisponibles(pedidos) {
+      const contenedor = document.getElementById('pedidosDisponibles');
+      
+      if (pedidos.length === 0) {
+        contenedor.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>No hay pedidos disponibles en este momento</p>
+          </div>
+        `;
+        return;
+      }
+      
+      contenedor.innerHTML = pedidos.map(pedido => `
+        <div class="pedido-card">
+          <div class="pedido-header">
+            <span class="pedido-id">${pedido.id}</span>
+            <span class="pedido-monto">$${pedido.monto || '0.00'}</span>
+          </div>
+          <div class="pedido-detalles">
+            <div class="detalle-item">
+              <span class="detalle-label">Cliente</span>
+              <span class="detalle-valor">${pedido.nombreCliente}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Teléfono</span>
+              <span class="detalle-valor">${pedido.telefonoCliente}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Dirección</span>
+              <span class="detalle-valor">${pedido.direccionEntrega}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Descripción</span>
+              <span class="detalle-valor">${pedido.descripcion}</span>
+            </div>
+          </div>
+          <div class="pedido-acciones">
+            <button class="btn-tomar" onclick="tomarPedido('${pedido.id}')">Tomar Pedido</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Mostrar pedidos activos
+    function mostrarPedidosActivos(pedidos) {
+      const contenedor = document.getElementById('pedidosActivos');
+      
+      if (pedidos.length === 0) {
+        contenedor.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">✅</div>
+            <p>No tienes pedidos activos</p>
+          </div>
+        `;
+        return;
+      }
+      
+      contenedor.innerHTML = pedidos.map(pedido => `
+        <div class="pedido-card">
+          <div class="pedido-header">
+            <span class="pedido-id">${pedido.id}</span>
+            <span class="pedido-monto">$${pedido.monto || '0.00'}</span>
+          </div>
+          <div class="pedido-detalles">
+            <div class="detalle-item">
+              <span class="detalle-label">Cliente</span>
+              <span class="detalle-valor">${pedido.nombreCliente}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Teléfono</span>
+              <span class="detalle-valor">${pedido.telefonoCliente}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Dirección</span>
+              <span class="detalle-valor">${pedido.direccionEntrega}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Estado</span>
+              <span class="detalle-valor">${pedido.estado}</span>
+            </div>
+          </div>
+          <div class="pedido-acciones">
+            ${pedido.estado === 'en-camino' ? `
+              <button class="btn-tomar" onclick="enviarLinkConfirmacion('${pedido.id}', '${pedido.telefonoCliente}')" style="background: #4299e1; margin-bottom: 10px;">
+                📱 Enviar Link a Cliente
+              </button>
+              <button class="btn-completar" onclick="completarPedido('${pedido.id}')">Marcar como Entregado</button>
+            ` : `
+              <button class="btn-tomar" onclick="cambiarEstado('${pedido.id}', 'en-camino')">Iniciar Entrega</button>
+            `}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Tomar pedido
+    async function tomarPedido(pedidoId) {
+      if (!confirm('¿Deseas tomar este pedido?')) return;
+      
+      try {
+        const response = await fetch(`/api/pedidos/${pedidoId}/asignar`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ repartidorId: repartidorActual.id })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+        
+        const data = JSON.parse(text);
+        
+        if (data.success) {
+          alert('¡Pedido asignado exitosamente!');
+          cargarPedidos();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error al tomar el pedido: ' + error.message);
+      }
+    }
+
+    // Cambiar estado del pedido
+    async function cambiarEstado(pedidoId, nuevoEstado) {
+      try {
+        const response = await fetch(`/api/pedidos/${pedidoId}/estado`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estado: nuevoEstado })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+        
+        const data = JSON.parse(text);
+        
+        if (data.success) {
+          alert('Estado actualizado');
+          cargarPedidos();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Completar pedido - Nueva versión con confirmación al comercio
+    async function completarPedido(pedidoId) {
+      if (!confirm('¿Confirmas que el pedido fue entregado al cliente?')) return;
+      
+      try {
+        // Usar el nuevo endpoint que notifica al comercio
+        const response = await fetch(`/api/pedidos/${pedidoId}/repartidor-confirma-entrega`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+        
+        const data = JSON.parse(text);
+        
+        if (data.success) {
+          await calcularSaldoTotal();
+          alert('✅ ¡Pedido completado!\n\n📢 Se notificó al comercio que la entrega fue exitosa.\n💰 Tu saldo ha sido actualizado.');
+          cargarPedidos();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Enviar link de confirmación al cliente por WhatsApp
+    function enviarLinkConfirmacion(pedidoId, telefonoCliente) {
+      // Generar URL de confirmación
+      const urlBase = window.location.origin;
+      const linkConfirmacion = `${urlBase}/confirmar-entrega-cliente.html?pedido=${pedidoId}`;
+      
+      // Preparar mensaje de WhatsApp
+      const mensaje = `¡Hola! 👋\n\nSoy tu repartidor de YAvoy.\n\n📦 Tu pedido está llegando.\n\nPor favor, confirma la entrega y escanea el código QR para pagar el envío:\n\n${linkConfirmacion}\n\n¡Gracias! 🚀`;
+      
+      // Limpiar teléfono (quitar espacios, guiones, etc.)
+      const telefonoLimpio = telefonoCliente.replace(/[^0-9]/g, '');
+      
+      // Abrir WhatsApp
+      const urlWhatsApp = `https://wa.me/${telefonoLimpio}?text=${encodeURIComponent(mensaje)}`;
+      window.open(urlWhatsApp, '_blank');
+      
+      alert('✅ Link enviado\n\nSe abrió WhatsApp para enviar el link de confirmación al cliente.');
+    }
+
+    // Previsualizar foto seleccionada (repartidor)
+    function previsualizarFotoRep(event) {
+      const archivo = event.target.files[0];
+      if (archivo) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('imagenPreviaRep').src = e.target.result;
+          document.getElementById('previsualizacionFotoRep').style.display = 'block';
+        };
+        reader.readAsDataURL(archivo);
+      }
+    }
+
+    // Subir foto de perfil del repartidor
+    async function subirFotoPerfilRep(archivo) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          try {
+            const response = await fetch(`/api/repartidores/${repartidorActual.id}/foto-perfil`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ fotoBase64: e.target.result })
+            });
+
+            const data = await response.json();
+            
+            if (data.success && data.fotoPerfil) {
+              repartidorActual.fotoPerfil = data.fotoPerfil;
+              resolve(data.fotoPerfil);
+            } else {
+              reject(new Error('Error al subir foto'));
+            }
+          } catch (error) {
+            console.error('Error al subir foto:', error);
+            reject(error);
+          }
+        };
+        reader.readAsDataURL(archivo);
+      });
+    }
+
+    // Abrir modal de editar perfil
+    function abrirEditarPerfil() {
+      if (!repartidorActual) {
+        alert('Error: No hay repartidor cargado');
+        return;
+      }
+      
+      // Cargar datos actuales en el formulario
+      document.getElementById('editNombre').value = repartidorActual.nombre || '';
+      document.getElementById('editTelefono').value = repartidorActual.telefono || '';
+      document.getElementById('editEmail').value = repartidorActual.email || '';
+      document.getElementById('editVehiculo').value = repartidorActual.vehiculo || 'Moto';
+      document.getElementById('editDni').value = repartidorActual.dni || repartidorActual.documento || '';
+      
+      // Mostrar foto actual si existe
+      if (repartidorActual.fotoPerfil) {
+        document.getElementById('imagenPreviaRep').src = repartidorActual.fotoPerfil;
+        document.getElementById('previsualizacionFotoRep').style.display = 'block';
+      } else {
+        document.getElementById('previsualizacionFotoRep').style.display = 'none';
+      }
+      
+      document.getElementById('modalEditarPerfil').style.display = 'block';
+    }
+
+    // Cerrar modal de editar perfil
+    function cerrarEditarPerfil() {
+      document.getElementById('modalEditarPerfil').style.display = 'none';
+    }
+
+    // Guardar cambios de perfil
+    async function guardarPerfil(event) {
+      event.preventDefault();
+      
+      const datosActualizados = {
+        nombre: document.getElementById('editNombre').value,
+        telefono: document.getElementById('editTelefono').value,
+        email: document.getElementById('editEmail').value,
+        vehiculo: document.getElementById('editVehiculo').value,
+        dni: document.getElementById('editDni').value
+      };
+      
+      if (!confirm('¿Guardar los cambios en tu perfil?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/repartidores/${repartidorActual.id}/perfil`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datosActualizados)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          repartidorActual = data.repartidor;
+          
+          // Subir foto si se seleccionó una
+          const inputFoto = document.getElementById('inputFotoPerfilRep');
+          if (inputFoto.files && inputFoto.files[0]) {
+            try {
+              await subirFotoPerfilRep(inputFoto.files[0]);
+            } catch (error) {
+              console.error('Error al subir foto:', error);
+            }
+          }
+          
+          // Actualizar vista
+          document.getElementById('repNombre').textContent = data.repartidor.nombre;
+          document.getElementById('repVehiculo').textContent = data.repartidor.vehiculo;
+          
+          alert('✅ Perfil actualizado correctamente\n\n📝 Se guardó un registro de la actualización en tu carpeta.');
+          cerrarEditarPerfil();
+        } else {
+          alert('❌ Error al actualizar perfil: ' + (data.error || 'Error desconocido'));
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al guardar cambios: ' + error.message);
+      }
+    }
+
+    // Cerrar sesión
+    function cerrarSesion() {
+      localStorage.removeItem('repartidorId');
+      repartidorActual = null;
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('panelSection').style.display = 'none';
+      document.getElementById('repartidorId').value = '';
+    }
+
+    // Auto-login si hay ID guardado
+    window.addEventListener('load', async () => {
+      const idGuardado = localStorage.getItem('repartidorId');
+      if (idGuardado) {
+        document.getElementById('repartidorId').value = idGuardado;
+        try {
+          const response = await fetch('/api/repartidores');
+          
+          if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+          }
+          
+          const text = await response.text();
+          if (!text) {
+            throw new Error('Respuesta vacía del servidor');
+          }
+          
+          const data = JSON.parse(text);
+          const repartidor = data.repartidores.find(r => r.id === idGuardado);
+          if (repartidor) {
+            repartidorActual = repartidor;
+            mostrarPanel();
+          }
+        } catch (error) {
+          console.error('Error en auto-login:', error);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

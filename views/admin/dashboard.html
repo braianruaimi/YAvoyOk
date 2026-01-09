@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAvoy - CEO Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .btn-logout {
+            padding: 0.5rem 1.5rem;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .metric-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .metric-change {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .metric-change.positive {
+            color: #38ef7d;
+        }
+        
+        .metric-change.negative {
+            color: #ff4757;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .heatmap-container {
+            height: 500px;
+            border-radius: 10px;
+        }
+        
+        .users-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .user-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info-item {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .user-role {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .user-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .status-activo {
+            background: #55efc4;
+            color: #00b894;
+        }
+        
+        .status-inactivo {
+            background: #dfe6e9;
+            color: #636e72;
+        }
+        
+        .status-suspendido {
+            background: #ff7675;
+            color: #d63031;
+        }
+        
+        .btn-action {
+            padding: 0.4rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-suspend {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #1e3c72;
+            background: white;
+            color: #1e3c72;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #1e3c72;
+            color: white;
+        }
+        
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .transactions-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .transactions-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .amount {
+            font-weight: bold;
+            color: #38ef7d;
+        }
+        
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">👑 YAvoy CEO Command Center</div>
+        <div class="user-info">
+            <span id="userName">Administrador</span>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon">💰</div>
+                <div class="metric-value" id="facturacionTotal">$0</div>
+                <div class="metric-label">Facturación Total</div>
+                <div class="metric-change positive" id="facturacionChange">+0% vs ayer</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">📦</div>
+                <div class="metric-value" id="pedidosTotal">0</div>
+                <div class="metric-label">Pedidos Hoy</div>
+                <div class="metric-change positive" id="pedidosChange">+0% vs ayer</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">👥</div>
+                <div class="metric-value" id="usuariosActivos">0</div>
+                <div class="metric-label">Usuarios Activos</div>
+                <div class="metric-change positive" id="usuariosChange">+0 nuevos</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">⭐</div>
+                <div class="metric-value" id="satisfaccionPromedio">0.0</div>
+                <div class="metric-label">Satisfacción Promedio</div>
+                <div class="metric-change positive" id="satisfaccionChange">+0.0</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>🗺️ Mapa de Calor - Pedidos en Tiempo Real</h2>
+                <div id="heatmap" class="heatmap-container"></div>
+            </div>
+
+            <div class="card">
+                <h2>👤 Gestión de Usuarios</h2>
+                <div class="filters">
+                    <button class="filter-btn active" onclick="filtrarUsuarios('todos')">Todos</button>
+                    <button class="filter-btn" onclick="filtrarUsuarios('cliente')">Clientes</button>
+                    <button class="filter-btn" onclick="filtrarUsuarios('repartidor')">Repartidores</button>
+                    <button class="filter-btn" onclick="filtrarUsuarios('comercio')">Comercios</button>
+                </div>
+                <div id="usersList" class="users-list">
+                    <p>Cargando usuarios...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💳 Transacciones Recientes</h2>
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Comercio</th>
+                        <th>Método</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Cargando transacciones...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Chatbot Universal -->
+    <div id="chatbot-container"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/js/chatbot-yavoy.js"></script>
+    <script>
+        // Verificar autenticación y rol
+        const token = localStorage.getItem('yavoy_token');
+        if (!token) {
+            window.location.href = '/index.html';
+        }
+
+        function parseJwt(token) {
+            try {
+                return JSON.parse(atob(token.split('.')[1]));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const userData = parseJwt(token);
+        if (!userData || userData.role !== 'ceo') {
+            alert('❌ Acceso denegado. Solo para administradores.');
+            window.location.href = '/index.html';
+        }
+
+        // Inicializar mapa de calor
+        const heatmap = L.map('heatmap').setView([-34.6037, -58.3816], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(heatmap);
+
+        // Cargar métricas principales
+        async function cargarMetricas() {
+            try {
+                const response = await fetch('/api/admin/metricas', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const metricas = await response.json();
+                
+                document.getElementById('facturacionTotal').textContent = `$${metricas.facturacion_total || 0}`;
+                document.getElementById('pedidosTotal').textContent = metricas.pedidos_hoy || 0;
+                document.getElementById('usuariosActivos').textContent = metricas.usuarios_activos || 0;
+                document.getElementById('satisfaccionPromedio').textContent = (metricas.satisfaccion_promedio || 0).toFixed(1);
+                
+                // Cambios porcentuales
+                if (metricas.cambios) {
+                    document.getElementById('facturacionChange').textContent = `${metricas.cambios.facturacion > 0 ? '+' : ''}${metricas.cambios.facturacion}% vs ayer`;
+                    document.getElementById('pedidosChange').textContent = `${metricas.cambios.pedidos > 0 ? '+' : ''}${metricas.cambios.pedidos}% vs ayer`;
+                    document.getElementById('usuariosChange').textContent = `+${metricas.cambios.usuarios} nuevos`;
+                    document.getElementById('satisfaccionChange').textContent = `+${metricas.cambios.satisfaccion.toFixed(1)}`;
+                }
+            } catch (error) {
+                console.error('Error al cargar métricas:', error);
+            }
+        }
+
+        // Cargar mapa de calor de pedidos
+        async function cargarMapaCalor() {
+            try {
+                const response = await fetch('/api/admin/mapa-pedidos', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const pedidos = await response.json();
+                
+                pedidos.forEach(pedido => {
+                    if (pedido.lat && pedido.lng) {
+                        const marker = L.circleMarker([pedido.lat, pedido.lng], {
+                            radius: 8,
+                            fillColor: '#ff4757',
+                            color: '#fff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.7
+                        }).addTo(heatmap);
+                        
+                        marker.bindPopup(`
+                            <strong>Pedido #${pedido.id}</strong><br>
+                            Estado: ${pedido.estado}<br>
+                            Total: $${pedido.total}
+                        `);
+                    }
+                });
+            } catch (error) {
+                console.error('Error al cargar mapa de calor:', error);
+            }
+        }
+
+        // Cargar usuarios
+        let filtroActual = 'todos';
+        async function cargarUsuarios() {
+            try {
+                const url = filtroActual === 'todos' 
+                    ? '/api/admin/usuarios'
+                    : `/api/admin/usuarios?role=${filtroActual}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const usuarios = await response.json();
+                const lista = document.getElementById('usersList');
+                
+                if (usuarios.length === 0) {
+                    lista.innerHTML = '<p style="text-align: center; color: #999;">No hay usuarios</p>';
+                    return;
+                }
+                
+                lista.innerHTML = '';
+                usuarios.forEach(user => {
+                    const item = document.createElement('div');
+                    item.className = 'user-item';
+                    
+                    const statusClass = user.estado === 'activo' ? 'status-activo' :
+                                       user.estado === 'suspendido' ? 'status-suspendido' : 'status-inactivo';
+                    
+                    item.innerHTML = `
+                        <div class="user-info-item">
+                            <div class="user-name">${user.nombre}</div>
+                            <div class="user-role">${user.role} - ${user.email}</div>
+                        </div>
+                        <div>
+                            <span class="user-status ${statusClass}">${user.estado}</span>
+                            <button class="btn-action btn-view" onclick="verUsuario(${user.id})">Ver</button>
+                            ${user.estado !== 'suspendido' ? 
+                                `<button class="btn-action btn-suspend" onclick="suspenderUsuario(${user.id})">Suspender</button>` :
+                                `<button class="btn-action btn-view" onclick="activarUsuario(${user.id})">Activar</button>`
+                            }
+                        </div>
+                    `;
+                    lista.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error al cargar usuarios:', error);
+            }
+        }
+
+        // Filtrar usuarios
+        function filtrarUsuarios(tipo) {
+            filtroActual = tipo;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cargarUsuarios();
+        }
+
+        // Cargar transacciones
+        async function cargarTransacciones() {
+            try {
+                const response = await fetch('/api/admin/transacciones', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const transacciones = await response.json();
+                const tbody = document.getElementById('transactionsBody');
+                
+                if (transacciones.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No hay transacciones</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = '';
+                transacciones.forEach(tx => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${tx.id}</td>
+                        <td>${new Date(tx.fecha).toLocaleString()}</td>
+                        <td>${tx.cliente}</td>
+                        <td>${tx.comercio}</td>
+                        <td>${tx.metodo_pago}</td>
+                        <td class="amount">$${tx.monto}</td>
+                        <td><span class="user-status status-activo">${tx.estado}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al cargar transacciones:', error);
+            }
+        }
+
+        // Acciones de usuario
+        async function suspenderUsuario(userId) {
+            if (!confirm('¿Seguro que deseas suspender este usuario?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/usuarios/${userId}/suspender`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('✅ Usuario suspendido');
+                    cargarUsuarios();
+                }
+            } catch (error) {
+                console.error('Error al suspender usuario:', error);
+            }
+        }
+
+        async function activarUsuario(userId) {
+            try {
+                const response = await fetch(`/api/admin/usuarios/${userId}/activar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('✅ Usuario activado');
+                    cargarUsuarios();
+                }
+            } catch (error) {
+                console.error('Error al activar usuario:', error);
+            }
+        }
+
+        function verUsuario(userId) {
+            window.location.href = `/views/admin/usuario-detalle.html?id=${userId}`;
+        }
+
+        function logout() {
+            localStorage.removeItem('yavoy_token');
+            window.location.href = '/index.html';
+        }
+
+        // Inicializar chatbot
+        if (typeof initChatbot === 'function') {
+            initChatbot('ceo');
+        }
+
+        // Cargar datos iniciales
+        cargarMetricas();
+        cargarMapaCalor();
+        cargarUsuarios();
+        cargarTransacciones();
+        
+        // Actualizar cada 30 segundos
+        setInterval(() => {
+            cargarMetricas();
+            cargarMapaCalor();
+            cargarTransacciones();
+        }, 30000);
+    </script>
+</body>
+</html>

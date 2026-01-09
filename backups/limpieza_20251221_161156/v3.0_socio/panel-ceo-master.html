@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel CEO Master - YaVoy</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles/ceo-panel-extra.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #ffffff;
+    }
+
+    /* Login Screen */
+    .ceo-login-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .ceo-login-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .ceo-login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .ceo-login-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .ceo-login-title {
+      font-size: 28px;
+      color: #2d3748;
+      margin-bottom: 10px;
+    }
+
+    .ceo-login-subtitle {
+      font-size: 14px;
+      color: #718096;
+    }
+
+    .ceo-login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .ceo-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ceo-form-label {
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 14px;
+    }
+
+    .ceo-form-input {
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .ceo-form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .ceo-btn-login {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .ceo-btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Panel Principal */
+    .ceo-panel {
+      display: none;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .ceo-panel.active {
+      display: block;
+    }
+
+    .ceo-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px 35px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ceo-header-info h1 {
+      font-size: 28px;
+      color: #2d3748;
+      margin-bottom: 5px;
+    }
+
+    .ceo-header-info p {
+      font-size: 14px;
+      color: #718096;
+    }
+
+    .ceo-btn-logout {
+      background: #f56565;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .ceo-btn-logout:hover {
+      background: #e53e3e;
+      transform: translateY(-2px);
+    }
+
+    /* Tabs */
+    .ceo-tabs {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 15px 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .ceo-tab-btn {
+      background: transparent;
+      border: none;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2d3748;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .ceo-tab-btn.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .ceo-tab-btn:hover {
+      color: #667eea;
+    }
+
+    /* Content */
+    .ceo-content {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .ceo-tab-content {
+      display: none;
+    }
+
+    .ceo-tab-content.active {
+      display: block;
+    }
+
+    .ceo-section-title {
+      font-size: 24px;
+      color: #2d3748;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Lista de items editables */
+    .ceo-item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .ceo-item-card {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    .ceo-item-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .ceo-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .ceo-item-title {
+      font-weight: bold;
+      color: #2d3748;
+      font-size: 18px;
+    }
+
+    .ceo-item-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .ceo-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 13px;
+    }
+
+    .ceo-btn-edit {
+      background: #4299e1;
+      color: white;
+    }
+
+    .ceo-btn-edit:hover {
+      background: #3182ce;
+    }
+
+    .ceo-btn-delete {
+      background: #fc8181;
+      color: white;
+    }
+
+    .ceo-btn-delete:hover {
+      background: #f56565;
+    }
+
+    .ceo-btn-save {
+      background: #48bb78;
+      color: white;
+    }
+
+    .ceo-btn-save:hover {
+      background: #38a169;
+    }
+
+    .ceo-btn-add {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 24px;
+      margin-bottom: 20px;
+    }
+
+    .ceo-btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Editor de formulario */
+    .ceo-editor {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 15px;
+    }
+
+    .ceo-editor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .ceo-editor-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ceo-editor-label {
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 13px;
+    }
+
+    .ceo-editor-input,
+    .ceo-editor-select,
+    .ceo-editor-textarea {
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .ceo-editor-input:focus,
+    .ceo-editor-select:focus,
+    .ceo-editor-textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .ceo-editor-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Stats Cards */
+    .ceo-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .ceo-stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+
+    .ceo-stat-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .ceo-stat-label {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 5px;
+    }
+
+    .ceo-stat-value {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    /* JSON Editor */
+    .ceo-json-editor {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .ceo-json-textarea {
+      width: 100%;
+      min-height: 400px;
+      background: #0f172a;
+      color: #10b981;
+      border: none;
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .ceo-json-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    /* Modal */
+    .ceo-modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ceo-modal.active {
+      display: flex;
+    }
+
+    .ceo-modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 800px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .ceo-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .ceo-modal-title {
+      font-size: 24px;
+      color: #2d3748;
+    }
+
+    .ceo-btn-close {
+      background: none;
+      border: none;
+      font-size: 30px;
+      color: #718096;
+      cursor: pointer;
+      padding: 0;
+      width: 35px;
+      height: 35px;
+    }
+
+    .ceo-btn-close:hover {
+      color: #2d3748;
+    }
+
+    /* File Upload */
+    .ceo-upload-area {
+      border: 3px dashed #e2e8f0;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .ceo-upload-area:hover {
+      border-color: #667eea;
+      background: #f7fafc;
+    }
+
+    .ceo-upload-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    /* Toggle Switch */
+    .ceo-toggle {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .ceo-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .ceo-toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e0;
+      transition: 0.3s;
+      border-radius: 24px;
+    }
+
+    .ceo-toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    .ceo-toggle input:checked + .ceo-toggle-slider {
+      background-color: #48bb78;
+    }
+
+    .ceo-toggle input:checked + .ceo-toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    /* Code Preview */
+    .ceo-code-preview {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    .ceo-code-preview code {
+      color: #10b981;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .ceo-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .ceo-tabs {
+        overflow-x: auto;
+      }
+
+      .ceo-editor-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ceo-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .ceo-alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ceo-alert-success {
+      background: #c6f6d5;
+      color: #22543d;
+      border: 2px solid #48bb78;
+    }
+
+    .ceo-alert-warning {
+      background: #fef5e7;
+      color: #d68910;
+      border: 2px solid #f6ad55;
+    }
+
+    .ceo-alert-danger {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 2px solid #fc8181;
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla de Login CEO -->
+  <div id="ceoLoginScreen" class="ceo-login-screen">
+    <div class="ceo-login-card">
+      <div class="ceo-login-header">
+        <div class="ceo-login-icon">👑</div>
+        <h1 class="ceo-login-title">Panel CEO Master</h1>
+        <p class="ceo-login-subtitle">Acceso total al sistema YaVoy</p>
+      </div>
+
+      <form id="ceoLoginForm" class="ceo-login-form" onsubmit="loginCEO(event)">
+        <div class="ceo-form-group">
+          <label class="ceo-form-label">Usuario CEO</label>
+          <input 
+            type="text" 
+            id="ceoUsername" 
+            class="ceo-form-input"
+            placeholder="Ingresa tu usuario"
+            required
+          />
+        </div>
+
+        <div class="ceo-form-group">
+          <label class="ceo-form-label">Contraseña Master</label>
+          <input 
+            type="password" 
+            id="ceoPassword" 
+            class="ceo-form-input"
+            placeholder="Contraseña de acceso total"
+            required
+          />
+        </div>
+
+        <button type="submit" class="ceo-btn-login">
+          🔐 Acceder al Panel Master
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Panel Principal CEO -->
+  <div id="ceoPanel" class="ceo-panel">
+    <!-- Header -->
+    <div class="ceo-header">
+      <div class="ceo-header-info">
+        <h1>👑 Panel CEO Master</h1>
+        <p>Control total del sistema YaVoy | <span id="ceoDashboardUser">CEO</span></p>
+      </div>
+      <button class="ceo-btn-logout" onclick="logoutCEO()">
+        🚪 Cerrar Sesión
+      </button>
+    </div>
+
+    <!-- Estadísticas Rápidas -->
+    <div class="ceo-stats-grid">
+      <div class="ceo-stat-card">
+        <div class="ceo-stat-icon">🏪</div>
+        <div class="ceo-stat-label">Comercios Totales</div>
+        <div class="ceo-stat-value" id="statTotalComercios">0</div>
+      </div>
+      <div class="ceo-stat-card">
+        <div class="ceo-stat-icon">🏍️</div>
+        <div class="ceo-stat-label">Repartidores</div>
+        <div class="ceo-stat-value" id="statTotalRepartidores">0</div>
+      </div>
+      <div class="ceo-stat-card">
+        <div class="ceo-stat-icon">👥</div>
+        <div class="ceo-stat-label">Clientes</div>
+        <div class="ceo-stat-value" id="statTotalClientes">0</div>
+      </div>
+      <div class="ceo-stat-card">
+        <div class="ceo-stat-icon">📦</div>
+        <div class="ceo-stat-label">Pedidos Totales</div>
+        <div class="ceo-stat-value" id="statTotalPedidos">0</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="ceo-tabs">
+      <button class="ceo-tab-btn active" onclick="cambiarTabCEO('comercios')">
+        🏪 Comercios
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('repartidores')">
+        🏍️ Repartidores
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('clientes')">
+        👥 Clientes
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('pedidos')">
+        📦 Pedidos
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('multimedia')">
+        📸 Multimedia
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('categorias')">
+        📑 Categorías
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('suspensiones')">
+        🚫 Suspensiones
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('solicitudes')">
+        📋 Solicitudes
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('configuracion')">
+        ⚙️ Configuración
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('archivos')">
+        📁 Archivos JSON
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('estilos')">
+        🎨 Estilos CSS
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('codigo')">
+        💻 Código JS
+      </button>
+      <button class="ceo-tab-btn" onclick="cambiarTabCEO('registros')">
+        📊 Registros
+      </button>
+    </div>
+
+    <!-- Contenido -->
+    <div class="ceo-content">
+      <!-- Tab: Comercios -->
+      <div id="tabComercios" class="ceo-tab-content active">
+        <h2 class="ceo-section-title">
+          <span>🏪</span>
+          Gestión de Comercios
+        </h2>
+        <button class="ceo-btn ceo-btn-add" onclick="abrirModalNuevoComercio()">
+          ➕ Agregar Nuevo Comercio
+        </button>
+        <div id="listaComercios" class="ceo-item-list">
+          <!-- Los comercios se cargarán aquí -->
+        </div>
+      </div>
+
+      <!-- Tab: Repartidores -->
+      <div id="tabRepartidores" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>🏍️</span>
+          Gestión de Repartidores
+        </h2>
+        <button class="ceo-btn ceo-btn-add" onclick="abrirModalNuevoRepartidor()">
+          ➕ Agregar Nuevo Repartidor
+        </button>
+        <div id="listaRepartidores" class="ceo-item-list">
+          <!-- Los repartidores se cargarán aquí -->
+        </div>
+      </div>
+
+      <!-- Tab: Clientes -->
+      <div id="tabClientes" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>👥</span>
+          Gestión de Clientes
+        </h2>
+        <button class="ceo-btn ceo-btn-add" onclick="abrirModalNuevoCliente()">
+          ➕ Agregar Nuevo Cliente
+        </button>
+        <div id="listaClientes" class="ceo-item-list">
+          <!-- Los clientes se cargarán aquí -->
+        </div>
+      </div>
+
+      <!-- Tab: Pedidos -->
+      <div id="tabPedidos" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>📦</span>
+          Todos los Pedidos del Sistema
+        </h2>
+        <div id="listaPedidos" class="ceo-item-list">
+          <!-- Los pedidos se cargarán aquí -->
+        </div>
+      </div>
+
+      <!-- Tab: Multimedia -->
+      <div id="tabMultimedia" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>📸</span>
+          Gestión de Fotos y Videos
+        </h2>
+        
+        <div class="ceo-alert ceo-alert-success">
+          <span>💡</span>
+          <div>
+            <strong>Control Total:</strong> Administra todas las fotos de perfil, fotos de productos y videos del sistema.
+          </div>
+        </div>
+
+        <!-- Filtros de multimedia -->
+        <div class="ceo-multimedia-filters">
+          <button class="ceo-btn ceo-btn-edit" onclick="filtrarMultimedia('comercios')">
+            🏪 Fotos de Comercios
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="filtrarMultimedia('repartidores')">
+            🏍️ Fotos de Repartidores
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="filtrarMultimedia('productos')">
+            📦 Fotos de Productos
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="filtrarMultimedia('videos')">
+            🎥 Videos
+          </button>
+        </div>
+
+        <div id="listaMultimedia" class="ceo-item-list">
+          <!-- El contenido multimedia se cargará aquí -->
+        </div>
+      </div>
+
+      <!-- Tab: Categorías -->
+      <div id="tabCategorias" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>📑</span>
+          Gestión de Categorías
+        </h2>
+        
+        <button class="ceo-btn ceo-btn-add" onclick="abrirModalNuevaCategoria()">
+          ➕ Agregar Nueva Categoría
+        </button>
+
+        <div class="ceo-editor ceo-editor-top-margin">
+          <h3 class="ceo-section-subtitle">Categorías Actuales del Sistema</h3>
+          <div id="listaCategorias" class="ceo-item-list">
+            <!-- Las categorías se cargarán aquí -->
+          </div>
+        </div>
+
+        <div class="ceo-alert ceo-alert-warning ceo-alert-top-margin">
+          <span>⚠️</span>
+          <div>
+            <strong>Importante:</strong> Al modificar una categoría, todos los comercios asociados se actualizarán automáticamente.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Suspensiones -->
+      <div id="tabSuspensiones" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>🚫</span>
+          Gestión de Suspensiones
+        </h2>
+
+        <div class="ceo-stats-grid ceo-stats-grid-margin">
+          <div class="ceo-stat-card ceo-stat-card-red">
+            <div class="ceo-stat-icon">🚫</div>
+            <div class="ceo-stat-label">Comercios Suspendidos</div>
+            <div class="ceo-stat-value" id="statComerciosSuspendidos">0</div>
+          </div>
+          <div class="ceo-stat-card ceo-stat-card-orange">
+            <div class="ceo-stat-icon">⚠️</div>
+            <div class="ceo-stat-label">Repartidores Suspendidos</div>
+            <div class="ceo-stat-value" id="statRepartidoresSuspendidos">0</div>
+          </div>
+          <div class="ceo-stat-card ceo-stat-card-yellow">
+            <div class="ceo-stat-icon">⏸️</div>
+            <div class="ceo-stat-label">Suspensiones Temporales</div>
+            <div class="ceo-stat-value" id="statTemporales">0</div>
+          </div>
+          <div class="ceo-stat-card ceo-stat-card-green">
+            <div class="ceo-stat-icon">✅</div>
+            <div class="ceo-stat-label">Reactivaciones Pendientes</div>
+            <div class="ceo-stat-value" id="statReactivaciones">0</div>
+          </div>
+        </div>
+
+        <div class="ceo-editor">
+          <h3 class="ceo-section-subtitle">Usuarios Suspendidos</h3>
+          <div id="listaSuspendidos" class="ceo-item-list">
+            <!-- Los usuarios suspendidos se cargarán aquí -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Solicitudes -->
+      <div id="tabSolicitudes" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>📋</span>
+          Solicitudes Pendientes
+        </h2>
+
+        <div class="ceo-stats-grid ceo-stats-grid-margin">
+          <div class="ceo-stat-card">
+            <div class="ceo-stat-icon">🛍️</div>
+            <div class="ceo-stat-label">Solicitudes de Tienda</div>
+            <div class="ceo-stat-value" id="statSolicitudesTienda">0</div>
+          </div>
+          <div class="ceo-stat-card">
+            <div class="ceo-stat-icon">📣</div>
+            <div class="ceo-stat-label">Solicitudes de Publicidad</div>
+            <div class="ceo-stat-value" id="statSolicitudesPublicidad">0</div>
+          </div>
+          <div class="ceo-stat-card">
+            <div class="ceo-stat-icon">📝</div>
+            <div class="ceo-stat-label">Otros Requerimientos</div>
+            <div class="ceo-stat-value" id="statOtrasRequerimientos">0</div>
+          </div>
+          <div class="ceo-stat-card">
+            <div class="ceo-stat-icon">💰</div>
+            <div class="ceo-stat-label">Valor Total Solicitudes</div>
+            <div class="ceo-stat-value" id="statValorTotalSolicitudes">$0</div>
+          </div>
+        </div>
+
+        <!-- Solicitudes de Tienda -->
+        <div class="ceo-editor ceo-editor-bottom-margin">
+          <h3 class="ceo-section-subtitle">🛍️ Solicitudes de Tienda Digital</h3>
+          <div id="listaSolicitudesTienda" class="ceo-item-list">
+            <!-- Las solicitudes de tienda se cargarán aquí -->
+          </div>
+        </div>
+
+        <!-- Solicitudes de Publicidad -->
+        <div class="ceo-editor">
+          <h3 class="ceo-section-subtitle">📣 Solicitudes de Publicidad</h3>
+          <div id="listaSolicitudesPublicidad" class="ceo-item-list">
+            <!-- Las solicitudes de publicidad se cargarán aquí -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Registros -->
+      <div id="tabRegistros" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>📊</span>
+          Registros y Logs del Sistema
+        </h2>
+
+        <div class="ceo-alert ceo-alert-success">
+          <span>📈</span>
+          <div>
+            <strong>Trazabilidad Completa:</strong> Todos los registros de términos, emails y teléfonos organizados por carpetas.
+          </div>
+        </div>
+
+        <div class="ceo-registros-grid">
+          <button class="ceo-btn ceo-btn-edit" onclick="cargarRegistros('terminos')">
+            📜 Términos Aceptados
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="cargarRegistros('emails')">
+            📧 Emails Registrados
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="cargarRegistros('telefonos')">
+            📱 Teléfonos Registrados
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="cargarRegistros('comercios')">
+            🏪 Registros de Comercios
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="cargarRegistros('repartidores')">
+            🏍️ Registros de Repartidores
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="cargarRegistros('clientes')">
+            👥 Registros de Clientes
+          </button>
+        </div>
+
+        <div class="ceo-editor">
+          <h3 id="tituloRegistros" class="ceo-section-subtitle">Selecciona un tipo de registro</h3>
+          <div id="listaRegistros" class="ceo-item-list">
+            <p class="ceo-placeholder-message">
+              Selecciona un tipo de registro para visualizar los datos
+            </p>
+          </div>
+        </div>
+
+        <!-- Exportar registros -->
+        <div class="ceo-export-controls">
+          <button class="ceo-btn ceo-btn-save" onclick="exportarRegistrosCSV()">
+            📥 Exportar a CSV
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="exportarRegistrosJSON()">
+            📥 Exportar a JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Configuración -->
+      <div id="tabConfiguracion" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>⚙️</span>
+          Configuración del Sistema
+        </h2>
+        <div class="ceo-editor">
+          <div class="ceo-editor-grid">
+            <div class="ceo-editor-field">
+              <label class="ceo-editor-label">Nombre de la Aplicación</label>
+              <input type="text" id="configAppName" class="ceo-editor-input" value="YaVoy">
+            </div>
+            <div class="ceo-editor-field">
+              <label class="ceo-editor-label">Puerto del Servidor</label>
+              <input type="number" id="configPort" class="ceo-editor-input" value="5501">
+            </div>
+            <div class="ceo-editor-field">
+              <label class="ceo-editor-label">Modo de la App</label>
+              <select id="configMode" class="ceo-editor-select">
+                <option value="production">Producción</option>
+                <option value="development">Desarrollo</option>
+              </select>
+            </div>
+            <div class="ceo-editor-field">
+              <label class="ceo-editor-label">Comisión Plataforma (%)</label>
+              <input type="number" id="configComision" class="ceo-editor-input" value="10" step="0.1">
+            </div>
+          </div>
+          <button class="ceo-btn ceo-btn-save" onclick="guardarConfiguracionSistema()">
+            💾 Guardar Configuración
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Archivos JSON -->
+      <div id="tabArchivos" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>📁</span>
+          Editor de Archivos JSON
+        </h2>
+        <div class="ceo-alert ceo-alert-warning">
+          <span>⚠️</span>
+          <div>
+            <strong>Precaución:</strong> Editar archivos JSON directamente puede afectar el funcionamiento del sistema. Asegúrate de mantener la estructura correcta.
+          </div>
+        </div>
+        <div class="ceo-editor-field ceo-editor-field-margin">
+          <label class="ceo-editor-label">Seleccionar Archivo JSON</label>
+          <select id="selectArchivoJSON" class="ceo-editor-select" onchange="cargarArchivoJSON()">
+            <option value="">-- Selecciona un archivo --</option>
+          </select>
+        </div>
+        <div class="ceo-json-editor">
+          <textarea id="jsonEditor" class="ceo-json-textarea" placeholder="Selecciona un archivo para editar..."></textarea>
+        </div>
+        <div class="ceo-json-actions">
+          <button class="ceo-btn ceo-btn-save" onclick="guardarArchivoJSON()">
+            💾 Guardar Cambios
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="formatearJSON()">
+            ✨ Formatear JSON
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="validarJSON()">
+            ✓ Validar Sintaxis
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Estilos CSS -->
+      <div id="tabEstilos" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>🎨</span>
+          Editor de Estilos CSS
+        </h2>
+        <div class="ceo-alert ceo-alert-warning">
+          <span>⚠️</span>
+          <div>
+            <strong>Editor Avanzado:</strong> Modifica los estilos visuales de la aplicación. Los cambios se aplican en tiempo real.
+          </div>
+        </div>
+        <div class="ceo-editor-field ceo-editor-field-margin">
+          <label class="ceo-editor-label">Archivo CSS</label>
+          <select id="selectArchivoCSS" class="ceo-editor-select" onchange="cargarArchivoCSS()">
+            <option value="styles.css">styles.css (Principal)</option>
+          </select>
+        </div>
+        <div class="ceo-json-editor">
+          <textarea id="cssEditor" class="ceo-json-textarea" placeholder="/* Edita los estilos CSS aquí */"></textarea>
+        </div>
+        <div class="ceo-json-actions">
+          <button class="ceo-btn ceo-btn-save" onclick="guardarArchivoCSS()">
+            💾 Guardar Estilos
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="previsualizarCSS()">
+            👁️ Previsualizar
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Código JS -->
+      <div id="tabCodigo" class="ceo-tab-content">
+        <h2 class="ceo-section-title">
+          <span>💻</span>
+          Editor de Código JavaScript
+        </h2>
+        <div class="ceo-alert ceo-alert-danger">
+          <span>🚨</span>
+          <div>
+            <strong>¡Peligro!</strong> Editar código JavaScript puede romper funcionalidades. Solo para usuarios avanzados.
+          </div>
+        </div>
+        <div class="ceo-editor-field ceo-editor-field-margin">
+          <label class="ceo-editor-label">Archivo JavaScript</label>
+          <select id="selectArchivoJS" class="ceo-editor-select" onchange="cargarArchivoJS()">
+            <option value="script.js">script.js (Principal)</option>
+            <option value="server.js">server.js (Servidor)</option>
+          </select>
+        </div>
+        <div class="ceo-json-editor">
+          <textarea id="jsEditor" class="ceo-json-textarea" placeholder="// Edita el código JavaScript aquí"></textarea>
+        </div>
+        <div class="ceo-json-actions">
+          <button class="ceo-btn ceo-btn-save" onclick="guardarArchivoJS()">
+            💾 Guardar Código
+          </button>
+          <button class="ceo-btn ceo-btn-edit" onclick="validarJS()">
+            ✓ Validar Sintaxis
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Universal -->
+  <div id="ceoModal" class="ceo-modal">
+    <div class="ceo-modal-content">
+      <div class="ceo-modal-header">
+        <h2 class="ceo-modal-title" id="modalTitle">Editor</h2>
+        <button class="ceo-btn-close" onclick="cerrarModalCEO()">&times;</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // Credenciales CEO (en producción, esto debe estar en el servidor)
+    const CEO_CREDENTIALS = {
+      username: 'ceo_yavoy',
+      password: 'YaVoy2025Master!CEO'
+    };
+
+    let currentTab = 'comercios';
+    let currentEditItem = null;
+    let comerciosData = [];
+    let repartidoresData = [];
+    let clientesData = [];
+    let pedidosData = [];
+
+    // Login CEO
+    function loginCEO(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('ceoUsername').value;
+      const password = document.getElementById('ceoPassword').value;
+
+      if (username === CEO_CREDENTIALS.username && password === CEO_CREDENTIALS.password) {
+        localStorage.setItem('ceoLoggedIn', 'true');
+        localStorage.setItem('ceoUsername', username);
+        document.getElementById('ceoLoginScreen').style.display = 'none';
+        document.getElementById('ceoPanel').classList.add('active');
+        document.getElementById('ceoDashboardUser').textContent = username;
+        inicializarPanelCEO();
+      } else {
+        alert('❌ Credenciales incorrectas.\n\nUsuario o contraseña no válidos.');
+      }
+    }
+
+    // Logout CEO
+    function logoutCEO() {
+      if (confirm('¿Seguro que deseas cerrar sesión del Panel CEO?')) {
+        localStorage.removeItem('ceoLoggedIn');
+        localStorage.removeItem('ceoUsername');
+        location.reload();
+      }
+    }
+
+    // Verificar sesión al cargar
+    window.addEventListener('DOMContentLoaded', () => {
+      const loggedIn = localStorage.getItem('ceoLoggedIn');
+      const username = localStorage.getItem('ceoUsername');
+      
+      if (loggedIn === 'true' && username) {
+        document.getElementById('ceoLoginScreen').style.display = 'none';
+        document.getElementById('ceoPanel').classList.add('active');
+        document.getElementById('ceoDashboardUser').textContent = username;
+        inicializarPanelCEO();
+      }
+    });
+
+    // Inicializar panel
+    async function inicializarPanelCEO() {
+      await cargarDatosCEO();
+      actualizarEstadisticas();
+      listarArchivosJSON();
+    }
+
+    // Cargar datos
+    async function cargarDatosCEO() {
+      try {
+        // Cargar comercios
+        const resComercios = await fetch('/api/comercios');
+        const dataComercios = await resComercios.json();
+        comerciosData = dataComercios.comercios || [];
+        renderizarComercios();
+
+        // Cargar repartidores
+        const resRepartidores = await fetch('/api/repartidores');
+        const dataRepartidores = await resRepartidores.json();
+        repartidoresData = dataRepartidores.repartidores || [];
+        renderizarRepartidores();
+
+        // Cargar clientes (crear endpoint si no existe)
+        clientesData = [];
+        renderizarClientes();
+
+        // Cargar pedidos
+        const resPedidos = await fetch('/api/pedidos');
+        const dataPedidos = await resPedidos.json();
+        pedidosData = dataPedidos.pedidos || [];
+        renderizarPedidos();
+
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      }
+    }
+
+    // Cambiar tab
+    function cambiarTabCEO(tabName) {
+      currentTab = tabName;
+      
+      document.querySelectorAll('.ceo-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.ceo-tab-content').forEach(content => content.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+    }
+
+    // Actualizar estadísticas
+    function actualizarEstadisticas() {
+      document.getElementById('statTotalComercios').textContent = comerciosData.length;
+      document.getElementById('statTotalRepartidores').textContent = repartidoresData.length;
+      document.getElementById('statTotalClientes').textContent = clientesData.length;
+      document.getElementById('statTotalPedidos').textContent = pedidosData.length;
+    }
+
+    // Renderizar comercios
+    function renderizarComercios() {
+      const lista = document.getElementById('listaComercios');
+      
+      if (comerciosData.length === 0) {
+        lista.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No hay comercios registrados</p>';
+        return;
+      }
+
+      lista.innerHTML = comerciosData.map(comercio => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">${comercio.nombre || 'Sin nombre'}</div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-edit" onclick='editarComercio(${JSON.stringify(comercio)})'>
+                ✏️ Editar
+              </button>
+              <button class="ceo-btn ceo-btn-delete" onclick="eliminarComercio('${comercio.id}')">
+                🗑️ Eliminar
+              </button>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; color: #718096;">
+            <div><strong>ID:</strong> ${comercio.id}</div>
+            <div><strong>Categoría:</strong> ${comercio.categoria || 'N/A'}</div>
+            <div><strong>Teléfono:</strong> ${comercio.whatsapp || comercio.telefono || 'N/A'}</div>
+            <div><strong>Estado:</strong> ${comercio.activo ? '✅ Activo' : '❌ Inactivo'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Renderizar repartidores
+    function renderizarRepartidores() {
+      const lista = document.getElementById('listaRepartidores');
+      
+      if (repartidoresData.length === 0) {
+        lista.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No hay repartidores registrados</p>';
+        return;
+      }
+
+      lista.innerHTML = repartidoresData.map(repartidor => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">${repartidor.nombre || 'Sin nombre'}</div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-edit" onclick='editarRepartidor(${JSON.stringify(repartidor)})'>
+                ✏️ Editar
+              </button>
+              <button class="ceo-btn ceo-btn-delete" onclick="eliminarRepartidor('${repartidor.id}')">
+                🗑️ Eliminar
+              </button>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; color: #718096;">
+            <div><strong>ID:</strong> ${repartidor.id}</div>
+            <div><strong>Vehículo:</strong> ${repartidor.tipoVehiculo || 'N/A'}</div>
+            <div><strong>Teléfono:</strong> ${repartidor.whatsapp || 'N/A'}</div>
+            <div><strong>Estado:</strong> ${repartidor.activo ? '✅ Activo' : '❌ Inactivo'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Renderizar clientes
+    function renderizarClientes() {
+      const lista = document.getElementById('listaClientes');
+      lista.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">Sistema de clientes en desarrollo</p>';
+    }
+
+    // Renderizar pedidos
+    function renderizarPedidos() {
+      const lista = document.getElementById('listaPedidos');
+      
+      if (pedidosData.length === 0) {
+        lista.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No hay pedidos en el sistema</p>';
+        return;
+      }
+
+      lista.innerHTML = pedidosData.map(pedido => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">Pedido ${pedido.id}</div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-edit" onclick='editarPedido(${JSON.stringify(pedido)})'>
+                ✏️ Editar
+              </button>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; color: #718096;">
+            <div><strong>Cliente:</strong> ${pedido.cliente?.nombre || 'N/A'}</div>
+            <div><strong>Comercio:</strong> ${pedido.comercio?.nombre || 'N/A'}</div>
+            <div><strong>Monto:</strong> $${pedido.monto || 0}</div>
+            <div><strong>Estado:</strong> ${pedido.estado || 'pendiente'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Editar comercio
+    function editarComercio(comercio) {
+      currentEditItem = comercio;
+      document.getElementById('modalTitle').textContent = '✏️ Editar Comercio';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="ceo-editor-grid">
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Nombre *</label>
+            <input type="text" id="editNombre" class="ceo-editor-input" value="${comercio.nombre || ''}" required>
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Categoría *</label>
+            <select id="editCategoria" class="ceo-editor-select" required>
+              <option value="kiosco" ${comercio.categoria === 'kiosco' ? 'selected' : ''}>Kiosco</option>
+              <option value="alimentacion" ${comercio.categoria === 'alimentacion' ? 'selected' : ''}>Alimentación</option>
+              <option value="farmacia" ${comercio.categoria === 'farmacia' ? 'selected' : ''}>Farmacia</option>
+              <option value="bazar" ${comercio.categoria === 'bazar' ? 'selected' : ''}>Bazar</option>
+              <option value="otros" ${comercio.categoria === 'otros' ? 'selected' : ''}>Otros</option>
+            </select>
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">WhatsApp</label>
+            <input type="tel" id="editWhatsapp" class="ceo-editor-input" value="${comercio.whatsapp || comercio.telefono || ''}">
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Email</label>
+            <input type="email" id="editEmail" class="ceo-editor-input" value="${comercio.email || ''}">
+          </div>
+          <div class="ceo-editor-field" style="grid-column: 1 / -1;">
+            <label class="ceo-editor-label">Dirección</label>
+            <input type="text" id="editDireccion" class="ceo-editor-input" value="${comercio.direccion || ''}">
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Estado</label>
+            <label class="ceo-toggle">
+              <input type="checkbox" id="editActivo" ${comercio.activo ? 'checked' : ''}>
+              <span class="ceo-toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <button class="ceo-btn ceo-btn-save" style="margin-top: 20px; width: 100%;" onclick="guardarComercio()">
+          💾 Guardar Cambios
+        </button>
+      `;
+      document.getElementById('ceoModal').classList.add('active');
+    }
+
+    // Guardar comercio
+    async function guardarComercio() {
+      const comercioActualizado = {
+        ...currentEditItem,
+        nombre: document.getElementById('editNombre').value,
+        categoria: document.getElementById('editCategoria').value,
+        whatsapp: document.getElementById('editWhatsapp').value,
+        email: document.getElementById('editEmail').value,
+        direccion: document.getElementById('editDireccion').value,
+        activo: document.getElementById('editActivo').checked
+      };
+
+      try {
+        const response = await fetch(`/api/comercio/${comercioActualizado.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(comercioActualizado)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Comercio actualizado correctamente');
+          cerrarModalCEO();
+          await cargarDatosCEO();
+        } else {
+          alert('⚠️ Error al actualizar comercio');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al guardar cambios');
+      }
+    }
+
+    // Eliminar comercio
+    async function eliminarComercio(id) {
+      if (!confirm('¿Seguro que deseas eliminar este comercio?\n\nEsta acción no se puede deshacer.')) return;
+
+      try {
+        const response = await fetch(`/api/comercio/${id}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Comercio eliminado correctamente');
+          await cargarDatosCEO();
+        } else {
+          alert('⚠️ Error al eliminar comercio');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al eliminar');
+      }
+    }
+
+    // Cerrar modal
+    function cerrarModalCEO() {
+      document.getElementById('ceoModal').classList.remove('active');
+      currentEditItem = null;
+    }
+
+    // Listar archivos JSON
+    function listarArchivosJSON() {
+      const select = document.getElementById('selectArchivoJSON');
+      const archivos = [
+        'servicios-prioridad',
+        'servicios-alimentacion',
+        'servicios-salud',
+        'servicios-bazar',
+        'servicios-otros'
+      ];
+
+      select.innerHTML = '<option value="">-- Selecciona un archivo --</option>' +
+        archivos.map(a => `<option value="${a}">${a}.json</option>`).join('');
+    }
+
+    // Cargar archivo JSON
+    async function cargarArchivoJSON() {
+      const archivo = document.getElementById('selectArchivoJSON').value;
+      if (!archivo) return;
+
+      try {
+        const response = await fetch(`/api/archivos/${archivo}.json`);
+        const data = await response.json();
+        document.getElementById('jsonEditor').value = JSON.stringify(data, null, 2);
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al cargar archivo');
+      }
+    }
+
+    // Guardar archivo JSON
+    async function guardarArchivoJSON() {
+      const archivo = document.getElementById('selectArchivoJSON').value;
+      if (!archivo) {
+        alert('⚠️ Selecciona un archivo primero');
+        return;
+      }
+
+      const contenido = document.getElementById('jsonEditor').value;
+
+      try {
+        JSON.parse(contenido); // Validar JSON
+
+        const response = await fetch(`/api/archivos/${archivo}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contenido })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Archivo guardado correctamente');
+        } else {
+          alert('⚠️ Error al guardar archivo');
+        }
+      } catch (error) {
+        alert('❌ JSON inválido. Verifica la sintaxis.');
+      }
+    }
+
+    // Formatear JSON
+    function formatearJSON() {
+      try {
+        const contenido = document.getElementById('jsonEditor').value;
+        const parsed = JSON.parse(contenido);
+        document.getElementById('jsonEditor').value = JSON.stringify(parsed, null, 2);
+        alert('✅ JSON formateado correctamente');
+      } catch (error) {
+        alert('❌ JSON inválido. No se puede formatear.');
+      }
+    }
+
+    // Validar JSON
+    function validarJSON() {
+      try {
+        const contenido = document.getElementById('jsonEditor').value;
+        JSON.parse(contenido);
+        alert('✅ JSON válido. No hay errores de sintaxis.');
+      } catch (error) {
+        alert(`❌ JSON inválido:\n\n${error.message}`);
+      }
+    }
+
+    // Guardar configuración del sistema
+    function guardarConfiguracionSistema() {
+      const config = {
+        appName: document.getElementById('configAppName').value,
+        port: document.getElementById('configPort').value,
+        mode: document.getElementById('configMode').value,
+        comision: document.getElementById('configComision').value
+      };
+
+      localStorage.setItem('sistemasConfig', JSON.stringify(config));
+      alert('✅ Configuración guardada correctamente\n\nLos cambios se aplicarán en el próximo reinicio del servidor.');
+    }
+
+    // Cargar archivo CSS
+    async function cargarArchivoCSS() {
+      try {
+        const response = await fetch('/styles.css');
+        const css = await response.text();
+        document.getElementById('cssEditor').value = css;
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al cargar archivo CSS');
+      }
+    }
+
+    // Guardar archivo CSS
+    async function guardarArchivoCSS() {
+      const contenido = document.getElementById('cssEditor').value;
+
+      try {
+        const response = await fetch('/api/archivos/styles.css', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'text/plain' },
+          body: contenido
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Estilos guardados correctamente');
+        } else {
+          alert('⚠️ Error al guardar estilos');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al guardar');
+      }
+    }
+
+    // Previsualizar CSS
+    function previsualizarCSS() {
+      alert('🎨 Función de previsualización en desarrollo');
+    }
+
+    // Cargar archivo JS
+    async function cargarArchivoJS() {
+      const archivo = document.getElementById('selectArchivoJS').value;
+      
+      try {
+        const response = await fetch(`/${archivo}`);
+        const js = await response.text();
+        document.getElementById('jsEditor').value = js;
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al cargar archivo JavaScript');
+      }
+    }
+
+    // Guardar archivo JS
+    async function guardarArchivoJS() {
+      const archivo = document.getElementById('selectArchivoJS').value;
+      const contenido = document.getElementById('jsEditor').value;
+
+      try {
+        const response = await fetch(`/api/archivos/${archivo}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'text/plain' },
+          body: contenido
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Código guardado correctamente\n\nReinicia el servidor para aplicar los cambios.');
+        } else {
+          alert('⚠️ Error al guardar código');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al guardar');
+      }
+    }
+
+    // Validar JS
+    function validarJS() {
+      try {
+        const contenido = document.getElementById('jsEditor').value;
+        new Function(contenido); // Validación básica
+        alert('✅ Código JavaScript válido');
+      } catch (error) {
+        alert(`❌ Error de sintaxis:\n\n${error.message}`);
+      }
+    }
+
+    // ========================================
+    // GESTIÓN DE MULTIMEDIA
+    // ========================================
+    
+    let multimediaActual = [];
+    let tipoMultimediaActual = 'comercios';
+
+    async function filtrarMultimedia(tipo) {
+      tipoMultimediaActual = tipo;
+      
+      try {
+        let endpoint = '';
+        switch(tipo) {
+          case 'comercios':
+            endpoint = '/api/multimedia/comercios';
+            break;
+          case 'repartidores':
+            endpoint = '/api/multimedia/repartidores';
+            break;
+          case 'productos':
+            endpoint = '/api/multimedia/productos';
+            break;
+          case 'videos':
+            endpoint = '/api/multimedia/videos';
+            break;
+        }
+
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        
+        multimediaActual = data.archivos || [];
+        renderizarMultimedia();
+      } catch (error) {
+        console.error('Error al cargar multimedia:', error);
+        document.getElementById('listaMultimedia').innerHTML = 
+          '<p style="text-align: center; padding: 40px; color: #718096;">Error al cargar archivos multimedia</p>';
+      }
+    }
+
+    function renderizarMultimedia() {
+      const lista = document.getElementById('listaMultimedia');
+      
+      if (multimediaActual.length === 0) {
+        lista.innerHTML = `
+          <p style="text-align: center; padding: 40px; color: #718096;">
+            No hay archivos multimedia de este tipo
+          </p>
+        `;
+        return;
+      }
+
+      lista.innerHTML = multimediaActual.map(archivo => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">
+              ${archivo.tipo === 'imagen' ? '📷' : '🎥'} ${archivo.nombre || archivo.id}
+            </div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-edit" onclick="verMultimedia('${archivo.ruta}')">
+                👁️ Ver
+              </button>
+              <button class="ceo-btn ceo-btn-delete" onclick="eliminarMultimedia('${archivo.id}', '${archivo.ruta}')">
+                🗑️ Eliminar
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: #718096; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+            <div><strong>Propietario:</strong> ${archivo.propietario || 'N/A'}</div>
+            <div><strong>Fecha:</strong> ${new Date(archivo.fecha).toLocaleDateString('es')}</div>
+            <div><strong>Tamaño:</strong> ${archivo.tamano || 'N/A'}</div>
+            <div><strong>Estado:</strong> ${archivo.activo ? '✅ Activo' : '❌ Inactivo'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function verMultimedia(ruta) {
+      window.open(ruta, '_blank');
+    }
+
+    async function eliminarMultimedia(id, ruta) {
+      if (!confirm('¿Seguro que deseas eliminar este archivo multimedia?\n\nEsta acción no se puede deshacer.')) return;
+
+      try {
+        const response = await fetch(`/api/multimedia/${id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ruta })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Archivo eliminado correctamente');
+          filtrarMultimedia(tipoMultimediaActual);
+        } else {
+          alert('⚠️ Error al eliminar archivo');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al eliminar');
+      }
+    }
+
+    // ========================================
+    // GESTIÓN DE CATEGORÍAS
+    // ========================================
+
+    const CATEGORIAS_SISTEMA = [
+      { id: 'prioridad', nombre: 'Prioritarios', icono: '⭐', color: '#667eea' },
+      { id: 'alimentacion', nombre: 'Alimentación', icono: '🍔', color: '#f6ad55' },
+      { id: 'salud', nombre: 'Salud', icono: '🏥', color: '#48bb78' },
+      { id: 'bazar', nombre: 'Bazar', icono: '🏪', color: '#4299e1' },
+      { id: 'indumentaria', nombre: 'Indumentaria', icono: '👕', color: '#9f7aea' },
+      { id: 'kiosco', nombre: 'Kiosco', icono: '🍬', color: '#ed8936' },
+      { id: 'otros', nombre: 'Otros', icono: '📦', color: '#718096' }
+    ];
+
+    function renderizarCategorias() {
+      const lista = document.getElementById('listaCategorias');
+      
+      lista.innerHTML = CATEGORIAS_SISTEMA.map(cat => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">
+              ${cat.icono} ${cat.nombre}
+            </div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-edit" onclick='editarCategoria(${JSON.stringify(cat)})'>
+                ✏️ Editar
+              </button>
+              <button class="ceo-btn ceo-btn-edit" onclick="verComerciosCategoria('${cat.id}')">
+                👁️ Ver Comercios (${contarComerciosPorCategoria(cat.id)})
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: #718096;">
+            <strong>ID:</strong> servicios-${cat.id} | 
+            <strong>Color:</strong> <span style="display: inline-block; width: 20px; height: 20px; background: ${cat.color}; border-radius: 4px; vertical-align: middle;"></span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function contarComerciosPorCategoria(categoriaId) {
+      return comerciosData.filter(c => c.categoria === categoriaId).length;
+    }
+
+    function editarCategoria(categoria) {
+      document.getElementById('modalTitle').textContent = '✏️ Editar Categoría';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="ceo-alert ceo-alert-warning">
+          <span>⚠️</span>
+          <div>Los cambios afectarán a <strong>${contarComerciosPorCategoria(categoria.id)} comercios</strong></div>
+        </div>
+        <div class="ceo-editor-grid">
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Nombre de la Categoría</label>
+            <input type="text" id="editCatNombre" class="ceo-editor-input" value="${categoria.nombre}">
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Icono (Emoji)</label>
+            <input type="text" id="editCatIcono" class="ceo-editor-input" value="${categoria.icono}">
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Color</label>
+            <input type="color" id="editCatColor" class="ceo-editor-input" value="${categoria.color}">
+          </div>
+        </div>
+        <button class="ceo-btn ceo-btn-save" style="margin-top: 20px; width: 100%;" onclick="guardarCategoria('${categoria.id}')">
+          💾 Guardar Cambios
+        </button>
+      `;
+      document.getElementById('ceoModal').classList.add('active');
+    }
+
+    async function guardarCategoria(id) {
+      const nombre = document.getElementById('editCatNombre').value;
+      const icono = document.getElementById('editCatIcono').value;
+      const color = document.getElementById('editCatColor').value;
+
+      const categoriaActualizada = { id, nombre, icono, color };
+
+      try {
+        const response = await fetch(`/api/categorias/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(categoriaActualizada)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert(`✅ Categoría actualizada\n\n${data.comerciosActualizados} comercios afectados`);
+          cerrarModalCEO();
+          renderizarCategorias();
+        } else {
+          alert('⚠️ Error al actualizar categoría');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al guardar');
+      }
+    }
+
+    function verComerciosCategoria(categoriaId) {
+      const comercios = comerciosData.filter(c => c.categoria === categoriaId);
+      
+      document.getElementById('modalTitle').textContent = `📊 Comercios en Categoría`;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="ceo-alert ceo-alert-success">
+          <span>📈</span>
+          <div><strong>${comercios.length} comercios</strong> en esta categoría</div>
+        </div>
+        <div class="ceo-item-list" style="max-height: 500px; overflow-y: auto;">
+          ${comercios.map(c => `
+            <div class="ceo-item-card" style="margin-bottom: 10px;">
+              <div><strong>${c.nombre}</strong></div>
+              <div style="font-size: 12px; color: #718096;">
+                ${c.direccion || 'Sin dirección'} | ${c.activo ? '✅ Activo' : '❌ Inactivo'}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById('ceoModal').classList.add('active');
+    }
+
+    // ========================================
+    // GESTIÓN DE SUSPENSIONES
+    // ========================================
+
+    async function cargarSuspensiones() {
+      try {
+        const response = await fetch('/api/suspensiones');
+        const data = await response.json();
+
+        const suspendidos = data.suspendidos || [];
+        
+        document.getElementById('statComerciosSuspendidos').textContent = 
+          suspendidos.filter(s => s.tipo === 'comercio').length;
+        document.getElementById('statRepartidoresSuspendidos').textContent = 
+          suspendidos.filter(s => s.tipo === 'repartidor').length;
+        document.getElementById('statTemporales').textContent = 
+          suspendidos.filter(s => s.temporal).length;
+        document.getElementById('statReactivaciones').textContent = 
+          suspendidos.filter(s => s.fechaReactivacion && new Date(s.fechaReactivacion) <= new Date()).length;
+
+        renderizarSuspensiones(suspendidos);
+      } catch (error) {
+        console.error('Error al cargar suspensiones:', error);
+      }
+    }
+
+    function renderizarSuspensiones(suspendidos) {
+      const lista = document.getElementById('listaSuspendidos');
+      
+      if (suspendidos.length === 0) {
+        lista.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No hay usuarios suspendidos</p>';
+        return;
+      }
+
+      lista.innerHTML = suspendidos.map(sus => `
+        <div class="ceo-item-card" style="border-left: 4px solid #fc8181;">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">
+              ${sus.tipo === 'comercio' ? '🏪' : '🏍️'} ${sus.nombre}
+            </div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-save" onclick="reactivarUsuario('${sus.id}', '${sus.tipo}')">
+                ✅ Reactivar
+              </button>
+              <button class="ceo-btn ceo-btn-edit" onclick="verDetallesSuspension('${sus.id}')">
+                👁️ Ver Detalles
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: #718096; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+            <div><strong>Motivo:</strong> ${sus.motivo || 'No especificado'}</div>
+            <div><strong>Fecha:</strong> ${new Date(sus.fechaSuspension).toLocaleDateString('es')}</div>
+            <div><strong>Tipo:</strong> ${sus.temporal ? '⏸️ Temporal' : '🚫 Indefinida'}</div>
+            ${sus.fechaReactivacion ? `<div><strong>Reactivación:</strong> ${new Date(sus.fechaReactivacion).toLocaleDateString('es')}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function suspenderUsuario(id, tipo, motivo, temporal = false, fechaReactivacion = null) {
+      try {
+        const response = await fetch('/api/suspensiones', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, tipo, motivo, temporal, fechaReactivacion })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Usuario suspendido correctamente');
+          await cargarSuspensiones();
+          await cargarDatosCEO();
+        } else {
+          alert('⚠️ Error al suspender usuario');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al suspender');
+      }
+    }
+
+    async function reactivarUsuario(id, tipo) {
+      if (!confirm('¿Seguro que deseas reactivar este usuario?')) return;
+
+      try {
+        const response = await fetch(`/api/suspensiones/${id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tipo })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Usuario reactivado correctamente');
+          await cargarSuspensiones();
+          await cargarDatosCEO();
+        } else {
+          alert('⚠️ Error al reactivar usuario');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al reactivar');
+      }
+    }
+
+    // ========================================
+    // GESTIÓN DE SOLICITUDES
+    // ========================================
+
+    async function cargarSolicitudes() {
+      try {
+        // Solicitudes de tienda
+        const resTienda = await fetch('/api/solicitudes/tienda');
+        const dataTienda = await resTienda.json();
+        const solicitudesTienda = dataTienda.solicitudes || [];
+
+        // Solicitudes de publicidad
+        const resPub = await fetch('/api/solicitudes/publicidad');
+        const dataPub = await resPub.json();
+        const solicitudesPub = dataPub.solicitudes || [];
+
+        document.getElementById('statSolicitudesTienda').textContent = solicitudesTienda.length;
+        document.getElementById('statSolicitudesPublicidad').textContent = solicitudesPub.length;
+        document.getElementById('statOtrasRequerimientos').textContent = 0;
+        
+        const valorTotal = 
+          solicitudesTienda.reduce((sum, s) => sum + (s.monto || 50000), 0) +
+          solicitudesPub.reduce((sum, s) => sum + (s.total || 0), 0);
+        document.getElementById('statValorTotalSolicitudes').textContent = `$${valorTotal.toLocaleString('es')}`;
+
+        renderizarSolicitudesTienda(solicitudesTienda);
+        renderizarSolicitudesPublicidad(solicitudesPub);
+      } catch (error) {
+        console.error('Error al cargar solicitudes:', error);
+      }
+    }
+
+    function renderizarSolicitudesTienda(solicitudes) {
+      const lista = document.getElementById('listaSolicitudesTienda');
+      
+      if (solicitudes.length === 0) {
+        lista.innerHTML = '<p style="text-align: center; padding: 20px; color: #718096;">No hay solicitudes pendientes</p>';
+        return;
+      }
+
+      lista.innerHTML = solicitudes.map(sol => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">🛍️ ${sol.comercioNombre || 'Comercio'}</div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-save" onclick="aprobarSolicitud('tienda', '${sol.id}')">
+                ✅ Aprobar
+              </button>
+              <button class="ceo-btn ceo-btn-delete" onclick="rechazarSolicitud('tienda', '${sol.id}')">
+                ❌ Rechazar
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: #718096;">
+            <p><strong>Comercio ID:</strong> ${sol.comercioId}</p>
+            <p><strong>Email:</strong> ${sol.email || 'No especificado'}</p>
+            <p><strong>Teléfono:</strong> ${sol.telefono || 'No especificado'}</p>
+            <p><strong>Fecha:</strong> ${new Date(sol.fecha).toLocaleDateString('es')}</p>
+            <p><strong>Valor:</strong> $50,000</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderizarSolicitudesPublicidad(solicitudes) {
+      const lista = document.getElementById('listaSolicitudesPublicidad');
+      
+      if (solicitudes.length === 0) {
+        lista.innerHTML = '<p style="text-align: center; padding: 20px; color: #718096;">No hay solicitudes pendientes</p>';
+        return;
+      }
+
+      lista.innerHTML = solicitudes.map(sol => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">📣 ${sol.comercioNombre || 'Comercio'}</div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-save" onclick="aprobarSolicitud('publicidad', '${sol.id}')">
+                ✅ Aprobar
+              </button>
+              <button class="ceo-btn ceo-btn-delete" onclick="rechazarSolicitud('publicidad', '${sol.id}')">
+                ❌ Rechazar
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: #718096;">
+            <p><strong>Plan:</strong> ${sol.plan || 'N/A'}</p>
+            <p><strong>Duración:</strong> ${sol.duracion || 'N/A'} meses</p>
+            <p><strong>Total:</strong> $${(sol.total || 0).toLocaleString('es')}</p>
+            <p><strong>Fecha:</strong> ${new Date(sol.fecha).toLocaleDateString('es')}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function aprobarSolicitud(tipo, id) {
+      if (!confirm('¿Aprobar esta solicitud?')) return;
+
+      try {
+        const response = await fetch(`/api/solicitudes/${tipo}/${id}/aprobar`, {
+          method: 'POST'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Solicitud aprobada\n\nSe ha notificado al comercio.');
+          await cargarSolicitudes();
+        } else {
+          alert('⚠️ Error al aprobar solicitud');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al aprobar');
+      }
+    }
+
+    async function rechazarSolicitud(tipo, id) {
+      const motivo = prompt('¿Motivo del rechazo? (opcional)');
+
+      try {
+        const response = await fetch(`/api/solicitudes/${tipo}/${id}/rechazar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ motivo })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Solicitud rechazada');
+          await cargarSolicitudes();
+        } else {
+          alert('⚠️ Error al rechazar solicitud');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al rechazar');
+      }
+    }
+
+    // ========================================
+    // GESTIÓN DE REGISTROS
+    // ========================================
+
+    let registrosActuales = [];
+    let tipoRegistroActual = '';
+
+    async function cargarRegistros(tipo) {
+      tipoRegistroActual = tipo;
+      
+      try {
+        const response = await fetch(`/api/registros/${tipo}`);
+        const data = await response.json();
+        
+        registrosActuales = data.registros || [];
+        
+        document.getElementById('tituloRegistros').textContent = 
+          `📊 ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} (${registrosActuales.length} registros)`;
+        
+        renderizarRegistros();
+      } catch (error) {
+        console.error('Error al cargar registros:', error);
+        document.getElementById('listaRegistros').innerHTML = 
+          '<p style="text-align: center; padding: 40px; color: #718096;">Error al cargar registros</p>';
+      }
+    }
+
+    function renderizarRegistros() {
+      const lista = document.getElementById('listaRegistros');
+      
+      if (registrosActuales.length === 0) {
+        lista.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No hay registros de este tipo</p>';
+        return;
+      }
+
+      lista.innerHTML = registrosActuales.map((reg, index) => `
+        <div class="ceo-item-card">
+          <div class="ceo-item-header">
+            <div class="ceo-item-title">#${index + 1} ${reg.nombre || reg.email || reg.telefono || reg.id}</div>
+            <div class="ceo-item-actions">
+              <button class="ceo-btn ceo-btn-edit" onclick='verDetalleRegistro(${JSON.stringify(reg)})'>
+                👁️ Ver Detalle
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: #718096;">
+            <strong>Fecha:</strong> ${new Date(reg.fecha || reg.fechaRegistro).toLocaleString('es')}
+            ${reg.tipo ? ` | <strong>Tipo:</strong> ${reg.tipo}` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function verDetalleRegistro(registro) {
+      document.getElementById('modalTitle').textContent = '📄 Detalle del Registro';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="ceo-code-preview">
+          <code>${JSON.stringify(registro, null, 2)}</code>
+        </div>
+      `;
+      document.getElementById('ceoModal').classList.add('active');
+    }
+
+    function exportarRegistrosCSV() {
+      if (registrosActuales.length === 0) {
+        alert('⚠️ No hay registros para exportar');
+        return;
+      }
+
+      const keys = Object.keys(registrosActuales[0]);
+      let csv = keys.join(',') + '\n';
+      
+      registrosActuales.forEach(reg => {
+        csv += keys.map(k => `"${reg[k] || ''}"`).join(',') + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `registros_${tipoRegistroActual}_${Date.now()}.csv`;
+      a.click();
+      
+      alert('✅ CSV exportado correctamente');
+    }
+
+    function exportarRegistrosJSON() {
+      if (registrosActuales.length === 0) {
+        alert('⚠️ No hay registros para exportar');
+        return;
+      }
+
+      const blob = new Blob([JSON.stringify(registrosActuales, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `registros_${tipoRegistroActual}_${Date.now()}.json`;
+      a.click();
+      
+      alert('✅ JSON exportado correctamente');
+    }
+
+    // ========================================
+    // INICIALIZACIÓN EXPANDIDA
+    // ========================================
+
+    async function inicializarPanelCEO() {
+      await cargarDatosCEO();
+      actualizarEstadisticas();
+      listarArchivosJSON();
+      renderizarCategorias();
+      await cargarSuspensiones();
+      await cargarSolicitudes();
+      
+      // Cargar multimedia por defecto
+      filtrarMultimedia('comercios');
+    }
+
+    // Funciones placeholders actualizadas
+    function abrirModalNuevoComercio() {
+      document.getElementById('modalTitle').textContent = '➕ Agregar Nuevo Comercio';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="ceo-alert ceo-alert-success">
+          <span>💡</span>
+          <div>Completa los datos del nuevo comercio</div>
+        </div>
+        <div class="ceo-editor-grid">
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Nombre *</label>
+            <input type="text" id="nuevoNombre" class="ceo-editor-input" required>
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Categoría *</label>
+            <select id="nuevoCategoria" class="ceo-editor-select" required>
+              ${CATEGORIAS_SISTEMA.map(c => `<option value="${c.id}">${c.icono} ${c.nombre}</option>`).join('')}
+            </select>
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">WhatsApp</label>
+            <input type="tel" id="nuevoWhatsapp" class="ceo-editor-input">
+          </div>
+          <div class="ceo-editor-field">
+            <label class="ceo-editor-label">Email</label>
+            <input type="email" id="nuevoEmail" class="ceo-editor-input">
+          </div>
+          <div class="ceo-editor-field" style="grid-column: 1 / -1;">
+            <label class="ceo-editor-label">Dirección</label>
+            <input type="text" id="nuevoDireccion" class="ceo-editor-input">
+          </div>
+        </div>
+        <button class="ceo-btn ceo-btn-save" style="margin-top: 20px; width: 100%;" onclick="guardarNuevoComercio()">
+          ✅ Crear Comercio
+        </button>
+      `;
+      document.getElementById('ceoModal').classList.add('active');
+    }
+
+    async function guardarNuevoComercio() {
+      const comercio = {
+        id: `COM-CEO-${Date.now()}`,
+        nombre: document.getElementById('nuevoNombre').value,
+        categoria: document.getElementById('nuevoCategoria').value,
+        whatsapp: document.getElementById('nuevoWhatsapp').value,
+        email: document.getElementById('nuevoEmail').value,
+        direccion: document.getElementById('nuevoDireccion').value,
+        activo: true,
+        verificado: false,
+        fechaRegistro: new Date().toISOString()
+      };
+
+      try {
+        const response = await fetch('/api/comercios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(comercio)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ Comercio creado correctamente');
+          cerrarModalCEO();
+          await cargarDatosCEO();
+        } else {
+          alert('⚠️ Error al crear comercio');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('⚠️ Error al guardar');
+      }
+    }
+
+    function abrirModalNuevoRepartidor() {
+      alert('📝 Modal de nuevo repartidor - En desarrollo');
+    }
+
+    function abrirModalNuevoCliente() {
+      alert('📝 Modal de nuevo cliente - En desarrollo');
+    }
+
+    function abrirModalNuevaCategoria() {
+      alert('📝 Modal de nueva categoría - En desarrollo');
+    }
+
+    function editarRepartidor(repartidor) {
+      alert('✏️ Editor de repartidor - En desarrollo');
+    }
+
+    function eliminarRepartidor(id) {
+      if (confirm('¿Eliminar este repartidor?\n\nEsta acción no se puede deshacer.')) {
+        alert('🗑️ Función de eliminar repartidor - En desarrollo');
+      }
+    }
+
+    function editarPedido(pedido) {
+      alert('✏️ Editor de pedido - En desarrollo');
+    }
+
+    function verDetallesSuspension(id) {
+      alert(`👁️ Ver detalles de suspensión ${id} - En desarrollo`);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+/* ===================================
+   ESTILOS PARA MODALES Y OVERLAYS
+   =================================== */
+
+/* Modal Overlay Base */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-overlay[aria-hidden="false"] {
+  display: flex;
+}
+
+/* Modal Content */
+.modal-content {
+  background: var(--color-superficie);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  position: relative;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal Header Tienda */
+.modal-header-tienda {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--color-borde);
+}
+
+.modal-header-tienda h2 {
+  color: var(--color-primario);
+  margin-bottom: 5px;
+  font-size: 24px;
+}
+
+.modal-header-tienda .tienda-categoria-modal {
+  display: inline-block;
+  background: var(--color-primario);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* Modal Body Tienda */
+.modal-body-tienda {
+  margin: 25px 0;
+}
+
+.info-section {
+  margin-bottom: 25px;
+}
+
+.info-section h3 {
+  color: var(--color-texto-claro);
+  font-size: 18px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-section p {
+  color: var(--color-texto);
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.lista-especialidades {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.lista-especialidades li {
+  color: var(--color-texto);
+  padding: 8px 0 8px 25px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.lista-especialidades li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-primario);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Botones de Acción Tienda */
+.botones-accion-tienda {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+.btn-whatsapp {
+  background: #25d366;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  flex: 1;
+  justify-content: center;
+  min-width: 200px;
+}
+
+.btn-whatsapp:hover {
+  background: #20ba5a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.btn-enlace {
+  background: var(--color-secundario);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  transition: all 0.3s;
+  flex: 1;
+}
+
+.btn-enlace:hover {
+  background: var(--color-primario);
+  transform: translateY(-2px);
+}
+
+/* Secciones con Fondo */
+.seccion-fondo-tarjeta {
+  background: var(--color-fondo-tarjeta);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.seccion-titulo-primario {
+  color: var(--color-primario);
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Previsualización de Imágenes */
+.previsualizacion-imagen {
+  margin-top: 10px;
+}
+
+.previsualizacion-imagen-contenedor {
+  border: 2px solid var(--color-primario);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--color-fondo);
+}
+
+.previsualizacion-imagen-contenedor img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 6px;
+  display: block;
+  margin: 0 auto;
+}
+
+.previsualizacion-imagen-info {
+  color: #10b981;
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Display de IDs */
+.id-display-container {
+  background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+  padding: 30px;
+  border-radius: 12px;
+  margin: 25px 0;
+  text-align: center;
+}
+
+.id-display-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.id-display-valor {
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 3px;
+  margin: 10px 0;
+}
+
+.id-display-nota {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+/* Info Box */
+.info-box {
+  background: var(--color-fondo-tarjeta);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--color-primario);
+}
+
+.info-box p {
+  color: var(--color-texto-claro);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/* Checkboxes mejorados */
+.checkbox-container {
+  background: var(--color-fondo-tarjeta);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 2px solid var(--color-primario);
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-wrapper label {
+  cursor: pointer;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.checkbox-label-strong {
+  color: var(--color-texto-claro);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.checkbox-label-small {
+  color: var(--color-texto);
+  opacity: 0.8;
+  font-size: 13px;
+}
+
+/* Mensajes de error */
+.mensaje-error {
+  display: none;
+  background: #ef4444;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.mensaje-error.visible {
+  display: block;
+}
+
+/* Estilos para texto centrado */
+.texto-centrado {
+  text-align: center;
+}
+
+.texto-color-primario {
+  color: var(--color-primario);
+}
+
+.texto-color-exito {
+  color: var(--color-exito);
+}
+
+.texto-nota-pequena {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 20px;
+    max-height: 85vh;
+  }
+
+  .botones-accion-tienda {
+    flex-direction: column;
+  }
+
+  .btn-whatsapp,
+  .btn-enlace {
+    min-width: 100%;
+  }
+
+  .id-display-valor {
+    font-size: 28px;
+  }
+}

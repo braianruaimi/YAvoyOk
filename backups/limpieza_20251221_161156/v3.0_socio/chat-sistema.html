@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Sistema - YaVoy 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1724;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            height: 100vh;
+        }
+
+        /* Sidebar - Lista de Conversaciones */
+        .sidebar {
+            background: #0b1220;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .search-box {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #06b6d4;
+        }
+
+        .filter-tabs {
+            display: flex;
+            padding: 10px 15px;
+            gap: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .filter-tab {
+            padding: 8px 15px;
+            border: none;
+            background: #0f1724;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .conversation-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f2f5;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .conversation-item:hover {
+            background: #0f1724;
+        }
+
+        .conversation-item.active {
+            background: #e8eaf6;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .conversation-time {
+            font-size: 0.75em;
+            color: #cccccc;
+        }
+
+        .conversation-preview {
+            font-size: 0.9em;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background: #06b6d4;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            background: #e8eaf6;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: #0b1220;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-user-details h3 {
+            font-size: 1.1em;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .chat-user-status {
+            font-size: 0.85em;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            padding: 10px;
+            border: none;
+            background: #0f1724;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover {
+            background: #e0e0e0;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 70%;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            background: #0b1220;
+            color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+            font-size: 0.75em;
+            color: #ffffff;
+            padding: 0 5px;
+        }
+
+        .message.sent .message-info {
+            justify-content: flex-end;
+        }
+
+        .message-status {
+            color: #06b6d4;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #0b1220;
+            border-radius: 18px;
+            max-width: 80px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .date-divider {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .date-divider span {
+            background: #0b1220;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            background: #0b1220;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.95em;
+            resize: none;
+            max-height: 120px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #06b6d4;
+        }
+
+        .btn-send {
+            padding: 12px 25px;
+            border: none;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-chat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #cccccc;
+        }
+
+        .empty-chat .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        /* Modal Bienvenida Chat */
+        .chat-welcome-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chat-welcome-modal.active {
+            display: flex;
+        }
+
+        .welcome-modal-content {
+            background: #0b1220;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .welcome-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message {
+            font-size: 1.1em;
+            color: #ffffff;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .btn-understood {
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-understood:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar.mobile-active {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                z-index: 1000;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+
+            .welcome-modal-content {
+                padding: 30px 20px;
+            }
+
+            .welcome-title {
+                font-size: 1.4em;
+            }
+
+            .welcome-message {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>💬 Mensajes</h2>
+                <div class="user-status">
+                    <div class="status-dot"></div>
+                    <span>En línea</span>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchConversations" placeholder="🔍 Buscar conversaciones...">
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filtrarConversaciones('todos')">Todos</button>
+                <button class="filter-tab" onclick="filtrarConversaciones('comercios')">Comercios</button>
+                <button class="filter-tab" onclick="filtrarConversaciones('repartidores')">Repartidores</button>
+            </div>
+
+            <div class="conversations-list" id="conversationsList">
+                <!-- Las conversaciones se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header hidden" id="chatHeader">
+                <div class="chat-user-info">
+                    <div class="avatar" id="chatAvatar">K</div>
+                    <div class="chat-user-details">
+                        <h3 id="chatUserName">Kiosco Central</h3>
+                        <div class="chat-user-status">
+                            <div class="status-dot"></div>
+                            <span>En línea</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="btn-icon" title="Llamar">📞</button>
+                    <button class="btn-icon" title="Videollamada">🎥</button>
+                    <button class="btn-icon" title="Más opciones">⋮</button>
+                </div>
+            </div>
+
+            <div class="empty-chat" id="emptyChat">
+                <div class="icon">💬</div>
+                <h3>Seleccioná una conversación</h3>
+                <p>Elegí un contacto para comenzar a chatear</p>
+            </div>
+
+            <div class="messages-container hidden" id="messagesContainer">
+                <!-- Los mensajes se cargarán aquí dinámicamente -->
+            </div>
+
+            <div class="input-area hidden" id="inputArea">
+                <div class="input-container">
+                    <div class="input-actions">
+                        <button class="btn-icon" title="Adjuntar archivo">📎</button>
+                        <button class="btn-icon" title="Imagen">🖼️</button>
+                        <button class="btn-icon" title="Emoji">😊</button>
+                    </div>
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="Escribí un mensaje..."
+                        rows="1"
+                    ></textarea>
+                    <button class="btn-send" id="sendButton" onclick="enviarMensaje()">
+                        <span>Enviar</span>
+                        <span>📤</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Bienvenida Chat -->
+    <div class="chat-welcome-modal" id="chatWelcomeModal">
+        <div class="welcome-modal-content">
+            <div class="welcome-icon">💬</div>
+            <h2 class="welcome-title">¡Bienvenido al Chat!</h2>
+            <p class="welcome-message">
+                Recuerda mantener una comunicación precisa para asegurar una entrega rápida.<br><br>
+                Por favor usa lenguaje respetuoso en todo momento.<br><br>
+                <strong>¡GRACIAS!</strong>
+            </p>
+            <button class="btn-understood" onclick="cerrarModalBienvenida()">
+                ✓ Entendido
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let conversaciones = [];
+        let conversacionActual = null;
+        let mensajes = {};
+        let conversacionesVistas = {}; // Guardar conversaciones ya vistas y su última interacción
+
+        // Inicializar chat
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarConversaciones();
+            setupEventListeners();
+            cargarConversacionesVistas();
+        });
+
+        function cargarConversacionesVistas() {
+            // Cargar del localStorage las conversaciones ya vistas
+            const vistas = localStorage.getItem('conversacionesVistas');
+            if (vistas) {
+                conversacionesVistas = JSON.parse(vistas);
+            }
+        }
+
+        function guardarConversacionVista(conversacionId) {
+            // Guardar timestamp de la última interacción
+            conversacionesVistas[conversacionId] = Date.now();
+            localStorage.setItem('conversacionesVistas', JSON.stringify(conversacionesVistas));
+        }
+
+        function debeAparecerModal(conversacionId) {
+            const DOS_HORAS = 2 * 60 * 60 * 1000; // 2 horas en milisegundos
+            
+            // Si la conversación nunca se ha visto, mostrar modal
+            if (!conversacionesVistas[conversacionId]) {
+                return true;
+            }
+            
+            // Si han pasado más de 2 horas desde la última interacción, mostrar modal
+            const ultimaInteraccion = conversacionesVistas[conversacionId];
+            const tiempoTranscurrido = Date.now() - ultimaInteraccion;
+            
+            if (tiempoTranscurrido > DOS_HORAS) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        function mostrarModalBienvenida(conversacionId) {
+            // Mostrar modal si cumple las condiciones
+            if (debeAparecerModal(conversacionId)) {
+                document.getElementById('chatWelcomeModal').classList.add('active');
+            }
+        }
+
+        function cerrarModalBienvenida() {
+            document.getElementById('chatWelcomeModal').classList.remove('active');
+            
+            // Guardar la conversación actual como vista
+            if (conversacionActual) {
+                guardarConversacionVista(conversacionActual.id);
+            }
+        }
+
+        function setupEventListeners() {
+            // Auto-resize del textarea
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            // Enviar con Enter (Shift+Enter para nueva línea)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    enviarMensaje();
+                }
+            });
+
+            // Búsqueda de conversaciones
+            document.getElementById('searchConversations').addEventListener('input', function(e) {
+                const filtro = e.target.value.toLowerCase();
+                filtrarConversacionesPorTexto(filtro);
+            });
+        }
+
+        async function cargarConversaciones() {
+            try {
+                // Intentar cargar conversaciones reales
+                const response = await fetch('http://localhost:5501/api/conversaciones');
+                
+                if (response.ok) {
+                    const conversacionesReales = await response.json();
+                    if (conversacionesReales.length > 0) {
+                        conversaciones = conversacionesReales;
+                        mostrarConversaciones();
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando conversaciones:', error);
+            }
+            
+            // Fallback a conversaciones de ejemplo
+            conversaciones = [
+                {
+                    id: 1,
+                    tipo: 'comercio',
+                    nombre: 'Kiosco Central',
+                    avatar: 'K',
+                    ultimoMensaje: '¿A qué hora llega el pedido?',
+                    hora: '10:30',
+                    noLeidos: 2,
+                    online: true
+                },
+                {
+                    id: 2,
+                    tipo: 'repartidor',
+                    nombre: 'Juan Pérez',
+                    avatar: 'JP',
+                    ultimoMensaje: 'Llegué al destino',
+                    hora: '10:15',
+                    noLeidos: 0,
+                    online: true
+                },
+                {
+                    id: 3,
+                    tipo: 'comercio',
+                    nombre: 'Panadería Don Pan',
+                    avatar: 'P',
+                    ultimoMensaje: 'Gracias por la entrega',
+                    hora: 'Ayer',
+                    noLeidos: 0,
+                    online: false
+                },
+                {
+                    id: 4,
+                    tipo: 'repartidor',
+                    nombre: 'María García',
+                    avatar: 'MG',
+                    ultimoMensaje: 'Saliendo para la entrega',
+                    hora: '09:45',
+                    noLeidos: 1,
+                    online: true
+                },
+                {
+                    id: 5,
+                    tipo: 'comercio',
+                    nombre: 'Farmacia del Centro',
+                    avatar: 'F',
+                    ultimoMensaje: 'Necesito un repartidor urgente',
+                    hora: '09:30',
+                    noLeidos: 3,
+                    online: true
+                }
+            ];
+
+            // Mensajes de ejemplo
+            mensajes = {
+                1: [
+                    {
+                        id: 1,
+                        tipo: 'recibido',
+                        texto: 'Hola! Necesito hacer un pedido',
+                        hora: '10:20',
+                        fecha: 'Hoy'
+                    },
+                    {
+                        id: 2,
+                        tipo: 'enviado',
+                        texto: '¡Hola! Claro, decime qué necesitás',
+                        hora: '10:21',
+                        fecha: 'Hoy',
+                        leido: true
+                    },
+                    {
+                        id: 3,
+                        tipo: 'recibido',
+                        texto: 'Quiero pedir 2 coca colas y un alfajor',
+                        hora: '10:22',
+                        fecha: 'Hoy'
+                    },
+                    {
+                        id: 4,
+                        tipo: 'enviado',
+                        texto: 'Perfecto! El total es $850. ¿Tu dirección?',
+                        hora: '10:23',
+                        fecha: 'Hoy',
+                        leido: true
+                    },
+                    {
+                        id: 5,
+                        tipo: 'recibido',
+                        texto: 'Av. Colón 1234',
+                        hora: '10:24',
+                        fecha: 'Hoy'
+                    },
+                    {
+                        id: 6,
+                        tipo: 'enviado',
+                        texto: 'Genial! Ya asigné un repartidor. Llega en 30 minutos aproximadamente',
+                        hora: '10:25',
+                        fecha: 'Hoy',
+                        leido: true
+                    },
+                    {
+                        id: 7,
+                        tipo: 'recibido',
+                        texto: '¿A qué hora llega el pedido?',
+                        hora: '10:30',
+                        fecha: 'Hoy'
+                    }
+                ],
+                2: [
+                    {
+                        id: 1,
+                        tipo: 'enviado',
+                        texto: 'Tengo un pedido para vos. ¿Estás disponible?',
+                        hora: '10:10',
+                        fecha: 'Hoy',
+                        leido: true
+                    },
+                    {
+                        id: 2,
+                        tipo: 'recibido',
+                        texto: 'Sí, disponible!',
+                        hora: '10:11',
+                        fecha: 'Hoy'
+                    },
+                    {
+                        id: 3,
+                        tipo: 'enviado',
+                        texto: 'Perfecto. Retirá en Kiosco Central, Av. Colón 500',
+                        hora: '10:12',
+                        fecha: 'Hoy',
+                        leido: true
+                    },
+                    {
+                        id: 4,
+                        tipo: 'recibido',
+                        texto: 'En camino 🚴',
+                        hora: '10:13',
+                        fecha: 'Hoy'
+                    },
+                    {
+                        id: 5,
+                        tipo: 'recibido',
+                        texto: 'Llegué al destino',
+                        hora: '10:15',
+                        fecha: 'Hoy'
+                    }
+                ]
+            };
+
+            mostrarConversaciones();
+        }
+
+        function mostrarConversaciones() {
+            const lista = document.getElementById('conversationsList');
+            lista.innerHTML = '';
+
+            conversaciones.forEach(conv => {
+                const item = document.createElement('div');
+                item.className = 'conversation-item';
+                item.onclick = () => abrirConversacion(conv.id);
+
+                item.innerHTML = `
+                    <div class="avatar">${conv.avatar}</div>
+                    <div class="conversation-info">
+                        <div class="conversation-header">
+                            <span class="conversation-name">${conv.nombre}</span>
+                            <span class="conversation-time">${conv.hora}</span>
+                        </div>
+                        <div class="conversation-preview">${conv.ultimoMensaje}</div>
+                    </div>
+                    ${conv.noLeidos > 0 ? `<div class="unread-badge">${conv.noLeidos}</div>` : ''}
+                `;
+
+                lista.appendChild(item);
+            });
+        }
+
+        function abrirConversacion(id) {
+            conversacionActual = conversaciones.find(c => c.id === id);
+            
+            // Mostrar modal si es nueva conversación o han pasado más de 2 horas
+            mostrarModalBienvenida(id);
+            
+            // Marcar como activa
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Marcar como leída
+            conversacionActual.noLeidos = 0;
+            mostrarConversaciones();
+
+            // Mostrar chat
+            document.getElementById('emptyChat').style.display = 'none';
+            document.getElementById('chatHeader').style.display = 'flex';
+            document.getElementById('messagesContainer').style.display = 'flex';
+            document.getElementById('inputArea').style.display = 'block';
+
+            // Actualizar header
+            document.getElementById('chatAvatar').textContent = conversacionActual.avatar;
+            document.getElementById('chatUserName').textContent = conversacionActual.nombre;
+
+            // Cargar mensajes
+            mostrarMensajes(id);
+        }
+
+        function mostrarMensajes(conversacionId) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+
+            const msgs = mensajes[conversacionId] || [];
+            let fechaActual = null;
+
+            msgs.forEach(msg => {
+                // Separador de fecha
+                if (msg.fecha !== fechaActual) {
+                    const divider = document.createElement('div');
+                    divider.className = 'date-divider';
+                    divider.innerHTML = `<span>${msg.fecha}</span>`;
+                    container.appendChild(divider);
+                    fechaActual = msg.fecha;
+                }
+
+                // Mensaje
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.tipo === 'enviado' ? 'sent' : 'received'}`;
+
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${msg.tipo === 'enviado' ? 'Y' : conversacionActual.avatar}</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${msg.texto}</div>
+                        <div class="message-info">
+                            <span>${msg.hora}</span>
+                            ${msg.tipo === 'enviado' ? `<span class="message-status">${msg.leido ? '✓✓' : '✓'}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(messageDiv);
+            });
+
+            // Scroll al final
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function enviarMensaje() {
+            const input = document.getElementById('messageInput');
+            const texto = input.value.trim();
+
+            if (!texto || !conversacionActual) return;
+
+            const nuevoMensaje = {
+                id: Date.now(),
+                tipo: 'enviado',
+                texto: texto,
+                hora: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+                fecha: 'Hoy',
+                leido: false
+            };
+
+            // Agregar mensaje localmente
+            if (!mensajes[conversacionActual.id]) {
+                mensajes[conversacionActual.id] = [];
+            }
+            mensajes[conversacionActual.id].push(nuevoMensaje);
+
+            // Enviar al servidor
+            try {
+                await fetch(`http://localhost:5501/api/chat/${conversacionActual.id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        remitente: 'admin',
+                        texto: texto,
+                        tipo: 'enviado'
+                    })
+                });
+            } catch (error) {
+                console.error('Error enviando mensaje al servidor:', error);
+            }
+
+            // Actualizar conversación
+            conversacionActual.ultimoMensaje = texto;
+            conversacionActual.hora = nuevoMensaje.hora;
+
+            // Limpiar input
+            input.value = '';
+            input.style.height = 'auto';
+
+            // Recargar vista
+            mostrarMensajes(conversacionActual.id);
+            mostrarConversaciones();
+
+            // Simular respuesta automática (opcional)
+            setTimeout(() => simularRespuesta(), 2000);
+        }
+
+        function simularRespuesta() {
+            if (!conversacionActual) return;
+
+            const respuestas = [
+                'Perfecto, gracias!',
+                'Entendido',
+                'Dale, ahí voy',
+                'Ok! 👍',
+                'Genial'
+            ];
+
+            const respuesta = {
+                id: Date.now(),
+                tipo: 'recibido',
+                texto: respuestas[Math.floor(Math.random() * respuestas.length)],
+                hora: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+                fecha: 'Hoy'
+            };
+
+            mensajes[conversacionActual.id].push(respuesta);
+            conversacionActual.ultimoMensaje = respuesta.texto;
+            conversacionActual.hora = respuesta.hora;
+            conversacionActual.noLeidos++;
+
+            mostrarMensajes(conversacionActual.id);
+            mostrarConversaciones();
+        }
+
+        function filtrarConversaciones(tipo) {
+            // Actualizar tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filtrar
+            const lista = document.getElementById('conversationsList');
+            const items = lista.querySelectorAll('.conversation-item');
+
+            items.forEach((item, index) => {
+                const conv = conversaciones[index];
+                if (tipo === 'todos' || conv.tipo === tipo) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function filtrarConversacionesPorTexto(filtro) {
+            const lista = document.getElementById('conversationsList');
+            const items = lista.querySelectorAll('.conversation-item');
+
+            items.forEach((item, index) => {
+                const conv = conversaciones[index];
+                const coincide = conv.nombre.toLowerCase().includes(filtro) ||
+                                conv.ultimoMensaje.toLowerCase().includes(filtro);
+                
+                item.style.display = coincide ? 'flex' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

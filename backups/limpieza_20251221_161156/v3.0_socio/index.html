@@ -1,0 +1,2942 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Conecta comercios con repartidores locales. Fácil, rápido y confiable."
+    />
+    <meta name="msapplication-TileColor" content="#06b6d4" />
+
+    <link rel="manifest" href="manifest.json?v=13" />
+    <link rel="icon" type="image/png" href="icons/icon-yavoy.png?v=13" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="YAvoy" />
+    <link rel="apple-touch-icon" href="icons/icon-yavoy.png?v=13" />
+    <title>YAvoy — Plataforma de Reparto</title>
+    <link rel="stylesheet" href="styles.css?v=13" />
+    <link rel="stylesheet" href="styles/theme.css" />
+    <link rel="stylesheet" href="styles/utilities.css" />
+    <link rel="stylesheet" href="styles/loading.css?v=1" />
+    <link rel="stylesheet" href="styles/animations-improved.css?v=1" />
+    <link rel="stylesheet" href="styles/responsive-improved.css?v=1" />
+    
+    <style>
+      /* Estilos del Widget Chatbot */
+      .chatbot-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9998;
+      }
+
+      .btn-chatbot-flotante {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        border: none;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-chatbot-flotante:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+      }
+
+      .chatbot-icon {
+        font-size: 28px;
+        z-index: 1;
+      }
+
+      .chatbot-pulse {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(6, 182, 212, 0.3);
+        animation: chatbot-pulse 2s infinite;
+      }
+
+      @keyframes chatbot-pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 0;
+        }
+      }
+
+      /* Botón de Tema Flotante */
+      .theme-toggle-widget {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        z-index: 9997;
+      }
+
+      .btn-theme-toggle {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .btn-theme-toggle:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-theme-toggle:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      .chatbot-modal {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 400px;
+        max-width: calc(100vw - 40px);
+        height: 600px;
+        max-height: calc(100vh - 120px);
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+      }
+
+      .chatbot-modal.active {
+        display: flex;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .chatbot-header {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        color: white;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .chatbot-header-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .chatbot-avatar {
+        font-size: 32px;
+      }
+
+      .chatbot-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .chatbot-status {
+        margin: 0;
+        font-size: 12px;
+        opacity: 0.9;
+      }
+
+      .btn-cerrar-chatbot {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .btn-cerrar-chatbot:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .chatbot-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .chatbot-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .chatbot-message {
+        display: flex;
+        gap: 8px;
+        animation: messageSlide 0.3s ease;
+      }
+
+      @keyframes messageSlide {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .chatbot-message.user {
+        justify-content: flex-end;
+      }
+
+      .chatbot-message.bot {
+        justify-content: flex-start;
+      }
+
+      .message-bubble {
+        max-width: 75%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        line-height: 1.5;
+        font-size: 14px;
+      }
+
+      .chatbot-message.user .message-bubble {
+        background: #06b6d4;
+        color: white;
+        border-bottom-right-radius: 4px;
+      }
+
+      .chatbot-message.bot .message-bubble {
+        background: #f1f5f9;
+        color: #1e293b;
+        border-bottom-left-radius: 4px;
+      }
+
+      .chatbot-suggestions-container {
+        padding: 0 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        max-height: 80px;
+        overflow-y: auto;
+      }
+
+      .suggestion-chip {
+        background: #e0f2fe;
+        color: #0891b2;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 13px;
+        cursor: pointer;
+        border: 1px solid #bae6fd;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .suggestion-chip:hover {
+        background: #06b6d4;
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      .chatbot-controls {
+        padding: 8px 16px;
+        display: flex;
+        gap: 8px;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .btn-chatbot-control {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: background 0.2s;
+      }
+
+      .btn-chatbot-control:hover {
+        background: #f1f5f9;
+      }
+
+      .btn-chatbot-control.active {
+        background: #e0f2fe;
+      }
+
+      .chatbot-input-area {
+        padding: 16px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 8px;
+      }
+
+      .chatbot-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 24px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .chatbot-input:focus {
+        border-color: #06b6d4;
+      }
+
+      .btn-enviar-chatbot {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #06b6d4;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-enviar-chatbot:hover {
+        background: #0891b2;
+        transform: scale(1.05);
+      }
+
+      .btn-enviar-chatbot:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+        transform: scale(1);
+      }
+
+      /* Tema claro para chatbot */
+      body.light-mode .chatbot-modal {
+        background: #ffffff;
+      }
+
+      body.light-mode .chatbot-modal .chatbot-messages {
+        background: #f9fafb;
+      }
+
+      body.light-mode .chatbot-modal .chatbot-message.bot .message-bubble {
+        background: #f1f5f9;
+        color: #334155;
+      }
+
+      body.light-mode .chatbot-modal .chatbot-input {
+        background: #ffffff;
+        border-color: #e2e8f0;
+        color: #1a202c;
+      }
+
+      body.light-mode .chatbot-modal .chatbot-controls,
+      body.light-mode .chatbot-modal .chatbot-input-area {
+        border-color: #e2e8f0;
+      }
+
+      body.light-mode .chatbot-modal .chatbot-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+
+      body.light-mode .chatbot-modal .btn-chatbot-control:hover {
+        background: #e2e8f0;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .chatbot-modal {
+          width: calc(100vw - 20px);
+          height: calc(100vh - 100px);
+          right: 10px;
+        }
+
+        .chatbot-widget {
+          right: 10px;
+          bottom: 10px;
+        }
+
+        .theme-toggle-widget {
+          right: 10px;
+          bottom: 85px;
+        }
+
+        .btn-theme-toggle {
+          width: 50px;
+          height: 50px;
+          font-size: 20px;
+        }
+      }
+
+      /* Rating buttons */
+      .message-rating {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        font-size: 16px;
+      }
+
+      .rating-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: all 0.2s;
+        padding: 4px;
+      }
+
+      .rating-btn:hover {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+
+      .rating-btn.selected {
+        opacity: 1;
+      }
+
+      /* Typing indicator */
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 12px 16px;
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #94a3b8;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%, 60%, 100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-10px);
+        }
+      }
+    </style>
+
+    <!-- MercadoPago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+  </head>
+
+  <body>
+    <!-- Panel de Notificaciones Mejorado -->
+    <div class="notification-panel" id="notificationPanel">
+      <button id="btnNotificacionesFlotante" class="btn-notificaciones-flotante" aria-label="Gestionar notificaciones" title="Notificaciones">
+        <span class="notification-icon">🔔</span>
+        <span class="notification-pulse"></span>
+      </button>
+      
+      <div class="notification-menu" id="notificationMenu">
+        <div class="notification-menu-header">
+          <span class="notification-menu-icon">🔔</span>
+          <span class="notification-menu-title">Notificaciones</span>
+        </div>
+        <div class="notification-menu-content">
+          <div class="notification-status" id="notificationStatus">
+            <span class="status-indicator"></span>
+            <span class="status-text">No configuradas</span>
+          </div>
+          <p class="notification-description">
+            Recibe alertas sobre nuevos pedidos, promociones y actualizaciones importantes
+          </p>
+          <div class="notification-actions">
+            <button id="btnActivarNotif" class="btn-notification-action btn-primary-action">
+              <span class="btn-icon">🔔</span>
+              <span class="btn-text">Activar</span>
+            </button>
+            <button id="btnDesactivarNotif" class="btn-notification-action btn-secondary-action hidden-element">
+              <span class="btn-icon">🔕</span>
+              <span class="btn-text">Desactivar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widget Tema Flotante -->
+    <div class="theme-toggle-widget">
+      <button id="btnThemeToggle" class="btn-theme-toggle" title="Cambiar tema (Oscuro/Claro)">
+        🌙
+      </button>
+    </div>
+
+    <!-- Widget Chatbot Flotante -->
+    <div class="chatbot-widget" id="chatbotWidget">
+      <button id="btnChatbotFlotante" class="btn-chatbot-flotante" title="Asistente Virtual YAvoy">
+        <span class="chatbot-icon">💬</span>
+        <span class="chatbot-pulse"></span>
+      </button>
+      <div class="chatbot-modal" id="chatbotModal">
+        <div class="chatbot-header">
+          <div class="chatbot-header-info">
+            <span class="chatbot-avatar">🤖</span>
+            <div>
+              <h3>Asistente YAvoy</h3>
+              <p class="chatbot-status">En línea 24/7</p>
+            </div>
+          </div>
+          <button id="btnCerrarChatbot" class="btn-cerrar-chatbot" title="Cerrar">✕</button>
+        </div>
+        <div class="chatbot-content">
+          <div id="chatbotMessages" class="chatbot-messages"></div>
+          <div id="chatbotSuggestions" class="chatbot-suggestions-container"></div>
+          <div class="chatbot-controls">
+            <button id="btnChatbotVoz" class="btn-chatbot-control" title="Activar voz">🎤</button>
+            <button id="btnChatbotHistorial" class="btn-chatbot-control" title="Historial">📋</button>
+          </div>
+          <div class="chatbot-input-area">
+            <input 
+              type="text" 
+              id="chatbotInput" 
+              class="chatbot-input" 
+              placeholder="Escribe tu pregunta o usa comandos: /ayuda"
+              autocomplete="off"
+            />
+            <button id="btnEnviarChatbot" class="btn-enviar-chatbot">
+              <span>➤</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay" role="status" aria-live="polite" aria-label="Cargando">
+      <div class="spinner-wrapper">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="spinner-text">Cargando...</p>
+      </div>
+    </div>
+
+    <div id="splash-screen" role="status" aria-label="Pantalla de bienvenida">
+      <img id="splash-icon" src="icons/icon-yavoy.png?v=11" alt="Logo de YAvoy animado" />
+      <p id="splash-text">YAvoy... ¡Conectando tu pedido!</p>
+    </div>
+
+    <main id="main" role="main">
+      <section id="inicio" class="hero" role="banner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content contenedor">
+          <div class="hero-text">
+            <h1>YaVoy - Tu plataforma de entregas local</h1>
+            <p>Conectando clientes, comercios y repartidores en tu ciudad</p>
+            
+            <!-- Selector de Rol -->
+            <div class="role-selector" role="navigation" aria-label="Selección de rol de usuario">
+              <div class="role-card hover-lift">
+                <div class="role-icon" aria-hidden="true">🚚</div>
+                <h3>Necesito un Envío</h3>
+                <p>Solicitá el envío de tus productos o compras</p>
+                <button class="btn-role btn-cliente" onclick="abrirModalPedido()" aria-label="Solicitar servicio de envío">Solicitar Envío</button>
+              </div>
+              
+              <div class="role-card hover-lift">
+                <div class="role-icon" aria-hidden="true">🚴</div>
+                <h3>Soy Repartidor</h3>
+                <p>Percibí ingresos realizando envíos de forma independiente</p>
+                <button class="btn-role btn-repartidor" onclick="abrirModalRepartidor()" aria-label="Abrir formulario de registro para repartidores">Registrarme</button>
+                <a href="panel-repartidor.html" class="btn-role-secondary" aria-label="Ir al panel de repartidor">Acceder a Mi Panel</a>
+              </div>
+              
+              <div class="role-card hover-lift">
+                <div class="role-icon" aria-hidden="true">🏪</div>
+                <h3>Soy Comercio</h3>
+                <p>Aumenta tus ventas con entregas</p>
+                <button class="btn-role btn-comercio" onclick="abrirModalComercio()" aria-label="Abrir formulario de registro para comercios">Registrarme</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="seccion-estadisticas" aria-label="Estadísticas de la plataforma">
+        <div class="contenedor">
+          <div class="stats-grid" role="list">
+            <div class="stat-card animate-fade-in-up" role="listitem">
+              <div class="stat-numero" data-target="5" aria-label="5 comercios activos">0</div>
+              <div class="stat-label">Comercios Activos</div>
+            </div>
+            <div class="stat-card animate-fade-in-up delay-100" role="listitem">
+              <div class="stat-numero" data-target="2" aria-label="2 repartidores activos">0</div>
+              <div class="stat-label">Repartidores</div>
+            </div>
+            <div class="stat-card animate-fade-in-up delay-200" role="listitem">
+              <div class="stat-numero" data-target="33" aria-label="33 envíos realizados">0</div>
+              <div class="stat-label">Envíos Realizados</div>
+            </div>
+            <div class="stat-card animate-fade-in-up delay-300" role="listitem">
+              <div class="stat-numero" data-target="97" aria-label="97 por ciento de satisfacción">0</div>
+              <div class="stat-label">% Satisfacción</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Cómo Funciona -->
+      <section class="seccion-como-funciona">
+        <div class="contenedor">
+          <h2 class="seccion-header-title">¿Cómo Funciona YaVoy?</h2>
+          
+          <div class="funciona-grid">
+            <!-- Para Clientes -->
+            <div class="funciona-card">
+              <div class="funciona-icono">🛍️</div>
+              <h3>Para Clientes</h3>
+              <div class="pasos">
+                <div class="paso">
+                  <span class="paso-num">1</span>
+                  <p>Elige tu comercio favorito</p>
+                </div>
+                <div class="paso">
+                  <span class="paso-num">2</span>
+                  <p>Crea tu pedido con los productos</p>
+                </div>
+                <div class="paso">
+                  <span class="paso-num">3</span>
+                  <p>Un repartidor lo lleva a tu puerta</p>
+                </div>
+              </div>
+              <a href="pedidos.html" class="btn-funciona">Hacer mi Primer Pedido</a>
+            </div>
+
+            <!-- Para Repartidores -->
+            <div class="funciona-card">
+              <div class="funciona-icono">🚴</div>
+              <h3>Para Repartidores</h3>
+              <div class="pasos">
+                <div class="paso">
+                  <span class="paso-num">1</span>
+                  <p>Regístrate como repartidor</p>
+                </div>
+                <div class="paso">
+                  <span class="paso-num">2</span>
+                  <p>Toma los pedidos disponibles</p>
+                </div>
+                <div class="paso">
+                  <span class="paso-num">3</span>
+                  <p>Entrega y gana dinero</p>
+                </div>
+              </div>
+              <a href="#repartidores" class="btn-funciona">Empezar a Repartir</a>
+            </div>
+
+            <!-- Para Comercios -->
+            <div class="funciona-card">
+              <div class="funciona-icono">🏪</div>
+              <h3>Para Comercios</h3>
+              <div class="pasos">
+                <div class="paso">
+                  <span class="paso-num">1</span>
+                  <p>Registra tu comercio gratis</p>
+                </div>
+                <div class="paso">
+                  <span class="paso-num">2</span>
+                  <p>Recibe pedidos de clientes</p>
+                </div>
+                <div class="paso">
+                  <span class="paso-num">3</span>
+                  <p>Aumenta tus ventas locales</p>
+                </div>
+              </div>
+              <a href="#comercios" class="btn-funciona">Registrar mi Negocio</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      </section>
+
+      <section id="repartidores" class="seccion-rol seccion-secundaria">
+        <div class="contenedor">
+          <h3>Genera Ingresos Extras con tu Moto o Auto 🏍️🚗</h3>
+          <p class="subtitulo">Únete a la red de repartidores independientes de YAvoy</p>
+
+          <div class="features-grid">
+            <div class="feature-card" data-feature="horarios">
+              <div class="icon">⏰</div>
+              <h4>Horarios Flexibles</h4>
+              <p>
+                Conéctate cuando quieras. Tú decides cuántas horas trabajas y cuándo descansas, sin
+                ataduras.
+              </p>
+            </div>
+
+            <div class="feature-card" data-feature="ganancias">
+              <div class="icon">💰</div>
+              <h4>Ganancias Claras</h4>
+              <p>
+                Tarifas competitivas por cada envío. Ve tus ganancias en tiempo real y cobra entre 24 y 48hs.
+              </p>
+            </div>
+
+            <div class="feature-card" data-feature="envios">
+              <div class="icon">🗺️</div>
+              <h4>Envíos Locales</h4>
+              <p>
+                Entrega solo dentro de tu ciudad, optimizando rutas y reduciendo el tiempo de viaje
+                al máximo.
+              </p>
+            </div>
+          </div>
+
+          <!-- Formulario de Registro de Repartidores -->
+          <div class="registro-repartidor-container">
+            <h4 class="seccion-subtitle text-center mb-20">Registrate como Repartidor</h4>
+            <form id="formRegistrarRepartidorInicio" novalidate data-validate="true">
+              <div class="form-row">
+                <label for="repNombreInicio">Nombre Completo *</label>
+                <input type="text" id="repNombreInicio" name="repNombre" required placeholder="Ej: Juan Pérez">
+                <div class="error" data-for="repNombreInicio" aria-live="polite"></div>
+              </div>
+
+              <div class="form-row">
+                <label for="repTelefonoInicio">Teléfono *</label>
+                <input type="tel" id="repTelefonoInicio" name="repTelefono" required placeholder="Ej: 1234567890">
+                <div class="error" data-for="repTelefonoInicio" aria-live="polite"></div>
+              </div>
+
+              <div class="form-row">
+                <label for="repEmailInicio">Email</label>
+                <input type="email" id="repEmailInicio" name="repEmail" placeholder="Ej: juan@example.com">
+                <div class="error" data-for="repEmailInicio" aria-live="polite"></div>
+              </div>
+
+              <div class="form-row">
+                <label for="repVehiculoInicio">Tipo de Vehículo</label>
+                <select id="repVehiculoInicio" name="repVehiculo">
+                  <option value="moto">Moto</option>
+                  <option value="bicicleta">Bicicleta</option>
+                  <option value="auto">Auto</option>
+                  <option value="a-pie">A pie</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-primario w-100 mt-20">Registrarme como Repartidor</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Tiendas Locales -->
+      <section id="tiendas-locales" class="seccion-rol">
+        <div class="contenedor">
+          <h2 class="text-center mb-20 color-text">🏪 Tiendas Locales Destacadas</h2>
+          <p class="seccion-subtitle">
+            Descubre los comercios locales que confían en YaVoy para llegar a más clientes. ¡Apoya el comercio de tu zona!
+          </p>
+
+          <div class="tiendas-grid">
+            <!-- Tienda 1 -->
+            <div class="tienda-card" onclick="abrirModalTienda('pizzeria')">
+              <div class="tienda-icono">🍕</div>
+              <h3 class="tienda-nombre">Pizzería Don Mario</h3>
+              <span class="tienda-categoria">Alimentación</span>
+              <p class="tienda-descripcion">Pizzas artesanales a la piedra con ingredientes frescos y de calidad.</p>
+              <div class="tienda-badge">Ver más →</div>
+            </div>
+
+            <!-- Tienda 2 -->
+            <div class="tienda-card" onclick="abrirModalTienda('farmacia')">
+              <div class="tienda-icono">💊</div>
+              <h3 class="tienda-nombre">Farmacia La Salud</h3>
+              <span class="tienda-categoria">Salud</span>
+              <p class="tienda-descripcion">Medicamentos, productos de cuidado personal y atención farmacéutica profesional.</p>
+              <div class="tienda-badge">Ver más →</div>
+            </div>
+
+            <!-- Tienda 3 -->
+            <div class="tienda-card" onclick="abrirModalTienda('kiosco')">
+              <div class="tienda-icono">🍬</div>
+              <h3 class="tienda-nombre">Kiosco El Rápido</h3>
+              <span class="tienda-categoria">Kiosco</span>
+              <p class="tienda-descripcion">Golosinas, bebidas, snacks y productos de conveniencia las 24 horas.</p>
+              <div class="tienda-badge">Ver más →</div>
+            </div>
+
+            <!-- Tienda 4 -->
+            <div class="tienda-card" onclick="abrirModalTienda('boutique')">
+              <div class="tienda-icono">👕</div>
+              <h3 class="tienda-nombre">Boutique Estilo</h3>
+              <span class="tienda-categoria">Indumentaria</span>
+              <p class="tienda-descripcion">Ropa de moda para toda la familia con las últimas tendencias.</p>
+              <div class="tienda-badge">Ver más →</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modales de Tiendas -->
+      <div id="modalTiendaPizzeria" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content modal-content-medium" role="dialog" aria-modal="true">
+          <div class="modal-header-tienda">
+            <div class="tienda-icon-large">🍕</div>
+            <h2 class="tienda-title">Pizzería Don Mario</h2>
+            <span class="tienda-categoria-modal">Alimentación</span>
+          </div>
+
+          <div class="modal-body-tienda">
+            <div class="info-section">
+              <h3>📝 Descripción</h3>
+              <p>Pizzería artesanal con más de 15 años de experiencia. Elaboramos nuestras pizzas con masa madre, ingredientes frescos y la mejor mozzarella. Tenemos opciones vegetarianas, veganas y sin gluten.</p>
+            </div>
+
+            <div class="info-section">
+              <h3>🍽️ Especialidades</h3>
+              <ul class="lista-especialidades">
+                <li>Pizza Napolitana clásica</li>
+                <li>Pizza de la casa (4 quesos)</li>
+                <li>Empanadas artesanales</li>
+                <li>Fainá casero</li>
+              </ul>
+            </div>
+
+            <div class="info-section">
+              <h3>🕐 Horario de Atención</h3>
+              <p><strong>Lunes a Jueves:</strong> 19:00 - 00:00<br>
+              <strong>Viernes a Domingo:</strong> 19:00 - 01:00</p>
+            </div>
+
+            <div class="botones-accion-tienda">
+              <a href="https://wa.me/542215047962?text=Hola,%20quiero%20hacer%20un%20pedido%20en%20Pizzería%20Don%20Mario" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="btn-whatsapp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Pedir por WhatsApp
+              </a>
+              <a href="https://www.instagram.com/pizzeriadonmario" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="btn-enlace">
+                📱 Instagram
+              </a>
+            </div>
+          </div>
+
+          <button onclick="cerrarModalTienda('pizzeria')" class="btn-outline w-100 mt-20">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+      <div id="modalTiendaFarmacia" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content modal-content-medium" role="dialog" aria-modal="true">
+          <div class="modal-header-tienda">
+            <div class="tienda-icon-large">💊</div>
+            <h2 class="tienda-title">Farmacia La Salud</h2>
+            <span class="tienda-categoria-modal">Salud</span>
+          </div>
+
+          <div class="modal-body-tienda">
+            <div class="info-section">
+              <h3>📝 Descripción</h3>
+              <p>Farmacia de confianza con atención personalizada. Contamos con farmacéuticos profesionales para asesorarte en tus consultas de salud. Amplio stock de medicamentos y productos de cuidado personal.</p>
+            </div>
+
+            <div class="info-section">
+              <h3>💊 Servicios</h3>
+              <ul class="lista-especialidades">
+                <li>Venta de medicamentos con y sin receta</li>
+                <li>Medición de presión arterial</li>
+                <li>Asesoramiento farmacéutico</li>
+                <li>Productos de cosmética y cuidado personal</li>
+                <li>Entrega a domicilio</li>
+              </ul>
+            </div>
+
+            <div class="info-section">
+              <h3>🕐 Horario de Atención</h3>
+              <p><strong>Lunes a Viernes:</strong> 8:00 - 21:00<br>
+              <strong>Sábados:</strong> 9:00 - 20:00<br>
+              <strong>Domingos:</strong> 10:00 - 13:00</p>
+            </div>
+
+            <div class="botones-accion-tienda">
+              <a href="https://wa.me/542215047962?text=Hola,%20necesito%20consultar%20sobre%20medicamentos%20en%20Farmacia%20La%20Salud" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="btn-whatsapp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Consultar por WhatsApp
+              </a>
+              <a href="https://www.facebook.com/farmacialasalud" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="btn-enlace">
+                📘 Facebook
+              </a>
+            </div>
+          </div>
+
+          <button onclick="cerrarModalTienda('farmacia')" class="btn-outline w-100 mt-20">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+      <div id="modalTiendaKiosco" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content modal-content-medium" role="dialog" aria-modal="true">
+          <div class="modal-header-tienda">
+            <div class="tienda-icon-large">🍬</div>
+            <h2 class="tienda-title">Kiosco El Rápido</h2>
+            <span class="tienda-categoria-modal">Kiosco</span>
+          </div>
+
+          <div class="modal-body-tienda">
+            <div class="info-section">
+              <h3>📝 Descripción</h3>
+              <p>Tu kiosco de barrio abierto las 24 horas. Encontrá todo lo que necesitás: desde golosinas y bebidas hasta productos de última necesidad. Atención rápida y amable siempre.</p>
+            </div>
+
+            <div class="info-section">
+              <h3>🛒 Productos</h3>
+              <ul class="lista-especialidades">
+                <li>Golosinas y chocolates</li>
+                <li>Bebidas frías y calientes</li>
+                <li>Snacks y alfajores</li>
+                <li>Cigarrillos y accesorios</li>
+                <li>Artículos de librería</li>
+                <li>Productos de higiene personal</li>
+              </ul>
+            </div>
+
+            <div class="info-section">
+              <h3>🕐 Horario de Atención</h3>
+              <p><strong>Todos los días:</strong> Abierto 24 horas<br>
+              <strong>Servicio de delivery:</strong> 7:00 - 02:00</p>
+            </div>
+
+            <div class="botones-accion-tienda">
+              <a href="https://wa.me/542215047962?text=Hola,%20quiero%20hacer%20un%20pedido%20en%20Kiosco%20El%20Rápido" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="btn-whatsapp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Pedir por WhatsApp
+              </a>
+              <a href="tel:+542215047962" 
+                 class="btn-enlace">
+                📞 Llamar
+              </a>
+            </div>
+          </div>
+
+          <button onclick="cerrarModalTienda('kiosco')" class="btn-outline w-100 mt-20">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+      <div id="modalTiendaBoutique" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content modal-content-medium" role="dialog" aria-modal="true">
+          <div class="modal-header-tienda">
+            <div class="tienda-icon-large">👕</div>
+            <h2 class="tienda-title">Boutique Estilo</h2>
+            <span class="tienda-categoria-modal">Indumentaria</span>
+          </div>
+
+          <div class="modal-body-tienda">
+            <div class="info-section">
+              <h3>📝 Descripción</h3>
+              <p>Boutique de moda con las últimas tendencias en ropa y accesorios. Atención personalizada para ayudarte a encontrar el look perfecto. Trabajamos con marcas reconocidas y diseños exclusivos.</p>
+            </div>
+
+            <div class="info-section">
+              <h3>👗 Productos</h3>
+              <ul class="lista-especialidades">
+                <li>Ropa de mujer: vestidos, blusas, pantalones</li>
+                <li>Ropa de hombre: camisas, jeans, buzos</li>
+                <li>Ropa infantil</li>
+                <li>Accesorios y carteras</li>
+                <li>Calzado de moda</li>
+              </ul>
+            </div>
+
+            <div class="info-section">
+              <h3>🕐 Horario de Atención</h3>
+              <p><strong>Lunes a Sábado:</strong> 9:00 - 20:00<br>
+              <strong>Domingos:</strong> Cerrado</p>
+            </div>
+
+            <div class="botones-accion-tienda">
+              <a href="https://wa.me/542215047962?text=Hola,%20quiero%20consultar%20sobre%20productos%20en%20Boutique%20Estilo" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="btn-whatsapp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Consultar por WhatsApp
+              </a>
+              <a href="https://www.instagram.com/boutiqueestilo" 
+                 target="_blank" 
+                 rel="noopener"
+                 class="btn-enlace">
+                📱 Ver Tienda Online
+              </a>
+            </div>
+          </div>
+
+          <button onclick="cerrarModalTienda('boutique')" class="btn-outline w-100 mt-20">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección Módulos del Sistema -->
+      <section class="seccion-modulos-sistema">
+        <div class="contenedor">
+          <h2 class="seccion-header-title">🚀 Portal del Sistema YAvoy 2026</h2>
+          <p class="seccion-subtitle">
+            Accede a todos los módulos administrativos y herramientas de gestión en un solo lugar
+          </p>
+
+          <div class="modulos-grid">
+            <!-- Portal de Gestión -->
+            <a href="portal-gestion.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">🏠</div>
+              <h3>Portal de Gestión</h3>
+              <p>Hub central con acceso a todos los módulos y sistemas de YAvoy</p>
+              <div class="modulo-badge badge-nuevo">🆕 Nuevo</div>
+            </a>
+
+            <!-- Chat Sistema -->
+            <a href="chat-sistema.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">💬</div>
+              <h3>Chat Sistema</h3>
+              <p>Interfaz completa tipo WhatsApp para conversaciones en tiempo real</p>
+              <div class="modulo-badge badge-nuevo">🆕 Nuevo</div>
+            </a>
+
+            <!-- App Comercio -->
+            <a href="comercio-app.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">🏪📱</div>
+              <h3>Comercio App</h3>
+              <p>PWA móvil para comercios: gestión, pedidos y estadísticas</p>
+              <div class="modulo-badge badge-pwa">🆕 PWA</div>
+            </a>
+
+            <!-- App Repartidor -->
+            <a href="repartidor-app.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">🚴📱</div>
+              <h3>Repartidor App</h3>
+              <p>PWA móvil para delivery: mapa, pedidos y ganancias</p>
+              <div class="modulo-badge badge-pwa">🆕 PWA</div>
+            </a>
+
+            <!-- Dashboard CEO -->
+            <a href="dashboard-ceo.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">📊</div>
+              <h3>Dashboard CEO</h3>
+              <p>6 KPIs y gráficos ejecutivos en tiempo real</p>
+              <div class="modulo-badge badge-activo">✓ Activo</div>
+            </a>
+
+            <!-- Panel Admin -->
+            <a href="panel-admin.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">⚙️</div>
+              <h3>Panel Admin</h3>
+              <p>Gestión completa de usuarios, comercios y repartidores</p>
+              <div class="modulo-badge badge-activo">✓ Activo</div>
+            </a>
+
+            <!-- Mapa de Entregas -->
+            <a href="mapa-entregas.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">🗺️</div>
+              <h3>Mapa de Entregas</h3>
+              <p>Visualización en tiempo real con marcadores y rutas</p>
+              <div class="modulo-badge badge-activo">✓ Activo</div>
+            </a>
+
+            <!-- Notificaciones Push -->
+            <a href="notificaciones-push.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">🔔</div>
+              <h3>Notificaciones Push</h3>
+              <p>Panel de control con 6 tipos de notificaciones web</p>
+              <div class="modulo-badge badge-nuevo">🆕 Nuevo</div>
+            </a>
+
+            <!-- Sistema de Pedidos -->
+            <a href="pedidos.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">📦</div>
+              <h3>Gestión de Pedidos</h3>
+              <p>CRUD completo con chat y estadísticas integradas</p>
+              <div class="modulo-badge badge-activo">✓ Activo</div>
+            </a>
+
+            <!-- Soporte -->
+            <a href="soporte.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">🤖</div>
+              <h3>Soporte 24/7</h3>
+              <p>Chatbot IA con NLP y perfiles personalizados</p>
+              <div class="modulo-badge badge-activo">✓ Activo</div>
+            </a>
+
+            <!-- Admin Soporte -->
+            <a href="admin-soporte.html" class="modulo-card hover-lift">
+              <div class="modulo-icono">📈</div>
+              <h3>Analytics Soporte</h3>
+              <p>Estadísticas y métricas del sistema de soporte</p>
+              <div class="modulo-badge badge-activo">✓ Activo</div>
+            </a>
+          </div>
+
+          <div class="modulos-footer">
+            <p class="modulos-tip">
+              💡 <strong>Tip:</strong> Instala las apps móviles (comercio-app y repartidor-app) para mejor experiencia
+            </p>
+            <p class="modulos-version">
+              Versión 2.0.0 | PWA v7 | Última actualización: Diciembre 2025
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contacto" class="seccion-rol">
+        <div class="contenedor contacto-grid">
+          <div class="contacto-info">
+            <h3>¿Tienes Preguntas? Contáctanos.</h3>
+            <p>
+              Estamos aquí para ayudarte a impulsar tu negocio o para resolver dudas sobre los
+              envíos.
+            </p>
+            <p>
+              📞 <strong>Teléfono:</strong>
+              <a
+                href="https://wa.me/542215047962"
+                target="_blank"
+                rel="noopener"
+                aria-label="Abrir WhatsApp al 2215047962"
+                >2215047962</a
+              >
+            </p>
+            <p>
+              📧 <strong>Email:</strong>
+              <a href="mailto:yavoyen5@gmail.com" aria-label="Enviar correo a yavoyen5@gmail.com"
+                >yavoyen5@gmail.com</a
+              >
+            </p>
+            <p>
+              💬 <strong>WhatsApp:</strong>
+              <a
+                href="https://wa.me/542215047962"
+                target="_blank"
+                rel="noopener"
+                aria-label="Abrir chat de WhatsApp"
+                >+54 221 504 7962</a
+              >
+            </p>
+            <p>📍 <strong>Oficina:</strong> Ensenada</p>
+          </div>
+
+          <div class="contacto-formulario">
+            <h4>Envíanos un Mensaje Rápido</h4>
+            <form id="form-contacto" novalidate data-validate="true">
+              <div class="form-row">
+                <input type="text" placeholder="Tu Nombre" required />
+                <div class="error" data-for="contactoNombre" aria-live="polite"></div>
+              </div>
+              <div class="form-row">
+                <input type="email" placeholder="Tu Correo" required />
+                <div class="error" data-for="contactoEmail" aria-live="polite"></div>
+              </div>
+              <div class="form-row">
+                <textarea placeholder="Escribe tu mensaje aquí..." rows="4" required></textarea>
+                <div class="error" data-for="contactoMensaje" aria-live="polite"></div>
+              </div>
+              <button type="submit" class="btn-primario">Enviar Mensaje</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="modal-repartidor" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" aria-label="Cerrar">&times;</span>
+        <h3>¡Únete como Repartidor! 🛵</h3>
+        <p>Completa el siguiente formulario de pre-registro para empezar a generar ingresos.</p>
+
+        <form id="form-registro-repartidor" novalidate data-validate="true">
+          <div class="form-row">
+            <input type="text" placeholder="Nombre completo" required />
+            <div class="error" data-for="repartidorNombre" aria-live="polite"></div>
+          </div>
+          <div class="form-row">
+            <input type="email" placeholder="Correo electrónico" required />
+            <div class="error" data-for="repartidorEmail" aria-live="polite"></div>
+          </div>
+          <div class="form-row">
+            <input type="tel" placeholder="Número de teléfono (WhatsApp)" required />
+            <div class="error" data-for="repartidorTelefono" aria-live="polite"></div>
+          </div>
+          <div class="form-row">
+            <input type="text" placeholder="D.N.I" required />
+            <div class="error" data-for="repartidorDni" aria-live="polite"></div>
+          </div>
+          <div class="form-row">
+            <textarea placeholder="Cuéntanos brevemente tu experiencia..." rows="3"></textarea>
+            <div class="error" data-for="repartidorExperiencia" aria-live="polite"></div>
+          </div>
+          <button type="submit" class="btn-primario">Enviar Pre-Registro</button>
+        </form>
+
+        <div id="form-vehiculo" class="form-vehiculo">
+          <h4 class="no-margin-top">Cargar datos de tu Moto o Auto</h4>
+          <form id="form-datos-vehiculo" novalidate data-validate="true">
+            <div class="form-row">
+              <input type="text" id="vehMarca" placeholder="Marca" required />
+              <div class="error" data-for="vehMarca" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+              <input type="text" id="vehModelo" placeholder="Modelo" required />
+              <div class="error" data-for="vehModelo" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+              <input type="text" id="vehDominio" placeholder="Dominio (Patente)" required />
+              <div class="error" data-for="vehDominio" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+              <input type="text" id="vehNumMotor" placeholder="Nº de Motor" required />
+              <div class="error" data-for="vehNumMotor" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+              <input type="text" id="vehNumChasis" placeholder="Nº de Chasis" required />
+              <div class="error" data-for="vehNumChasis" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+              <label>Registro de Conducir (Frente)</label>
+              <input type="file" id="licFrente" accept="image/*" required />
+              <div class="error" data-for="licFrente" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+              <label>Registro de Conducir (Dorso)</label>
+              <input type="file" id="licDorso" accept="image/*" required />
+              <div class="error" data-for="licDorso" aria-live="polite"></div>
+            </div>
+            <button type="submit" class="btn-primario">Guardar Datos del Vehículo</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Repartidor -->
+    <div id="modalRepartidor" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+      <div class="modal-content modal-content-large" role="dialog" aria-modal="true" aria-labelledby="modalRepartidorTitulo">
+        <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalRepartidor()">&times;</button>
+        <h3 id="modalRepartidorTitulo">Solicitud de Registro - Repartidor 🚴</h3>
+        
+        <p class="color-text-claro mb-25 text-normal">
+          Completa todos los campos para unirte a nuestro equipo de repartidores. Todos los datos son obligatorios.
+        </p>
+
+        <form id="formRegistrarRepartidorInicio" class="form-registro" enctype="multipart/form-data">
+          
+          <!-- SECCIÓN: Datos Personales -->
+          <div class="form-section-box">
+            <h4 class="form-section-title">📋 Datos Personales</h4>
+            
+            <div class="form-row">
+              <label for="repNombreInicio">Nombre Completo y Apellido *</label>
+              <input type="text" id="repNombreInicio" name="repNombre" required 
+                     placeholder="Ej: Juan Carlos Pérez González" 
+                     minlength="5"
+                     pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                     title="Ingresa tu nombre completo y apellido">
+              <small class="form-help-text">Nombre y apellido completos</small>
+            </div>
+
+            <div class="form-row">
+              <label for="repTelefonoInicio">Número de Teléfono *</label>
+              <input type="tel" id="repTelefonoInicio" name="repTelefono" required 
+                     placeholder="Ej: +54 9 11 1234-5678" 
+                     pattern="[0-9+\s\-()]+"
+                     minlength="10"
+                     title="Ingresa un número de teléfono válido">
+              <small class="form-help-text">Incluye código de área</small>
+            </div>
+
+            <div class="form-row">
+              <label for="repEmailInicio">Correo Electrónico *</label>
+              <input type="email" id="repEmailInicio" name="repEmail" required 
+                     placeholder="Ej: juan.perez@gmail.com"
+                     title="Ingresa un email válido. Recibirás un mensaje de verificación">
+              <small class="form-warning-text">📧 Se enviará un mensaje de verificación a este email</small>
+            </div>
+
+            <div class="form-row">
+              <label for="repDniInicio">Número de DNI *</label>
+              <input type="text" id="repDniInicio" name="repDni" required 
+                     placeholder="Ej: 12345678" 
+                     pattern="[0-9]+"
+                     minlength="7"
+                     maxlength="10"
+                     title="Ingresa tu número de DNI sin puntos">
+              <small class="form-help-text">Solo números, sin puntos ni espacios</small>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: Documentación DNI -->
+          <div class="form-section-box">
+            <h4 class="form-section-title">🪪 Documentación - DNI</h4>
+            
+            <div class="form-row">
+              <label for="repDniFrente">Foto DNI - Frente *</label>
+              <input type="file" id="repDniFrente" name="dniFrente" required 
+                     accept="image/jpeg,image/png,image/jpg"
+                     onchange="validarImagen(this, 'previsualizacionDniFrente')">
+              <small class="form-help-text">
+                ⚠️ La imagen debe ser nítida y legible. Formatos: JPG, PNG (máx. 5MB)
+              </small>
+              <div id="previsualizacionDniFrente" class="preview-container"></div>
+            </div>
+
+            <div class="form-row">
+              <label for="repDniDorso">Foto DNI - Dorso *</label>
+              <input type="file" id="repDniDorso" name="dniDorso" required 
+                     accept="image/jpeg,image/png,image/jpg"
+                     onchange="validarImagen(this, 'previsualizacionDniDorso')">
+              <small class="form-help-text">
+                ⚠️ La imagen debe ser nítida y legible. Formatos: JPG, PNG (máx. 5MB)
+              </small>
+              <div id="previsualizacionDniDorso" class="preview-container"></div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: Vehículo -->
+          <div class="form-section-box">
+            <h4 class="form-section-title">🏍️ Datos del Vehículo</h4>
+            
+            <div class="form-row">
+              <label for="repVehiculoInicio">Tipo de Vehículo *</label>
+              <select id="repVehiculoInicio" name="repVehiculo" required onchange="mostrarCamposVehiculo(this.value)">
+                <option value="">-- Selecciona --</option>
+                <option value="moto">Moto</option>
+                <option value="bicicleta">Bicicleta</option>
+                <option value="auto">Auto</option>
+                <option value="a-pie">A pie</option>
+              </select>
+            </div>
+
+            <div id="camposVehiculo">
+              <div class="form-row">
+                <label for="repCedulaFrente">Foto Cédula del Vehículo - Frente *</label>
+                <input type="file" id="repCedulaFrente" name="cedulaFrente" 
+                       accept="image/jpeg,image/png,image/jpg"
+                       onchange="validarImagen(this, 'previsualizacionCedulaFrente')">
+                <small class="form-help-text">
+                  ⚠️ La cédula debe estar vigente y legible. Formatos: JPG, PNG (máx. 5MB)
+                </small>
+                <div id="previsualizacionCedulaFrente" class="preview-container"></div>
+              </div>
+
+              <div class="form-row">
+                <label for="repCedulaDorso">Foto Cédula del Vehículo - Dorso *</label>
+                <input type="file" id="repCedulaDorso" name="cedulaDorso" 
+                       accept="image/jpeg,image/png,image/jpg"
+                       onchange="validarImagen(this, 'previsualizacionCedulaDorso')">
+                <small class="form-help-text">
+                  ⚠️ La cédula debe estar vigente y legible. Formatos: JPG, PNG (máx. 5MB)
+                </small>
+                <div id="previsualizacionCedulaDorso" class="preview-container"></div>
+              </div>
+            </div>
+
+            <div id="mensajeBicicleta">
+              <small class="form-success-text">ℹ️ No se requiere cédula para bicicleta o a pie</small>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: Términos y Condiciones -->
+          <div class="form-terminos-box">
+            <div class="flex-start">
+              <input 
+                type="checkbox" 
+                id="repAceptaTerminos" 
+                name="aceptaTerminos" 
+                required 
+                class="checkbox-large"
+                aria-label="Aceptar términos y condiciones"
+                aria-required="true">
+              <label for="repAceptaTerminos" class="cursor-pointer text-normal terminos-label">
+                <strong class="color-text-claro">✓ He leído y acepto los Términos y Condiciones de YaVoy *</strong>
+                <br>
+                <small class="form-help-text opacity-80 terminos-help-text">
+                  Incluye: política de privacidad, condiciones de uso, y responsabilidades del repartidor.
+                  <br>
+                  <a href="javascript:void(0);" onclick="mostrarTerminos(); return false;" class="link-underline terminos-link">
+                    📜 Ver términos completos aquí
+                  </a>
+                  |
+                  <a href="terminos-repartidores.html" target="_blank" class="link-underline terminos-link">
+                    🔗 Abrir en nueva pestaña
+                  </a>
+                </small>
+              </label>
+            </div>
+            <div id="errorTerminos" class="error-terminos">
+              ⚠️ Debes aceptar los términos y condiciones para continuar
+            </div>
+          </div>
+
+          <div id="mensajeError" class="display-none error-message"></div>
+
+          <button type="submit" class="btn-primario w-100 btn-submit-large" id="btnEnviarSolicitud">
+            📤 Enviar Solicitud de Registro
+          </button>
+          
+          <p class="text-center color-text text-small info-text-small">
+            Todos los campos marcados con * son obligatorios
+          </p>
+        </form>
+        
+        <!-- Script para validación de términos -->
+        <script>
+          (function() {
+            const form = document.querySelector('#registro-repartidor form');
+            const checkbox = document.getElementById('repAceptaTerminos');
+            const errorDiv = document.getElementById('errorTerminos');
+            const btnSubmit = document.getElementById('btnEnviarSolicitud');
+            
+            if (checkbox && form) {
+              // Verificar estado del checkbox
+              checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                  errorDiv.style.display = 'none';
+                  this.parentElement.parentElement.style.borderColor = '#10b981';
+                } else {
+                  this.parentElement.parentElement.style.borderColor = 'var(--color-primario)';
+                }
+              });
+              
+              // Validar antes de enviar
+              form.addEventListener('submit', function(e) {
+                if (!checkbox.checked) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  errorDiv.style.display = 'block';
+                  checkbox.parentElement.parentElement.style.borderColor = '#ef4444';
+                  checkbox.focus();
+                  
+                  // Scroll al checkbox
+                  checkbox.parentElement.parentElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                  });
+                  
+                  // Mostrar alerta
+                  alert('⚠️ Debes aceptar los Términos y Condiciones para continuar.');
+                  return false;
+                }
+              });
+              
+              // Hacer el checkbox más visible en Edge
+              if (navigator.userAgent.indexOf('Edg') > -1) {
+                checkbox.style.transform = 'scale(1.2)';
+              }
+            }
+          })();
+        </script>
+      </div>
+    </div>
+
+    <!-- Modal Verificación Repartidor -->
+    <div id="modalVerificacionRepartidor" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+      <div class="modal-content text-center modal-content-500" role="dialog" aria-modal="true">
+        <div class="mb-20">
+          <div class="icon-large mb-15">✅</div>
+          <h2 class="mb-10 color-exito">¡Registro Exitoso!</h2>
+          <p class="color-text-claro text-medium">Tu cuenta de repartidor ha sido creada correctamente</p>
+        </div>
+        
+        <div class="id-box-gradient id-box-repartidor">
+          <p class="id-label">Tu ID de Repartidor</p>
+          <div id="repartidorIdDisplay" class="id-display">REP-XXX</div>
+          <p class="id-help-text">Guarda este ID para acceder a tu panel</p>
+        </div>
+        
+        <div class="bg-fondo-tarjeta info-box info-box-primary">
+          <p class="color-text-claro text-normal info-text-left">
+            📱 <strong>Próximos pasos:</strong><br>
+            1. Guarda tu ID de repartidor<br>
+            2. Accede a tu panel con este ID<br>
+            3. Completa tu perfil y empieza a recibir pedidos
+          </p>
+        </div>
+        
+        <div class="button-group">
+          <button onclick="copiarIdRepartidor()" class="btn-primario flex-1">
+            📋 Copiar ID
+          </button>
+          <a href="panel-repartidor.html" class="btn-secundario flex-1 btn-link-secondary">
+            Ir a Mi Panel
+          </a>
+        </div>
+        
+        <button onclick="cerrarModalVerificacion()" class="btn-outline w-100 mt-15">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Verificación Comercio -->
+    <div id="modalVerificacionComercio" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+      <div class="modal-content text-center modal-content-500" role="dialog" aria-modal="true">
+        <div class="mb-20">
+          <div class="icon-large mb-15">🏪</div>
+          <h2 class="mb-10 color-exito">¡Registro Exitoso!</h2>
+          <p class="color-text-claro text-medium">Tu comercio ha sido registrado correctamente</p>
+        </div>
+        
+        <div class="id-box-gradient id-box-comercio">
+          <p class="id-label">Tu ID de Comercio</p>
+          <div id="comercioIdDisplay" class="id-display">COM-XXX</div>
+          <p class="id-help-text">Guarda este ID para futuras referencias</p>
+        </div>
+        
+        <div class="bg-fondo-tarjeta info-box info-box-success">
+          <p class="color-text-claro text-normal info-text-left">
+            🎉 <strong>¡Bienvenido a YaVoy!</strong><br>
+            Tu comercio ha sido registrado exitosamente.<br><br>
+            <strong>Próximos pasos:</strong><br>
+            1. Accede a tu panel de control<br>
+            2. Configura los datos de tu comercio<br>
+            3. Empieza a recibir y gestionar pedidos
+          </p>
+        </div>
+        
+        <div class="button-group">
+          <button onclick="copiarIdComercio()" class="btn-primario flex-1 bg-success">
+            📋 Copiar ID
+          </button>
+          <button onclick="irAPanelComercio()" class="btn-primario flex-2 bg-gradient-purple">
+            🏪 Ir a Mi Panel
+          </button>
+        </div>
+        
+        <button onclick="cerrarModalVerificacionComercio()" class="btn-outline w-100 mt-15">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Verificación Cliente/Pedido -->
+    <div id="modalVerificacionPedido" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+      <div class="modal-content text-center modal-content-500" role="dialog" aria-modal="true">
+        <div class="mb-20">
+          <div class="icon-large mb-15">🎉</div>
+          <h2 class="mb-10 color-exito">¡Pedido Creado!</h2>
+          <p class="color-text-claro text-medium">Tu pedido ha sido registrado exitosamente</p>
+        </div>
+        
+        <div class="id-box-gradient id-box-pedido">
+          <p class="id-label">Número de Pedido</p>
+          <div id="pedidoIdDisplay" class="id-display">PED-XXX</div>
+          <p class="id-help-text">Guarda este número para hacer seguimiento</p>
+        </div>
+        
+        <div class="bg-fondo-tarjeta info-box info-box-warning">
+          <p class="color-text-claro text-normal info-text-left">
+            📦 <strong>¿Qué sigue ahora?</strong><br>
+            1. Un repartidor tomará tu pedido pronto<br>
+            2. Recibirás notificaciones del estado<br>
+            3. El repartidor llegará a la dirección indicada<br>
+            4. ¡Disfruta tu pedido!
+          </p>
+        </div>
+        
+        <div class="button-group">
+          <button onclick="copiarIdPedido()" class="btn-primario flex-1 bg-warning">
+            📋 Copiar N° Pedido
+          </button>
+        </div>
+        
+        <button onclick="cerrarModalVerificacionPedido()" class="btn-outline w-100 mt-15">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Crear Pedido -->
+    <div id="modalPedido" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+      <div class="modal-content modal-content-medium" role="dialog" aria-modal="true" aria-labelledby="modalPedidoTitulo">
+        <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalPedido()">&times;</button>
+        <h3 id="modalPedidoTitulo">Solicitar Servicio de Envío 🚚</h3>
+        <p class="color-text mb-20">Completá los datos para solicitar el envío de tu pedido</p>
+        
+        <form id="formCrearPedido" class="form-registro" data-validate="true">
+          <div class="form-row">
+            <label for="pedidoNombreCliente">Tu Nombre*</label>
+            <input
+              id="pedidoNombreCliente"
+              name="nombreCliente"
+              type="text"
+              required
+              placeholder="Ej: Juan Pérez"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="pedidoTelefonoCliente">Tu Teléfono*</label>
+            <input
+              id="pedidoTelefonoCliente"
+              name="telefonoCliente"
+              type="tel"
+              required
+              placeholder="Ej: +54 9 11 1234-5678"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="pedidoDireccionEntrega">Dirección de Entrega*</label>
+            <input
+              id="pedidoDireccionEntrega"
+              name="direccionEntrega"
+              type="text"
+              required
+              placeholder="Ej: Calle 123, Barrio, Ciudad"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="pedidoDescripcion">Descripción del Envío*</label>
+            <textarea
+              id="pedidoDescripcion"
+              name="descripcion"
+              required
+              rows="4"
+              placeholder="Indicá qué productos se enviarán, cantidades u observaciones necesarias para el repartidor."
+              class="textarea-full"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="pedidoMonto">Valor del Pedido (referencial)</label>
+            <input
+              id="pedidoMonto"
+              name="monto"
+              type="number"
+              step="0.01"
+              placeholder="$0.00"
+            />
+            <small class="form-help-text" style="display: block; margin-top: 5px; color: var(--color-texto); opacity: 0.8;">
+              Valor aproximado de los productos a enviar (no incluye el costo de envío que se calcula según distancia).
+            </small>
+          </div>
+
+          <!-- DISCLAIMER LEGAL -->
+          <div style="background: var(--color-fondo-tarjeta); border-left: 4px solid var(--color-acento); padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h4 style="color: var(--color-texto-claro); font-size: 14px; font-weight: 600; margin: 0 0 10px 0;">
+              📦 Sobre este servicio
+            </h4>
+            <p style="color: var(--color-texto); font-size: 13px; line-height: 1.6; margin: 0;">
+              Al solicitar este envío, entendés y aceptás que:
+            </p>
+            <ul style="color: var(--color-texto); font-size: 13px; line-height: 1.8; margin: 10px 0 0 20px; padding: 0;">
+              <li><strong>YAvoy solo presta el servicio de envío.</strong> No vendemos productos.</li>
+              <li>La transacción de compra es directamente entre vos y el comercio.</li>
+              <li>El costo del envío será calculado e informado antes de asignar repartidor.</li>
+              <li>Los tiempos de entrega son estimativos y dependen de disponibilidad.</li>
+            </ul>
+          </div>
+
+          <!-- SECCIÓN: Términos y Condiciones Cliente -->
+          <div class="form-terminos-box">
+            <div class="checkbox-wrapper">
+              <input 
+                type="checkbox" 
+                id="clienteAceptaTerminos" 
+                name="aceptaTerminos" 
+                required 
+                value="si"
+                aria-label="Aceptar términos y condiciones"
+              />
+              <label for="clienteAceptaTerminos" class="cursor-pointer text-normal terminos-label">
+                <strong class="color-text-claro">✓ Acepto los Términos y Condiciones del Servicio de Envío de YAvoy *</strong>
+                <br>
+                <small class="form-help-text opacity-80 terminos-help-text">
+                  <a href="javascript:void(0);" onclick="mostrarTerminosCliente(); return false;" class="link-underline terminos-link">
+                    📜 Ver términos completos
+                  </a>
+                  |
+                  <a href="terminos-clientes.html" target="_blank" class="link-underline terminos-link">
+                    🔗 Abrir en nueva pestaña
+                  </a>
+                </small>
+              </label>
+            </div>
+            <div id="errorTerminosCliente" class="error-terminos">
+              ⚠️ Debes aceptar los Términos del Servicio de Envío para continuar
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primario">🚚 Solicitar Envío</button>
+            <div id="pedidoSuccess" class="form-success" role="status" aria-live="polite"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Registro de Comercio -->
+    <div id="modalComercio" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalComercioTitulo">
+        <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalComercio()">&times;</button>
+        <h3 id="modalComercioTitulo">Registrá tu Comercio 🏪</h3>
+        <p class="color-text mb-20">Completá el formulario y nos pondremos en contacto con vos.</p>
+        
+        <form id="formRegistrarComercioInicio" class="form-registro" data-validate="true">
+          <div class="form-row">
+            <label for="comercioNombrePropietario">Nombre y Apellido del Responsable del Comercio*</label>
+            <input
+              id="comercioNombrePropietario"
+              name="nombrePropietario"
+              type="text"
+              required
+              placeholder="Juan Pérez"
+            />
+            <div class="error" data-for="comercioNombrePropietario" aria-live="polite"></div>
+          </div>
+
+          <div class="form-row">
+            <label for="comercioCUIT">
+              CUIT del Comercio
+              <span style="font-size: 12px; color: var(--color-texto); font-weight: normal;">(opcional)</span>
+            </label>
+            <input
+              id="comercioCUIT"
+              name="cuit"
+              type="text"
+              placeholder="20-12345678-9"
+              maxlength="13"
+            />
+            <small class="form-help-text" style="display: block; margin-top: 5px; color: var(--color-texto); opacity: 0.8;">
+              Se solicitará para completar el alta
+            </small>
+            <div class="error" data-for="comercioCUIT" aria-live="polite"></div>
+          </div>
+
+          <div class="form-row">
+            <label for="comercioNombreNegocio">Nombre del Comercio*</label>
+            <input
+              id="comercioNombreNegocio"
+              name="nombreComercio"
+              type="text"
+              required
+              placeholder="Ej. Panadería Don José"
+            />
+            <div class="error" data-for="comercioNombreNegocio" aria-live="polite"></div>
+          </div>
+
+          <div class="form-row">
+            <label for="comercioEmailContacto">Email de Contacto*</label>
+            <input
+              id="comercioEmailContacto"
+              name="email"
+              type="email"
+              required
+              placeholder="comercio@ejemplo.com"
+            />
+            <div class="error" data-for="comercioEmailContacto" aria-live="polite"></div>
+          </div>
+
+          <div class="form-row">
+            <label for="comercioTelefonoContacto">Número de Teléfono*</label>
+            <input
+              id="comercioTelefonoContacto"
+              name="telefono"
+              type="tel"
+              required
+              placeholder="+54 9 11 1234-5678"
+            />
+            <div class="error" data-for="comercioTelefonoContacto" aria-live="polite"></div>
+          </div>
+
+          <div class="form-row">
+            <label for="comercioCategoriaInicio">Categoría del Comercio*</label>
+            <select id="comercioCategoriaInicio" name="categoria" required>
+              <option value="">Selecciona una categoría</option>
+              <option value="restaurante">Restaurante / Comida</option>
+              <option value="indumentaria">Indumentaria / Ropa</option>
+              <option value="farmacia">Farmacia / Salud</option>
+              <option value="kiosco">Kiosco / Despensa</option>
+              <option value="bazar">Bazar / Hogar</option>
+              <option value="empresas">Empresas</option>
+              <option value="mayoristas">Mayoristas</option>
+              <option value="otros">Otros</option>
+            </select>
+            <div class="error" data-for="comercioCategoriaInicio" aria-live="polite"></div>
+          </div>
+
+          <!-- SECCIÓN: Términos y Condiciones Comercio -->
+          <div class="form-terminos-box">
+            <div class="checkbox-wrapper">
+              <input 
+                type="checkbox" 
+                id="comercioAceptaTerminos" 
+                name="aceptaTerminos" 
+                required 
+                value="si"
+                aria-label="Aceptar términos y condiciones"
+              />
+              <label for="comercioAceptaTerminos" class="cursor-pointer text-normal terminos-label">
+                <strong class="color-text-claro">✓ He leído y acepto los Términos y Condiciones para Comercios de YAvoy *</strong>
+                <br>
+                <small class="form-help-text opacity-80 terminos-help-text">
+                  Incluye: responsabilidades del comercio, condiciones de uso y política de intermediación.
+                  <br>
+                  <a href="javascript:void(0);" onclick="mostrarTerminosComercio(); return false;" class="link-underline terminos-link">
+                    📜 Ver términos completos aquí
+                  </a>
+                  |
+                  <a href="terminos-comercios.html" target="_blank" class="link-underline terminos-link">
+                    🔗 Abrir en nueva pestaña
+                  </a>
+                </small>
+              </label>
+            </div>
+            <div id="errorTerminosComercio" class="error-terminos">
+              ⚠️ Debes aceptar los términos y condiciones para continuar
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primario">Enviar Registro</button>
+            <div id="comercioRegistroSuccess" class="form-success" role="status" aria-live="polite"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <footer>
+      <div class="contenedor footer-grid">
+        <div class="footer-info">
+          <h4>YAvoy</h4>
+          <p>Conectando la ciudad, un envío a la vez.</p>
+          <p>&copy; 2025 Todos los derechos reservados.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Enlaces Rápidos</h4>
+          <a href="#inicio">Inicio</a>
+          <a href="#comercios">Para Comercios</a>
+          <a href="#repartidores">Haz Envíos</a>
+          <a href="faq.html">Preguntas Frecuentes</a>
+          <a href="soporte.html">🤖 Soporte 24/7</a>
+        </div>
+
+        <div class="footer-social">
+          <h4>Síguenos</h4>
+          <a href="#"><i class="icono-social">FB</i> Facebook</a>
+          <a href="#"><i class="icono-social">IG</i> Instagram</a>
+          <a
+            href="https://wa.me/542215047962"
+            target="_blank"
+            rel="noopener"
+            aria-label="Escribir por WhatsApp"
+            ><i class="icono-social">WA</i> Contáctanos (WA)</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Volver arriba" title="Volver arriba">
+      ↑
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+    <script src="js/mercadopago-integration.js"></script>
+    <script src="js/calificaciones-sistema.js"></script>
+    <script src="js/recompensas-sistema.js"></script>
+    <script src="js/tracking-gps.js"></script>
+    <script src="js/propinas-sistema.js"></script>
+    <script src="js/pedidos-grupales.js"></script>
+    <script src="js/referidos-sistema.js"></script>
+    <script src="js/notificaciones-ia.js"></script>
+    <script src="js/inventario-sistema.js"></script>
+    <script src="js/analytics-dashboard.js"></script>
+    <script type="module">
+      import { initUI } from './js/ui.js';
+      import { initForms } from './js/forms.js';
+      import { initializePushNotifications } from './js/notifications.js';
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initUI();
+        initForms();
+        initializePushNotifications();
+
+        // Inicializar MercadoPago
+        if (window.mercadoPagoSecure) {
+          window.mercadoPagoSecure.init().catch(err => {
+            console.error('Error inicializando MercadoPago:', err);
+          });
+        }
+      });
+    </script>
+
+    <script>
+      // Funciones para el modal de repartidor
+      function abrirModalRepartidor() {
+        const modal = document.getElementById('modalRepartidor');
+        if (modal) {
+          modal.style.display = 'flex';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function cerrarModalRepartidor() {
+        const modal = document.getElementById('modalRepartidor');
+        if (modal) {
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Funciones para modal de verificación
+      function mostrarModalVerificacion(idRepartidor) {
+        // Cerrar modal de registro
+        cerrarModalRepartidor();
+        
+        // Mostrar modal de verificación
+        const modal = document.getElementById('modalVerificacionRepartidor');
+        const idDisplay = document.getElementById('repartidorIdDisplay');
+        
+        if (modal && idDisplay) {
+          idDisplay.textContent = idRepartidor;
+          modal.style.display = 'flex';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+          
+          // Guardar ID en localStorage para fácil acceso
+          localStorage.setItem('ultimoRepartidorId', idRepartidor);
+        }
+      }
+
+      function cerrarModalVerificacion() {
+        const modal = document.getElementById('modalVerificacionRepartidor');
+        if (modal) {
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      function copiarIdRepartidor() {
+        const idDisplay = document.getElementById('repartidorIdDisplay');
+        const idTexto = idDisplay.textContent;
+        
+        navigator.clipboard.writeText(idTexto).then(() => {
+          const btnCopiar = event.target;
+          const textoOriginal = btnCopiar.textContent;
+          btnCopiar.textContent = '✓ Copiado!';
+          btnCopiar.style.background = 'var(--color-exito)';
+          
+          setTimeout(() => {
+            btnCopiar.textContent = textoOriginal;
+            btnCopiar.style.background = '';
+          }, 2000);
+        }).catch(err => {
+          alert('ID: ' + idTexto);
+        });
+      }
+
+      // Funciones para validación de imágenes y formulario de repartidor
+      function validarImagen(input, previsualizacionId) {
+        const archivo = input.files[0];
+        const previsualizacion = document.getElementById(previsualizacionId);
+        
+        if (!archivo) {
+          previsualizacion.innerHTML = '';
+          return;
+        }
+
+        // Validar tamaño (5MB máximo)
+        const maxSize = 5 * 1024 * 1024;
+        if (archivo.size > maxSize) {
+          previsualizacion.innerHTML = '<p style="color: #ef4444; font-size: 13px;">❌ El archivo es muy grande. Máximo 5MB</p>';
+          input.value = '';
+          return;
+        }
+
+        // Validar tipo
+        if (!archivo.type.match(/image\/(jpeg|jpg|png)/)) {
+          previsualizacion.innerHTML = '<p style="color: #ef4444; font-size: 13px;">❌ Solo se permiten imágenes JPG o PNG</p>';
+          input.value = '';
+          return;
+        }
+
+        // Mostrar previsualización
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previsualizacion.innerHTML = `
+            <div style="border: 2px solid var(--color-primario); border-radius: 8px; padding: 10px; background: var(--color-fondo);">
+              <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 6px; display: block; margin: 0 auto;">
+              <p style="color: #10b981; font-size: 12px; margin-top: 8px; text-align: center;">✓ Imagen cargada (${(archivo.size / 1024).toFixed(1)} KB)</p>
+            </div>
+          `;
+        };
+        reader.readAsDataURL(archivo);
+      }
+
+      function mostrarCamposVehiculo(tipoVehiculo) {
+        const camposVehiculo = document.getElementById('camposVehiculo');
+        const mensajeBicicleta = document.getElementById('mensajeBicicleta');
+        const cedulaFrente = document.getElementById('repCedulaFrente');
+        const cedulaDorso = document.getElementById('repCedulaDorso');
+
+        if (tipoVehiculo === 'moto' || tipoVehiculo === 'auto') {
+          camposVehiculo.style.display = 'block';
+          mensajeBicicleta.style.display = 'none';
+          cedulaFrente.required = true;
+          cedulaDorso.required = true;
+        } else if (tipoVehiculo === 'bicicleta' || tipoVehiculo === 'a-pie') {
+          camposVehiculo.style.display = 'none';
+          mensajeBicicleta.style.display = 'block';
+          cedulaFrente.required = false;
+          cedulaDorso.required = false;
+        } else {
+          camposVehiculo.style.display = 'none';
+          mensajeBicicleta.style.display = 'none';
+          cedulaFrente.required = false;
+          cedulaDorso.required = false;
+        }
+      }
+
+      function mostrarTerminos() {
+        const terminosHTML = `
+          <div style="max-width: 900px; max-height: 80vh; overflow-y: auto; padding: 35px; background: var(--color-fondo); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+            <h2 style="color: var(--color-primario); margin-bottom: 25px; font-size: 22px; border-bottom: 2px solid var(--color-primario); padding-bottom: 10px;">
+              📜 Términos y Condiciones de Uso para Repartidores Independientes de YAvoy
+            </h2>
+            
+            <div style="color: var(--color-texto); line-height: 1.8; font-size: 14px;">
+              
+              <p style="text-align: right; font-style: italic; color: var(--color-texto); margin-bottom: 20px;">
+                <strong>Última actualización: 2025</strong>
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 25px; font-size: 18px; font-weight: 600;">
+                1. OBJETO, ACEPTACIÓN Y DECLARACIONES
+              </h3>
+              
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>1.1 Objeto y Aceptación:</strong> El presente documento establece los términos y condiciones ("Términos") que rigen el acceso, registro y uso de la plataforma digital YAvoy (en adelante, la "Plataforma") por parte de personas físicas que actúan como prestadores independientes de servicios de mensajería y/o entrega (en adelante, el "Repartidor" o "Usted").
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                La utilización de la Plataforma y la marcación de la casilla "He leído y comprendo los Términos y Condiciones" implica la aceptación plena, expresa y sin reservas del presente acuerdo contractual, el cual resulta legalmente vinculante.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>1.2 Declaraciones y Garantías del Repartidor:</strong> El Repartidor declara bajo juramento que:
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>La información personal, de contacto y documentación proporcionada es verdadera, exacta y de su exclusiva titularidad.</li>
+                <li>Posee plena capacidad legal para contratar y prestar los servicios ofrecidos a través de la Plataforma.</li>
+                <li>Cuenta con toda la documentación legal habilitante para circular y operar el vehículo utilizado (licencia de conducir vigente, documentación del vehículo y permisos exigidos por la normativa aplicable).</li>
+                <li>Mantiene vigente un seguro obligatorio que cubre el vehículo utilizado y la responsabilidad civil frente a terceros.</li>
+              </ul>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                2. NATURALEZA DE LA RELACIÓN
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>2.1 Rol de YAvoy:</strong> YAvoy actúa exclusivamente como una plataforma tecnológica de intermediación que conecta a usuarios solicitantes de envíos con Repartidores independientes que ofrecen realizar dichos servicios.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>2.2 Independencia del Repartidor:</strong> El Repartidor reconoce y acepta que su relación con YAvoy es de carácter estrictamente comercial e independiente. No existe relación laboral, de dependencia, subordinación, sociedad, mandato, agencia ni exclusividad.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                El Repartidor:
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>Decide libremente cuándo conectarse o desconectarse de la Plataforma.</li>
+                <li>Puede aceptar o rechazar pedidos sin penalidad alguna.</li>
+                <li>No se encuentra sujeto a horarios mínimos, máximos ni a obligación de disponibilidad.</li>
+              </ul>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                3. COMPENSACIÓN Y PAGOS
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>3.1 Ingresos por Servicios Prestados:</strong> Por cada servicio de entrega correctamente finalizado, el Repartidor podrá percibir hasta el ochenta por ciento (80%) del valor total del envío abonado por el usuario final, excluyendo impuestos, tasas o retenciones que pudieran corresponder.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>3.2 Comisión de la Plataforma:</strong> El veinte por ciento (20%) restante corresponde a la comisión de YAvoy por el uso de la Plataforma, infraestructura tecnológica, soporte y procesamiento de pagos.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>3.3 Aclaraciones Importantes:</strong> YAvoy no garantiza al Repartidor un volumen mínimo de pedidos ni ingresos determinados. Los montos percibidos pueden variar según demanda, zona geográfica, disponibilidad del Repartidor y correcta ejecución del servicio.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                El Repartidor será el único responsable del cumplimiento de sus obligaciones fiscales, impositivas, previsionales y tributarias.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                4. RESPONSABILIDAD DEL REPARTIDOR
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>4.1 Asunción de Responsabilidad:</strong> El Repartidor asume la responsabilidad civil, administrativa y penal, en la medida permitida por la legislación vigente, sobre los bienes transportados desde su retiro hasta su entrega efectiva.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>4.2 Daños, Pérdidas o Extravíos:</strong> El Repartidor será responsable por cualquier daño, pérdida, deterioro, extravío, robo o hurto del pedido mientras se encuentre bajo su custodia.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>4.3 Indemnidad:</strong> El Repartidor se obliga a mantener indemne a YAvoy frente a cualquier reclamo, sanción, multa o acción legal derivada de su negligencia, incumplimiento normativo o mala ejecución del servicio.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                5. EXCLUSIÓN Y LIMITACIÓN DE RESPONSABILIDAD DE YAVOY
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>5.1 Rol de Intermediario:</strong> YAvoy no asume responsabilidad alguna sobre:
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>La legalidad, calidad o estado de los productos enviados.</li>
+                <li>Las acciones u omisiones del Repartidor o del usuario final.</li>
+                <li>Daños personales, materiales o económicos sufridos durante la prestación del servicio.</li>
+              </ul>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>5.2 Exclusión de Responsabilidad Personal:</strong> El Repartidor acepta que los socios, directivos, representantes y colaboradores de YAvoy no serán responsables de manera personal o solidaria por conflictos derivados del uso de la Plataforma.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                6. SUSPENSIÓN Y BAJA
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                YAvoy se reserva el derecho de suspender o dar de baja al Repartidor, de forma temporal o permanente, ante incumplimientos, denuncias fundadas, conductas riesgosas, uso indebido de la Plataforma o por razones de seguridad, sin que ello genere derecho a indemnización alguna.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                7. PROTECCIÓN DE DATOS PERSONALES
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                El Repartidor autoriza expresamente a YAvoy a recolectar, almacenar y tratar sus datos personales e imágenes (incluyendo DNI) con fines de validación de identidad, seguridad y operación de la Plataforma, conforme a la Ley 25.326 de Protección de Datos Personales.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                8. LEY APLICABLE Y JURISDICCIÓN
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                Los presentes Términos se rigen por las leyes de la República Argentina. Toda controversia será sometida a la jurisdicción de los tribunales ordinarios de la Provincia de Buenos Aires, renunciando a cualquier otro fuero.
+              </p>
+
+              <div style="background: var(--color-fondo-tarjeta); padding: 20px; border-radius: 8px; margin-top: 30px; border-left: 4px solid var(--color-primario);">
+                <p style="color: var(--color-texto-claro); font-weight: 600; margin-bottom: 10px;">
+                  ⚖️ DECLARACIÓN DE ACEPTACIÓN
+                </p>
+                <p style="font-size: 13px; line-height: 1.6;">
+                  Al marcar la casilla "He leído y comprendo los Términos y Condiciones" y presionar el botón "Aceptar", el Repartidor declara haber leído, comprendido y aceptado íntegramente el presente acuerdo.
+                </p>
+              </div>
+            </div>
+
+            <button onclick="cerrarTerminos()" class="btn-primario" style="margin-top: 30px; width: 100%; padding: 15px; font-size: 16px;">
+              He Leído y Comprendido - Cerrar
+            </button>
+          </div>
+        `;
+
+        const modalTerminos = document.createElement('div');
+        modalTerminos.id = 'modalTerminos';
+        modalTerminos.className = 'modal-overlay';
+        modalTerminos.style.display = 'flex';
+        modalTerminos.innerHTML = terminosHTML;
+        document.body.appendChild(modalTerminos);
+        document.body.style.overflow = 'hidden';
+      }
+
+      function cerrarTerminos() {
+        const modal = document.getElementById('modalTerminos');
+        if (modal) {
+          modal.remove();
+          document.body.style.overflow = '';
+        }
+      }
+
+      function cerrarTerminosComercio() {
+        const modal = document.getElementById('modalTerminosComercio');
+        if (modal) {
+          modal.remove();
+          document.body.style.overflow = '';
+        }
+      }
+
+      function mostrarTerminosComercio() {
+        const terminosHTML = `
+          <div style="max-width: 900px; max-height: 80vh; overflow-y: auto; padding: 35px; background: var(--color-fondo); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+            <h2 style="color: var(--color-primario); margin-bottom: 25px; font-size: 22px; border-bottom: 2px solid var(--color-primario); padding-bottom: 10px;">
+              📜 Términos y Condiciones para Comercios – YAvoy
+            </h2>
+            
+            <div style="color: var(--color-texto); line-height: 1.8; font-size: 14px;">
+              
+              <p style="text-align: center; background: var(--color-superficie); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>Completá el formulario para iniciar el registro de tu comercio en YAvoy</strong><br>
+                <em style="font-size: 13px;">Última actualización: Diciembre 2025</em>
+              </p>
+
+              <div style="background: var(--color-fondo-tarjeta); padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid var(--color-acento);">
+                <p style="margin: 0; font-weight: 500;">
+                  ⚠️ <strong>Importante:</strong> YAvoy actúa exclusivamente como plataforma intermediaria. El comercio es responsable por los productos, precios, calidad, facturación y cumplimiento de la normativa vigente.
+                </p>
+              </div>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 25px; font-size: 18px; font-weight: 600;">
+                1. Introducción
+              </h3>
+              
+              <p style="margin: 15px 0; text-align: justify;">
+                El presente documento establece los Términos y Condiciones aplicables al uso de la plataforma YAvoy por parte de los comercios que soliciten su incorporación. Al registrarse, el comercio declara haber leído, comprendido y aceptado íntegramente estos términos.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                YAvoy es una plataforma tecnológica de intermediación, cuyo objetivo es facilitar el contacto entre clientes, comercios y repartidores independientes.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                2. Naturaleza de la Relación
+              </h3>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>La relación entre YAvoy y el comercio es estrictamente comercial y no exclusiva.</li>
+                <li>YAvoy no es empleador, socio, representante, distribuidor ni franquicia del comercio.</li>
+                <li>El comercio actúa de manera independiente, bajo su propia responsabilidad legal, fiscal y comercial.</li>
+              </ul>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                3. Registro del Comercio
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                Para operar en la plataforma, el comercio deberá proporcionar información veraz, actualizada y completa.
+              </p>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>YAvoy se reserva el derecho de:</strong>
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>Aprobar o rechazar solicitudes de registro.</li>
+                <li>Solicitar documentación adicional.</li>
+                <li>Suspender o cancelar cuentas ante incumplimientos.</li>
+              </ul>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                4. Responsabilidades del Comercio
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>El comercio es único y exclusivo responsable de:</strong>
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>Los productos ofrecidos.</li>
+                <li>La calidad, estado, higiene y seguridad de los productos.</li>
+                <li>Los precios publicados y su correcta actualización.</li>
+                <li>El cumplimiento de normativas sanitarias, comerciales y fiscales vigentes.</li>
+                <li>La correcta preparación y entrega del pedido al repartidor.</li>
+              </ul>
+
+              <p style="margin: 15px 0; text-align: justify; font-weight: 600; color: var(--color-acento);">
+                YAvoy no controla ni garantiza los productos ofrecidos por los comercios.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                5. Pedidos, Pagos y Facturación
+              </h3>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>Los pagos realizados por los clientes se efectúan a través de los medios habilitados en la plataforma.</li>
+                <li>El comercio es responsable de la facturación correspondiente al cliente final, conforme a la legislación vigente.</li>
+                <li>YAvoy no asume responsabilidad por errores de facturación del comercio.</li>
+              </ul>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                6. Rol de YAvoy como Intermediario
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>YAvoy actúa exclusivamente como:</strong>
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>Plataforma de intermediación tecnológica.</li>
+                <li>Facilitador del contacto entre clientes, comercios y repartidores.</li>
+              </ul>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>YAvoy no es responsable por:</strong>
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>Incumplimientos del comercio.</li>
+                <li>Daños derivados de los productos.</li>
+                <li>Reclamos de clientes relacionados con calidad, precios o disponibilidad.</li>
+              </ul>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                7. Comisiones y Condiciones Económicas
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                Las comisiones, tarifas o condiciones económicas serán informadas al comercio por los canales oficiales de YAvoy y podrán ser actualizadas previo aviso.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                8. Suspensión y Baja
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                <strong>YAvoy podrá suspender o dar de baja al comercio en caso de:</strong>
+              </p>
+
+              <ul style="margin: 15px 0 15px 25px; line-height: 2;">
+                <li>Incumplimiento de estos Términos y Condiciones.</li>
+                <li>Reclamos reiterados de clientes.</li>
+                <li>Actividades ilegales o fraudulentas.</li>
+              </ul>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                El comercio también podrá solicitar la baja en cualquier momento.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                9. Limitación de Responsabilidad
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                YAvoy no será responsable por daños directos o indirectos derivados del uso de la plataforma, interrupciones del servicio o conflictos entre el comercio y terceros.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                10. Protección de Datos
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                El comercio autoriza a YAvoy a tratar los datos proporcionados conforme a la Política de Privacidad vigente, exclusivamente para fines operativos y comerciales.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                11. Modificaciones
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                YAvoy podrá modificar estos Términos y Condiciones. Las modificaciones serán comunicadas y su continuidad en el uso implicará aceptación.
+              </p>
+
+              <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px; font-weight: 600;">
+                12. Jurisdicción y Legislación Aplicable
+              </h3>
+
+              <p style="margin: 15px 0; text-align: justify;">
+                Estos Términos se rigen por las leyes de la República Argentina. Ante cualquier conflicto, las partes se someten a la jurisdicción de los tribunales ordinarios correspondientes.
+              </p>
+
+              <div style="background: var(--color-fondo-tarjeta); padding: 20px; border-radius: 8px; margin-top: 30px; border-left: 4px solid var(--color-primario);">
+                <p style="color: var(--color-texto-claro); font-weight: 600; margin-bottom: 10px;">
+                  ⚖️ DECLARACIÓN DE ACEPTACIÓN
+                </p>
+                <p style="font-size: 13px; line-height: 1.6;">
+                  Al registrarse, el comercio declara haber leído, comprendido y aceptado estos Términos y Condiciones.
+                </p>
+              </div>
+            </div>
+
+            <button onclick="cerrarTerminosComercio()" class="btn-primario" style="margin-top: 30px; width: 100%; padding: 15px; font-size: 16px;">
+              He Leído y Comprendido - Cerrar
+            </button>
+          </div>
+        `;
+
+        const modalTerminos = document.createElement('div');
+        modalTerminos.id = 'modalTerminosComercio';
+        modalTerminos.className = 'modal-overlay';
+        modalTerminos.style.display = 'flex';
+        modalTerminos.innerHTML = terminosHTML;
+        document.body.appendChild(modalTerminos);
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Funciones para términos de cliente
+      function mostrarTerminosCliente() {
+        const terminosHTML = `
+          <div style="max-width: 900px; max-height: 80vh; overflow-y: auto; padding: 35px; background: var(--color-fondo); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+            <h2 style="color: var(--color-primario); margin-bottom: 20px; font-size: 24px;">📋 Términos y Condiciones de Uso para Clientes</h2>
+            <p style="color: var(--color-texto); font-style: italic; margin-bottom: 30px;">Última actualización: Diciembre 2025</p>
+            
+            <div style="background: var(--color-fondo-tarjeta); padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid var(--color-acento);">
+              <p style="margin: 0; font-weight: 500; color: var(--color-texto);">
+                ⚠️ <strong>Importante:</strong> YAvoy actúa exclusivamente como plataforma de intermediación. No somos propietarios de los productos ni prestamos directamente el servicio de entrega.
+              </p>
+            </div>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">1. Objeto y Aceptación</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              <strong>1.1.</strong> Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma digital YAvoy por parte de los usuarios que solicitan productos y/o servicios de entrega (el "Cliente").
+            </p>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              <strong>1.2.</strong> Al registrarse, realizar un pedido y/o utilizar la Plataforma, el Cliente declara haber leído, comprendido y aceptado íntegramente estos Términos.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">2. Rol de YAvoy – Plataforma de Intermediación</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              <strong>2.1.</strong> YAvoy actúa exclusivamente como plataforma tecnológica que conecta Clientes, Comercios independientes y Repartidores independientes.
+            </p>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              <strong>2.2.</strong> YAvoy no es propietario de los productos, no elabora, no comercializa, no almacena ni distribuye bienes, ni presta directamente el servicio de entrega.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">3. Registro y Uso</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              El Cliente debe proporcionar información veraz y es responsable de mantener la confidencialidad de sus datos de acceso.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">4. Pedidos, Precios y Pagos</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              Los precios son fijados por los Comercios. El costo del envío es determinado por la Plataforma. Los pagos se procesan a través de proveedores externos.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">5. Entregas</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              Los plazos son estimativos. YAvoy no garantiza tiempos exactos ni se responsabiliza por demoras atribuibles a terceros o fuerza mayor.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">6. Responsabilidad sobre Productos</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              La calidad, estado y legalidad de los productos son responsabilidad exclusiva del Comercio. Los reclamos deben realizarse directamente al Comercio.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">7. Cancelaciones y Reembolsos</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              Una vez confirmado el pedido, puede no ser cancelable. Las políticas de reembolso dependen del Comercio y del proveedor de pago.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">8. Limitación de Responsabilidad</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              YAvoy no será responsable por daños directos o indirectos derivados del uso de la Plataforma. El uso se realiza bajo exclusiva responsabilidad del Cliente.
+            </p>
+
+            <h3 style="color: var(--color-texto-claro); margin-top: 30px; font-size: 18px;">9. Jurisdicción</h3>
+            <p style="color: var(--color-texto); line-height: 1.8; text-align: justify;">
+              Estos Términos se rigen por las leyes de la República Argentina.
+            </p>
+
+            <div style="background: var(--color-fondo-tarjeta); padding: 20px; border-radius: 8px; margin: 30px 0; border-left: 4px solid var(--color-acento);">
+              <h3 style="color: var(--color-acento); margin-bottom: 15px;">⚖️ DECLARACIÓN DE ACEPTACIÓN</h3>
+              <p style="margin: 0; font-weight: 500; color: var(--color-texto);">
+                Al utilizar la Plataforma, el Cliente declara haber leído, comprendido y aceptado estos Términos y Condiciones.
+              </p>
+            </div>
+
+            <button onclick="cerrarTerminosCliente()" class="btn-primario" style="margin-top: 30px; width: 100%; padding: 15px; font-size: 16px;">
+              He Leído y Comprendido - Cerrar
+            </button>
+          </div>
+        `;
+
+        const modalTerminos = document.createElement('div');
+        modalTerminos.id = 'modalTerminosCliente';
+        modalTerminos.className = 'modal-overlay';
+        modalTerminos.style.display = 'flex';
+        modalTerminos.innerHTML = terminosHTML;
+        document.body.appendChild(modalTerminos);
+        document.body.style.overflow = 'hidden';
+      }
+
+      function cerrarTerminosCliente() {
+        const modal = document.getElementById('modalTerminosCliente');
+        if (modal) {
+          modal.remove();
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Funciones para modal de verificación de comercio
+      function mostrarModalVerificacionComercio(idComercio) {
+        cerrarModalComercio();
+        
+        const modal = document.getElementById('modalVerificacionComercio');
+        const idDisplay = document.getElementById('comercioIdDisplay');
+        
+        if (modal && idDisplay) {
+          idDisplay.textContent = idComercio;
+          modal.style.display = 'flex';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+          localStorage.setItem('ultimoComercioId', idComercio);
+        }
+      }
+
+      function cerrarModalVerificacionComercio() {
+        const modal = document.getElementById('modalVerificacionComercio');
+        if (modal) {
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      function copiarIdComercio() {
+        const idDisplay = document.getElementById('comercioIdDisplay');
+        const idTexto = idDisplay.textContent;
+        
+        navigator.clipboard.writeText(idTexto).then(() => {
+          const btnCopiar = event.target;
+          const textoOriginal = btnCopiar.textContent;
+          btnCopiar.textContent = '✓ Copiado!';
+          btnCopiar.style.background = '#059669';
+          
+          setTimeout(() => {
+            btnCopiar.textContent = textoOriginal;
+            btnCopiar.style.background = '';
+          }, 2000);
+        }).catch(err => {
+          alert('ID: ' + idTexto);
+        });
+      }
+
+      function irAPanelComercio() {
+        const idComercio = document.getElementById('comercioIdDisplay').textContent;
+        window.location.href = `panel-comercio.html?id=${idComercio}`;
+      }
+
+      // Funciones para modal de verificación de pedido
+      function mostrarModalVerificacionPedido(idPedido) {
+        cerrarModalPedido();
+        
+        const modal = document.getElementById('modalVerificacionPedido');
+        const idDisplay = document.getElementById('pedidoIdDisplay');
+        
+        if (modal && idDisplay) {
+          idDisplay.textContent = idPedido;
+          modal.style.display = 'flex';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+          localStorage.setItem('ultimoPedidoId', idPedido);
+        }
+      }
+
+      function cerrarModalVerificacionPedido() {
+        const modal = document.getElementById('modalVerificacionPedido');
+        if (modal) {
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      function copiarIdPedido() {
+        const idDisplay = document.getElementById('pedidoIdDisplay');
+        const idTexto = idDisplay.textContent;
+        
+        navigator.clipboard.writeText(idTexto).then(() => {
+          const btnCopiar = event.target;
+          const textoOriginal = btnCopiar.textContent;
+          btnCopiar.textContent = '✓ Copiado!';
+          btnCopiar.style.background = '#d97706';
+          
+          setTimeout(() => {
+            btnCopiar.textContent = textoOriginal;
+            btnCopiar.style.background = '';
+          }, 2000);
+        }).catch(err => {
+          alert('N° Pedido: ' + idTexto);
+        });
+      }
+
+      // Funciones para modales de tiendas
+      function abrirModalTienda(tiendaId) {
+        const modal = document.getElementById('modalTienda' + tiendaId.charAt(0).toUpperCase() + tiendaId.slice(1));
+        if (modal) {
+          modal.style.display = 'flex';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function cerrarModalTienda(tiendaId) {
+        const modal = document.getElementById('modalTienda' + tiendaId.charAt(0).toUpperCase() + tiendaId.slice(1));
+        if (modal) {
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Funciones para el modal de pedido
+      function abrirModalPedido() {
+        const modal = document.getElementById('modalPedido');
+        if (modal) {
+          modal.style.display = 'flex';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function cerrarModalPedido() {
+        const modal = document.getElementById('modalPedido');
+        if (modal) {
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = 'auto';
+        }
+      }
+
+      // Funciones para el modal de comercio
+      function abrirModalComercio() {
+        const modal = document.getElementById('modalComercio');
+        if (modal) {
+          modal.style.display = 'flex';
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function cerrarModalComercio() {
+        const modal = document.getElementById('modalComercio');
+        if (modal) {
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = 'auto';
+        }
+      }
+
+      // Cerrar modal al hacer clic fuera del contenido
+      document.addEventListener('click', (e) => {
+        const modalRepartidor = document.getElementById('modalRepartidor');
+        const modalPedido = document.getElementById('modalPedido');
+        const modalComercio = document.getElementById('modalComercio');
+        
+        const modalVerificacion = document.getElementById('modalVerificacionRepartidor');
+        const modalVerificacionComercio = document.getElementById('modalVerificacionComercio');
+        const modalVerificacionPedido = document.getElementById('modalVerificacionPedido');
+        
+        if (modalRepartidor && e.target === modalRepartidor) {
+          cerrarModalRepartidor();
+        }
+        if (modalPedido && e.target === modalPedido) {
+          cerrarModalPedido();
+        }
+
+        if (modalVerificacion && e.target === modalVerificacion) {
+          cerrarModalVerificacion();
+        }
+        if (modalVerificacionComercio && e.target === modalVerificacionComercio) {
+          cerrarModalVerificacionComercio();
+        }
+        if (modalVerificacionPedido && e.target === modalVerificacionPedido) {
+          cerrarModalVerificacionPedido();
+        }
+        if (modalComercio && e.target === modalComercio) {
+          cerrarModalComercio();
+        }
+      });
+
+      // Cerrar modal con tecla ESC
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          cerrarModalRepartidor();
+          cerrarModalPedido();
+          cerrarModalComercio();
+          cerrarModalVerificacion();
+          cerrarModalVerificacionComercio();
+          cerrarModalVerificacionPedido();
+        }
+      });
+
+      // Service Worker deshabilitado temporalmente para evitar problemas de caché
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          // Desregistrar TODOS los service workers
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let registration of registrations) {
+            await registration.unregister();
+            console.log('Service Worker desregistrado');
+          }
+          
+          // Limpiar TODAS las cachés
+          const cacheNames = await caches.keys();
+          for (let cacheName of cacheNames) {
+            await caches.delete(cacheName);
+            console.log('Caché eliminado:', cacheName);
+          }
+          
+          console.log('Todos los service workers y cachés eliminados');
+        });
+      }
+
+      // Detectar si la app es instalable y mostrar prompt
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        mostrarBotonInstalar();
+      });
+      function mostrarBotonInstalar() {
+        const btnInstalar = document.createElement('button');
+        btnInstalar.textContent = '📱 Instalar App';
+        btnInstalar.className = 'btn-instalar-pwa';
+        btnInstalar.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: #06b6d4;
+                color: white;
+                border: none;
+                border-radius: 50px;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1500;
+                animation: pulseBtn 2s infinite;
+            `;
+        btnInstalar.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Usuario eligió: ${outcome}`);
+            deferredPrompt = null;
+            btnInstalar.remove();
+          }
+        });
+        document.body.appendChild(btnInstalar);
+      }
+    </script>
+    <style>
+      @keyframes pulseBtn {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* Styles moved from inline to stylesheet to avoid inline CSS */
+      .form-vehiculo {
+        display: none;
+        margin-top: 16px;
+      }
+
+      /* utility class for headings that should have no top margin */
+      .no-margin-top,
+      .form-vehiculo h4 {
+        margin-top: 0;
+      }
+
+      .visually-hidden {
+        position: absolute !important;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+        clip: rect(1px, 1px, 1px, 1px);
+        white-space: nowrap;
+      }
+    </style>
+    
+    <!-- Scripts -->
+    <script src="js/error-handling.js?v=1"></script>
+    <script src="js/performance.js?v=1" defer></script>
+    <script src="js/validaciones.js?v=1"></script>
+    <script src="js/ui-improvements.js?v=1"></script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+      // Botón de cambio de tema global
+      document.addEventListener('DOMContentLoaded', () => {
+        const btnThemeToggle = document.getElementById('btnThemeToggle');
+        const body = document.body;
+        
+        // Cargar tema guardado
+        const savedTheme = localStorage.getItem('yavoy-theme') || 'dark';
+        if (savedTheme === 'light') {
+          body.classList.add('light-mode');
+          btnThemeToggle.textContent = '☀️';
+        } else {
+          btnThemeToggle.textContent = '🌙';
+        }
+        
+        // Toggle theme
+        btnThemeToggle.addEventListener('click', () => {
+          body.classList.toggle('light-mode');
+          const isLight = body.classList.contains('light-mode');
+          btnThemeToggle.textContent = isLight ? '☀️' : '🌙';
+          localStorage.setItem('yavoy-theme', isLight ? 'light' : 'dark');
+          
+          // Mostrar feedback
+          const toast = document.createElement('div');
+          toast.className = 'toast toast-visible';
+          toast.textContent = isLight ? '☀️ Modo claro activado' : '🌙 Modo oscuro activado';
+          toast.style.cssText = 'position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; background: var(--color-primario); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2);';
+          document.body.appendChild(toast);
+          
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+          }, 2000);
+        });
+      });
+    </script>
+    
+    <!-- Chatbot Widget Script -->
+    <script src="js/soporte-chatbot.js"></script>
+    <script>
+      // Widget integrado con el chatbot profesional completo
+      document.addEventListener('DOMContentLoaded', () => {
+        // Esperar a que SoporteChatbot esté disponible
+        setTimeout(() => {
+          // Crear instancia global del chatbot sin saludo automático
+          window.chatbot = new SoporteChatbot({ autoGreeting: false });
+          
+          // Configurar controles del widget
+          const btnFlotante = document.getElementById('btnChatbotFlotante');
+          const btnCerrar = document.getElementById('btnCerrarChatbot');
+          const modal = document.getElementById('chatbotModal');
+          const btnVoz = document.getElementById('btnChatbotVoz');
+          const btnHistorial = document.getElementById('btnChatbotHistorial');
+          const input = document.getElementById('chatbotInput');
+          
+          let isOpen = false;
+          
+          // Toggle modal
+          btnFlotante.addEventListener('click', () => {
+            isOpen = !isOpen;
+            modal.classList.toggle('active', isOpen);
+            if (isOpen && !window.chatbot.initialized) {
+              window.chatbot.initialized = true;
+              // Mensaje de bienvenida personalizado
+              setTimeout(() => {
+                window.chatbot.addMessage('¡Hola! 👋 Soy el asistente virtual de YAvoy. ¿En qué puedo ayudarte hoy?', 'bot');
+                
+                // Detectar tipo de usuario
+                if (!window.chatbot.userProfile.type) {
+                  setTimeout(() => window.chatbot.askUserType(), 500);
+                } else {
+                  setTimeout(() => window.chatbot.showPersonalizedOptions(), 500);
+                }
+              }, 300);
+            }
+            if (isOpen) input.focus();
+          });
+          
+          // Cerrar modal
+          btnCerrar.addEventListener('click', () => {
+            isOpen = false;
+            modal.classList.remove('active');
+          });
+          
+          // Enviar mensaje con Enter
+          input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              window.chatbot.sendMessage();
+            }
+          });
+          
+          // Voz
+          btnVoz.addEventListener('click', () => {
+            if (!window.chatbot.voiceEnabled) {
+              if (!('webkitSpeechRecognition' in window)) {
+                window.chatbot.addMessage('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.', 'bot');
+                return;
+              }
+              window.chatbot.voiceEnabled = true;
+              btnVoz.classList.add('active');
+              window.chatbot.addMessage('Reconocimiento de voz activado. Habla cuando veas el micrófono activo. 🎤', 'bot');
+            } else {
+              window.chatbot.voiceEnabled = false;
+              btnVoz.classList.remove('active');
+              window.chatbot.addMessage('Reconocimiento de voz desactivado.', 'bot');
+            }
+          });
+          
+          // Historial - abrir chatbot completo
+          btnHistorial.addEventListener('click', () => {
+            window.open('soporte.html', '_blank');
+          });
+        }, 100);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Pruebas del Sistema YAvoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .test-section h2 {
+            color: #333;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .test-result {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .test-result pre {
+            background: #f1f3f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        .test-result-hidden {
+            display: none;
+        }
+
+        .rep-id-text {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .features-list {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .resumen-section {
+            background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+        }
+
+        .resumen-text {
+            font-size: 16px;
+            line-height: 2;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Sistema de Pruebas YAvoy</h1>
+        <p class="subtitle">Diagnóstico y Testing Completo</p>
+
+        <!-- Estado del Servidor -->
+        <div class="test-section">
+            <h2>
+                🖥️ Estado del Servidor
+                <span id="serverStatus" class="status pending">Verificando...</span>
+            </h2>
+            <button class="btn" onclick="verificarServidor()">Verificar Servidor</button>
+            <div id="serverResult" class="test-result test-result-hidden"></div>
+        </div>
+
+        <!-- Test de Repartidor -->
+        <div class="test-section">
+            <h2>
+                🚴 Panel de Repartidor
+                <span id="repartidorStatus" class="status pending">No probado</span>
+            </h2>
+            <div class="grid">
+                <div>
+                    <h4>1. Registrar Repartidor de Prueba</h4>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="repNombre" value="Test Repartidor" placeholder="Nombre completo">
+                    </div>
+                    <div class="form-group">
+                        <label>DNI</label>
+                        <input type="text" id="repDni" value="12345678" placeholder="DNI sin puntos">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" id="repTelefono" value="1112345678" placeholder="Sin 0 ni 15">
+                    </div>
+                    <button class="btn btn-success" onclick="registrarRepartidorPrueba()">Registrar Repartidor</button>
+                </div>
+                <div>
+                    <h4>2. Acceder al Panel</h4>
+                    <button class="btn" onclick="abrirPanelRepartidor()">Abrir Panel Repartidor</button>
+                    <p class="rep-id-text">
+                        <strong>ID del último repartidor:</strong> <span id="repId">-</span>
+                    </p>
+                </div>
+            </div>
+            <div id="repartidorResult" class="test-result test-result-hidden"></div>
+        </div>
+
+        <!-- Test de Comercio -->
+        <div class="test-section">
+            <h2>
+                🏪 Sistema de Comercios
+                <span id="comercioStatus" class="status pending">No probado</span>
+            </h2>
+            <div class="grid">
+                <div>
+                    <h4>1. Registrar Comercio de Prueba</h4>
+                    <button class="btn btn-success" onclick="registrarComercioPrueba()">Registrar Comercio</button>
+                </div>
+                <div>
+                    <h4>2. Ver Comercios</h4>
+                    <button class="btn" onclick="listarComercios()">Listar Comercios</button>
+                </div>
+            </div>
+            <div id="comercioResult" class="test-result test-result-hidden"></div>
+        </div>
+
+        <!-- Test de Pedidos -->
+        <div class="test-section">
+            <h2>
+                📦 Sistema de Pedidos
+                <span id="pedidoStatus" class="status pending">No probado</span>
+            </h2>
+            <div class="grid">
+                <div>
+                    <h4>1. Crear Pedido de Prueba</h4>
+                    <button class="btn btn-success" onclick="crearPedidoPrueba()">Crear Pedido</button>
+                </div>
+                <div>
+                    <h4>2. Ver Pedidos</h4>
+                    <button class="btn" onclick="listarPedidos()">Listar Pedidos</button>
+                </div>
+            </div>
+            <div id="pedidoResult" class="test-result test-result-hidden"></div>
+        </div>
+
+        <!-- Test de Pagos MercadoPago -->
+        <div class="test-section">
+            <h2>
+                💳 Sistema de Pagos (MercadoPago)
+                <span id="pagoStatus" class="status pending">No probado</span>
+            </h2>
+            <div class="alert alert-info">
+                <strong>⚠️ Importante:</strong> Para probar pagos reales necesitas configurar tus credenciales de MercadoPago en el servidor.
+            </div>
+            <div class="grid">
+                <div>
+                    <h4>1. Verificar Configuración</h4>
+                    <button class="btn" onclick="verificarMercadoPago()">Verificar MercadoPago</button>
+                </div>
+                <div>
+                    <h4>2. Ir a Página de Pago</h4>
+                    <button class="btn btn-secondary" onclick="abrirPaginaPago()">Abrir pagar-pedido.html</button>
+                </div>
+            </div>
+            <div id="pagoResult" class="test-result test-result-hidden"></div>
+        </div>
+
+        <!-- Test de Features Nuevas -->
+        <div class="test-section">
+            <h2>
+                ✨ Features Nuevas (10 Sistemas)
+                <span id="featuresStatus" class="status pending">No probado</span>
+            </h2>
+            <div class="grid">
+                <div>
+                    <h4>Endpoints Disponibles:</h4>
+                    <ul class="features-list">
+                        <li>✅ Calificaciones</li>
+                        <li>✅ Recompensas</li>
+                        <li>✅ Tracking GPS</li>
+                        <li>✅ Propinas</li>
+                        <li>✅ Pedidos Grupales</li>
+                        <li>✅ Referidos</li>
+                        <li>✅ Notificaciones IA</li>
+                        <li>✅ Inventario</li>
+                        <li>✅ Analytics</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Pruebas Rápidas:</h4>
+                    <button class="btn" onclick="probarCalificaciones()">Probar Calificaciones</button>
+                    <button class="btn" onclick="probarReferidos()">Probar Referidos</button>
+                    <button class="btn" onclick="probarAnalytics()">Probar Analytics</button>
+                </div>
+            </div>
+            <div id="featuresResult" class="test-result test-result-hidden"></div>
+        </div>
+
+        <!-- Resumen Final -->
+        <div class="test-section resumen-section">
+            <h2>📊 Resumen de Pruebas</h2>
+            <div id="resumen" class="resumen-text">
+                <p>Haz clic en los botones de prueba para comenzar...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ultimoRepartidorId = null;
+        let ultimoComercioId = null;
+        let ultimoPedidoId = null;
+
+        // Verificar servidor
+        async function verificarServidor() {
+            const resultDiv = document.getElementById('serverResult');
+            const statusSpan = document.getElementById('serverStatus');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Verificando...';
+            
+            try {
+                const response = await fetch('/api/repartidores');
+                const data = await response.json();
+                
+                statusSpan.className = 'status success';
+                statusSpan.textContent = '✅ Online';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ Servidor funcionando correctamente</strong><br>
+                        Puerto: 5501<br>
+                        Repartidores registrados: ${data.repartidores?.length || 0}
+                    </div>
+                `;
+                actualizarResumen();
+            } catch (error) {
+                statusSpan.className = 'status error';
+                statusSpan.textContent = '❌ Offline';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error al conectar con el servidor</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Registrar repartidor de prueba
+        async function registrarRepartidorPrueba() {
+            const resultDiv = document.getElementById('repartidorResult');
+            const statusSpan = document.getElementById('repartidorStatus');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Registrando repartidor...';
+            
+            const datos = {
+                nombre: document.getElementById('repNombre').value,
+                dni: document.getElementById('repDni').value,
+                telefono: document.getElementById('repTelefono').value,
+                vehiculo: 'Moto',
+                zona: 'Centro'
+            };
+            
+            try {
+                const response = await fetch('/api/repartidores', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    ultimoRepartidorId = data.repartidor.id;
+                    document.getElementById('repId').textContent = ultimoRepartidorId;
+                    statusSpan.className = 'status success';
+                    statusSpan.textContent = '✅ Funcionando';
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✅ Repartidor registrado exitosamente</strong><br>
+                            ID: ${data.repartidor.id}<br>
+                            Nombre: ${data.repartidor.nombre}
+                        </div>
+                        <pre>${JSON.stringify(data.repartidor, null, 2)}</pre>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                statusSpan.className = 'status error';
+                statusSpan.textContent = '❌ Error';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error al registrar repartidor</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Abrir panel repartidor
+        function abrirPanelRepartidor() {
+            window.open('/panel-repartidor.html', '_blank');
+        }
+
+        // Registrar comercio de prueba
+        async function registrarComercioPrueba() {
+            const resultDiv = document.getElementById('comercioResult');
+            const statusSpan = document.getElementById('comercioStatus');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Registrando comercio...';
+            
+            const comercio = {
+                nombre: 'Pizza Test',
+                direccion: 'Av. Test 123',
+                telefono: '1112345678',
+                categoria: 'alimentacion',
+                horarioApertura: '10:00',
+                horarioCierre: '23:00'
+            };
+            
+            try {
+                const response = await fetch('/api/guardar-comercio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(comercio)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    ultimoComercioId = data.id;
+                    statusSpan.className = 'status success';
+                    statusSpan.textContent = '✅ Funcionando';
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✅ Comercio registrado exitosamente</strong><br>
+                            ID: ${data.id}
+                        </div>
+                        <pre>${JSON.stringify(comercio, null, 2)}</pre>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                statusSpan.className = 'status error';
+                statusSpan.textContent = '❌ Error';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error al registrar comercio</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Listar comercios
+        async function listarComercios() {
+            const resultDiv = document.getElementById('comercioResult');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Cargando comercios...';
+            
+            try {
+                const response = await fetch('/api/listar-comercios');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ Comercios cargados: ${data.comercios.length}</strong>
+                    </div>
+                    <pre>${JSON.stringify(data.comercios, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error al cargar comercios</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Crear pedido de prueba
+        async function crearPedidoPrueba() {
+            if (!ultimoComercioId) {
+                alert('Primero registra un comercio de prueba');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('pedidoResult');
+            const statusSpan = document.getElementById('pedidoStatus');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Creando pedido...';
+            
+            const pedido = {
+                comercioId: ultimoComercioId,
+                comercioNombre: 'Pizza Test',
+                clienteNombre: 'Cliente Test',
+                clienteTelefono: '1112345678',
+                direccionEntrega: 'Av. Test 456',
+                items: [
+                    { nombre: 'Pizza Mozzarella', precio: 1500, cantidad: 1 }
+                ],
+                total: 1500,
+                formaPago: 'mercadopago'
+            };
+            
+            try {
+                const response = await fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pedido)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    ultimoPedidoId = data.pedido.id;
+                    statusSpan.className = 'status success';
+                    statusSpan.textContent = '✅ Funcionando';
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✅ Pedido creado exitosamente</strong><br>
+                            ID: ${data.pedido.id}<br>
+                            Total: $${data.pedido.total}
+                        </div>
+                        <pre>${JSON.stringify(data.pedido, null, 2)}</pre>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                statusSpan.className = 'status error';
+                statusSpan.textContent = '❌ Error';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error al crear pedido</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Listar pedidos
+        async function listarPedidos() {
+            const resultDiv = document.getElementById('pedidoResult');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Cargando pedidos...';
+            
+            try {
+                const response = await fetch('/api/pedidos');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ Pedidos cargados: ${data.pedidos.length}</strong>
+                    </div>
+                    <pre>${JSON.stringify(data.pedidos, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error al cargar pedidos</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Verificar MercadoPago
+        async function verificarMercadoPago() {
+            const resultDiv = document.getElementById('pagoResult');
+            const statusSpan = document.getElementById('pagoStatus');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Verificando MercadoPago...';
+            
+            try {
+                const response = await fetch('/api/mercadopago/public-key');
+                const data = await response.json();
+                
+                if (data.publicKey) {
+                    statusSpan.className = 'status success';
+                    statusSpan.textContent = '✅ Configurado';
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✅ MercadoPago configurado correctamente</strong><br>
+                            Clave pública encontrada
+                        </div>
+                    `;
+                } else {
+                    throw new Error('No se encontró la clave pública');
+                }
+            } catch (error) {
+                statusSpan.className = 'status error';
+                statusSpan.textContent = '❌ No configurado';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ MercadoPago no configurado</strong><br>
+                        ${error.message}<br><br>
+                        <strong>Solución:</strong> Agrega tus credenciales de MercadoPago en el servidor
+                    </div>
+                `;
+            }
+        }
+
+        // Abrir página de pago
+        function abrirPaginaPago() {
+            if (!ultimoPedidoId) {
+                alert('Primero crea un pedido de prueba');
+                return;
+            }
+            window.open(`/pagar-pedido.html?pedido=${ultimoPedidoId}`, '_blank');
+        }
+
+        // Probar calificaciones
+        async function probarCalificaciones() {
+            const resultDiv = document.getElementById('featuresResult');
+            const statusSpan = document.getElementById('featuresStatus');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Probando sistema de calificaciones...';
+            
+            try {
+                const response = await fetch('/api/calificaciones');
+                const data = await response.json();
+                
+                statusSpan.className = 'status success';
+                statusSpan.textContent = '✅ Funcionando';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ Sistema de calificaciones funcionando</strong><br>
+                        Calificaciones registradas: ${data.length}
+                    </div>
+                `;
+            } catch (error) {
+                statusSpan.className = 'status error';
+                statusSpan.textContent = '❌ Error';
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error en calificaciones</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Probar referidos
+        async function probarReferidos() {
+            const resultDiv = document.getElementById('featuresResult');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Probando sistema de referidos...';
+            
+            try {
+                const response = await fetch('/api/referidos');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ Sistema de referidos funcionando</strong><br>
+                        Referidos registrados: ${data.length}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error en referidos</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Probar analytics
+        async function probarAnalytics() {
+            const resultDiv = document.getElementById('featuresResult');
+            resultDiv.classList.remove('test-result-hidden');
+            resultDiv.innerHTML = '<div class="loading"></div> Probando sistema de analytics...';
+            
+            try {
+                const response = await fetch('/api/analytics/datos-completos');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ Sistema de analytics funcionando</strong><br>
+                        Ingresos totales: $${data.ingresosTotales}<br>
+                        Pedidos totales: ${data.totalPedidos}
+                    </div>
+                    <pre>${JSON.stringify(data, null, 2).substring(0, 500)}...</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Error en analytics</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Actualizar resumen
+        function actualizarResumen() {
+            // Implementar resumen de todas las pruebas
+        }
+
+        // Auto-verificar servidor al cargar
+        window.addEventListener('load', verificarServidor);
+    </script>
+</body>
+</html>
+

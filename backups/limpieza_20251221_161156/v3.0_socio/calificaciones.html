@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calificaciones - YAvoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --color-estrella: #fbbf24;
+            --color-estrella-vacia: #d1d5db;
+        }
+
+        .calificaciones-container {
+            max-width: 1200px;
+            margin: 80px auto 40px;
+            padding: 20px;
+        }
+
+        .calificaciones-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .calificaciones-header h1 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .calificaciones-header .text-subtitle {
+            color: #64748b;
+        }
+
+        /* Tarjeta de Resumen */
+        .resumen-calificaciones {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+        }
+
+        .promedio-general {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .promedio-numero {
+            font-size: 72px;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .promedio-estrellas {
+            font-size: 32px;
+            color: var(--color-estrella);
+            margin-bottom: 10px;
+        }
+
+        .promedio-total {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .distribucion-estrellas {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .fila-distribucion {
+            display: grid;
+            grid-template-columns: 60px 1fr 50px;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .label-estrellas {
+            font-weight: 600;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .barra-progreso {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .barra-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-estrella) 0%, #f59e0b 100%);
+            transition: width 0.5s ease;
+        }
+
+        .cantidad-reviews {
+            text-align: right;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Filtros */
+        .filtros-calificaciones {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filtro-label {
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .filtro-select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filtro-select:hover {
+            border-color: #667eea;
+        }
+
+        .btn-filtro {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-filtro:hover,
+        .btn-filtro.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Lista de Calificaciones */
+        .lista-calificaciones {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .calificacion-item {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .calificacion-item:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .calificacion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .info-cliente {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nombre-cliente {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 16px;
+        }
+
+        .badge-verificado {
+            background: #10b981;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .info-fecha {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .calificacion-estrellas {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .calificacion-estrellas .estrellas {
+            font-size: 24px;
+            color: var(--color-estrella);
+        }
+
+        .numero-estrellas {
+            font-weight: 700;
+            color: #475569;
+            font-size: 18px;
+        }
+
+        .calificacion-comentario {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .calificacion-aspectos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .aspecto-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .aspecto-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .aspecto-valor {
+            font-size: 16px;
+            color: var(--color-estrella);
+        }
+
+        .calificacion-respuesta {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .respuesta-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .respuesta-label {
+            font-weight: 700;
+            color: #0369a1;
+            font-size: 14px;
+        }
+
+        .respuesta-fecha {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .respuesta-texto {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .calificacion-acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-like,
+        .btn-reportar {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-like:hover {
+            background: #f0f9ff;
+            border-color: #0ea5e9;
+        }
+
+        .btn-like.active {
+            background: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+        }
+
+        .btn-reportar:hover {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .no-calificaciones {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .no-calificaciones p:first-child {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .no-calificaciones p:last-child {
+            font-size: 18px;
+        }
+
+        /* Modal de Calificación */
+        .modal-calificacion {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal-calificacion.active {
+            display: flex;
+        }
+
+        .modal-content-calificacion {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header-calificacion {
+            padding: 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .btn-cerrar-modal-calificacion {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-cerrar-modal-calificacion:hover {
+            background: #e2e8f0;
+        }
+
+        .modal-body-calificacion {
+            padding: 25px;
+        }
+
+        .form-group-calificacion {
+            margin-bottom: 25px;
+        }
+
+        .form-label-calificacion {
+            display: block;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .estrellas-seleccion {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .estrella-calificacion {
+            font-size: 48px;
+            cursor: pointer;
+            color: var(--color-estrella-vacia);
+            transition: all 0.3s;
+        }
+
+        .estrella-calificacion:hover,
+        .estrella-calificacion.activa {
+            color: var(--color-estrella);
+            transform: scale(1.1);
+        }
+
+        .aspectos-calificacion {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .aspecto-calificacion {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .aspecto-calificacion-label {
+            display: block;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .estrellas-aspecto {
+            display: flex;
+            gap: 5px;
+        }
+
+        .estrella-aspecto {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--color-estrella-vacia);
+            transition: all 0.3s;
+        }
+
+        .estrella-aspecto:hover,
+        .estrella-aspecto.activa {
+            color: var(--color-estrella);
+        }
+
+        .form-textarea-calificacion {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .form-textarea-calificacion:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-footer-calificacion {
+            padding: 20px 25px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancelar-calificacion,
+        .btn-enviar-calificacion {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .btn-cancelar-calificacion {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-cancelar-calificacion:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-enviar-calificacion {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-enviar-calificacion:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .resumen-calificaciones {
+                grid-template-columns: 1fr;
+            }
+
+            .filtros-calificaciones {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .estrellas-seleccion {
+                gap: 5px;
+            }
+
+            .estrella-calificacion {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calificaciones-container">
+        <div class="calificaciones-header">
+            <h1>⭐ Calificaciones y Reseñas</h1>
+            <p class="text-subtitle">Opiniones reales de nuestros clientes</p>
+        </div>
+
+        <!-- Resumen de Calificaciones -->
+        <div class="resumen-calificaciones">
+            <div class="promedio-general">
+                <div class="promedio-numero" id="promedioNumero">4.8</div>
+                <div class="promedio-estrellas" id="promedioEstrellas">★★★★★</div>
+                <div class="promedio-total" id="totalCalificaciones">Basado en 156 calificaciones</div>
+            </div>
+
+            <div id="distribucionContainer"></div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filtros-calificaciones">
+            <span class="filtro-label">Filtrar por:</span>
+            
+            <button class="btn-filtro active" data-filtro="todas">Todas</button>
+            <button class="btn-filtro" data-filtro="5">5 ★</button>
+            <button class="btn-filtro" data-filtro="4">4 ★</button>
+            <button class="btn-filtro" data-filtro="3">3 ★</button>
+            <button class="btn-filtro" data-filtro="2">2 ★</button>
+            <button class="btn-filtro" data-filtro="1">1 ★</button>
+
+            <select class="filtro-select" id="ordenSelect" aria-label="Ordenar calificaciones">
+                <option value="reciente">Más recientes</option>
+                <option value="antigua">Más antiguas</option>
+                <option value="mejor">Mejor valoradas</option>
+                <option value="peor">Peor valoradas</option>
+            </select>
+        </div>
+
+        <!-- Lista de Calificaciones -->
+        <div id="listaCalificacionesContainer"></div>
+    </div>
+
+    <!-- Modal de Calificación -->
+    <div class="modal-calificacion" id="modalCalificacion">
+        <div class="modal-content-calificacion">
+            <div class="modal-header-calificacion">
+                <h2 class="modal-title">⭐ Calificar Servicio</h2>
+                <button class="btn-cerrar-modal-calificacion" type="button">×</button>
+            </div>
+
+            <form id="formCalificacion">
+                <div class="modal-body-calificacion">
+                    <!-- Calificación General -->
+                    <div class="form-group-calificacion">
+                        <label class="form-label-calificacion">¿Cómo fue tu experiencia?</label>
+                        <div class="estrellas-seleccion">
+                            <span class="estrella-calificacion" data-valor="1">★</span>
+                            <span class="estrella-calificacion" data-valor="2">★</span>
+                            <span class="estrella-calificacion" data-valor="3">★</span>
+                            <span class="estrella-calificacion" data-valor="4">★</span>
+                            <span class="estrella-calificacion" data-valor="5">★</span>
+                        </div>
+                    </div>
+
+                    <!-- Aspectos Específicos -->
+                    <div class="form-group-calificacion">
+                        <label class="form-label-calificacion">Califica aspectos específicos:</label>
+                        <div class="aspectos-calificacion">
+                            <div class="aspecto-calificacion" data-aspecto="calidad">
+                                <span class="aspecto-calificacion-label">📦 Calidad del producto</span>
+                                <div class="estrellas-aspecto">
+                                    <span class="estrella-aspecto" data-valor="1" data-aspecto="calidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="2" data-aspecto="calidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="3" data-aspecto="calidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="4" data-aspecto="calidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="5" data-aspecto="calidad">★</span>
+                                </div>
+                            </div>
+
+                            <div class="aspecto-calificacion" data-aspecto="velocidad">
+                                <span class="aspecto-calificacion-label">⚡ Velocidad de entrega</span>
+                                <div class="estrellas-aspecto">
+                                    <span class="estrella-aspecto" data-valor="1" data-aspecto="velocidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="2" data-aspecto="velocidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="3" data-aspecto="velocidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="4" data-aspecto="velocidad">★</span>
+                                    <span class="estrella-aspecto" data-valor="5" data-aspecto="velocidad">★</span>
+                                </div>
+                            </div>
+
+                            <div class="aspecto-calificacion" data-aspecto="servicio">
+                                <span class="aspecto-calificacion-label">💁 Atención al cliente</span>
+                                <div class="estrellas-aspecto">
+                                    <span class="estrella-aspecto" data-valor="1" data-aspecto="servicio">★</span>
+                                    <span class="estrella-aspecto" data-valor="2" data-aspecto="servicio">★</span>
+                                    <span class="estrella-aspecto" data-valor="3" data-aspecto="servicio">★</span>
+                                    <span class="estrella-aspecto" data-valor="4" data-aspecto="servicio">★</span>
+                                    <span class="estrella-aspecto" data-valor="5" data-aspecto="servicio">★</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comentario -->
+                    <div class="form-group-calificacion">
+                        <label class="form-label-calificacion">Cuéntanos más sobre tu experiencia (opcional):</label>
+                        <textarea 
+                            class="form-textarea-calificacion" 
+                            id="comentarioCalificacion" 
+                            placeholder="¿Qué te gustó? ¿Qué podríamos mejorar?"
+                            maxlength="500"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer-calificacion">
+                    <button type="button" class="btn-cancelar-calificacion" onclick="window.sistemaCalificaciones.cerrarModalCalificacion()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-enviar-calificacion">
+                        ✅ Enviar Calificación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/calificaciones-sistema.js"></script>
+    <script>
+        // Cargar calificaciones de ejemplo
+        document.addEventListener('DOMContentLoaded', () => {
+            const entityId = new URLSearchParams(window.location.search).get('entity') || 'COMERCIO-001';
+            
+            // Renderizar resumen
+            if (window.sistemaCalificaciones) {
+                const data = window.sistemaCalificaciones.getPromedio(entityId);
+                document.getElementById('promedioNumero').textContent = data.promedio.toFixed(1);
+                document.getElementById('totalCalificaciones').textContent = `Basado en ${data.total} calificaciones`;
+
+                // Renderizar distribución
+                const container = document.getElementById('distribucionContainer');
+                window.sistemaCalificaciones.renderizarDistribucion(entityId, container);
+
+                // Renderizar lista
+                const listaContainer = document.getElementById('listaCalificacionesContainer');
+                window.sistemaCalificaciones.renderizarListaCalificaciones(entityId, listaContainer);
+            }
+        });
+
+        // Filtros
+        document.querySelectorAll('.btn-filtro').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // TODO: Aplicar filtro
+            });
+        });
+    </script>
+</body>
+</html>

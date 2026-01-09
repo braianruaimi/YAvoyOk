@@ -1,0 +1,2897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YaVoy Comercio - App Móvil</title>
+    <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/utilities.css">
+    <style>
+        :root {
+            --color-primario: #06b6d4;
+            --color-primario-dark: #0891b2;
+            --color-fondo: #0f1724;
+            --color-card: #1a2332;
+            --color-texto: #ffffff;
+            --color-texto-secundario: #94a3b8;
+            --color-exito: #10b981;
+            --color-advertencia: #f59e0b;
+            --color-peligro: #ef4444;
+            --color-info: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--color-fondo);
+            color: var(--color-texto);
+            overflow-x: hidden;
+        }
+
+        /* ==================== PANTALLA LOGIN ==================== */
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-dark) 100%);
+        }
+
+        .login-container {
+            background: var(--color-card);
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-logo {
+            font-size: 4em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: var(--color-texto-secundario);
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--color-texto);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-texto);
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--color-primario);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
+        }
+
+        .login-help {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85em;
+            color: var(--color-texto-secundario);
+        }
+
+        /* ==================== APP SCREEN ==================== */
+        #appScreen {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Header App */
+        .app-header {
+            background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-dark) 100%);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .comercio-nombre {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.85em;
+            cursor: pointer;
+        }
+
+        .stats-mini {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-mini {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-mini-label {
+            font-size: 0.7em;
+            opacity: 0.9;
+            display: block;
+            margin-top: 3px;
+        }
+
+        /* Tabs Content */
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ==================== TAB: INICIO ==================== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .quick-action-btn {
+            background: var(--color-card);
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            padding: 25px 15px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-primario);
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
+        }
+
+        .quick-action-icon {
+            font-size: 3em;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-text {
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--color-texto);
+        }
+
+        .pedidos-recientes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pedido-card-mini {
+            background: var(--color-card);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid var(--color-primario);
+        }
+
+        .pedido-header-mini {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .pedido-id {
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .pedido-estado-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .estado-pendiente {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--color-advertencia);
+        }
+
+        .estado-aceptado {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--color-info);
+        }
+
+        .estado-en-camino {
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--color-primario);
+        }
+
+        .estado-entregado {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-exito);
+        }
+
+        .pedido-info-mini {
+            font-size: 0.85em;
+            color: var(--color-texto-secundario);
+            margin-bottom: 5px;
+        }
+
+        /* ==================== TAB: CREAR PEDIDO ==================== */
+        .form-crear-pedido {
+            background: var(--color-card);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--color-texto);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-texto);
+            font-size: 1em;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-crear-pedido {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--color-exito) 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-crear-pedido:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .urgencia-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .urgencia-toggle input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+        }
+
+        .urgencia-toggle label {
+            margin: 0;
+            color: var(--color-peligro);
+            font-weight: 600;
+        }
+
+        /* ==================== TAB: PEDIDOS ACTIVOS ==================== */
+        .pedidos-activos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .pedido-card {
+            background: var(--color-card);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid var(--color-primario);
+        }
+
+        .pedido-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .pedido-numero {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .pedido-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .timeline-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 1.2em;
+        }
+
+        .timeline-step.completed .timeline-icon {
+            background: var(--color-exito);
+        }
+
+        .timeline-step.active .timeline-icon {
+            background: var(--color-primario);
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-label {
+            font-size: 0.75em;
+            color: var(--color-texto-secundario);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+        }
+
+        .pedido-detalles {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detalle-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detalle-row:last-child {
+            border-bottom: none;
+        }
+
+        .detalle-label {
+            color: var(--color-texto-secundario);
+            font-size: 0.9em;
+        }
+
+        .detalle-valor {
+            font-weight: 600;
+        }
+
+        .repartidor-info {
+            background: rgba(6, 182, 212, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .repartidor-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--color-primario);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .repartidor-datos {
+            flex: 1;
+        }
+
+        .repartidor-nombre {
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .repartidor-telefono {
+            font-size: 0.85em;
+            color: var(--color-texto-secundario);
+        }
+
+        .btn-llamar {
+            background: var(--color-exito);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .pedido-acciones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-accion {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-chat {
+            background: var(--color-info);
+            color: white;
+        }
+
+        .btn-mapa {
+            background: var(--color-primario);
+            color: white;
+        }
+
+        .btn-cancelar {
+            background: var(--color-peligro);
+            color: white;
+        }
+
+        /* ==================== TAB: HISTORIAL ==================== */
+        .historial-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: var(--color-texto);
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: var(--color-primario);
+            border-color: var(--color-primario);
+        }
+
+        .historial-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .historial-card {
+            background: var(--color-card);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid var(--color-exito);
+        }
+
+        .historial-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .historial-fecha {
+            font-size: 0.8em;
+            color: var(--color-texto-secundario);
+        }
+
+        .historial-rating {
+            color: var(--color-advertencia);
+        }
+
+        /* ==================== TAB: PERFIL ==================== */
+        .perfil-section {
+            background: var(--color-card);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .perfil-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .perfil-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            margin: 0 auto 15px;
+        }
+
+        .perfil-nombre {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .perfil-categoria {
+            color: var(--color-texto-secundario);
+            font-size: 0.95em;
+        }
+
+        .perfil-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perfil-stat {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .perfil-stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--color-primario);
+        }
+
+        .perfil-stat-label {
+            font-size: 0.8em;
+            color: var(--color-texto-secundario);
+            margin-top: 5px;
+        }
+
+        .perfil-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .perfil-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .perfil-info-label {
+            color: var(--color-texto-secundario);
+            font-weight: 600;
+        }
+
+        .perfil-info-value {
+            font-weight: 700;
+        }
+
+        .btn-editar-perfil {
+            width: 100%;
+            padding: 14px;
+            background: var(--color-primario);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* ==================== BOTTOM NAVIGATION ==================== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-card);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 20px;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--color-primario);
+        }
+
+        .nav-icon {
+            font-size: 1.8em;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        /* ==================== MODAL CHAT ==================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: var(--color-card);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            color: var(--color-texto);
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--color-fondo);
+        }
+
+        .mensaje {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .mensaje.enviado {
+            flex-direction: row-reverse;
+        }
+
+        .mensaje-bubble {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            background: var(--color-card);
+        }
+
+        .mensaje.enviado .mensaje-bubble {
+            background: var(--color-primario);
+        }
+
+        .mensaje-texto {
+            margin-bottom: 5px;
+        }
+
+        .mensaje-hora {
+            font-size: 0.7em;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        .chat-input-container {
+            background: var(--color-card);
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-texto);
+        }
+
+        .btn-send {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--color-primario);
+            border: none;
+            color: white;
+            font-size: 1.3em;
+            cursor: pointer;
+        }
+
+        /* ==================== EMPTY STATE ==================== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-texto-secundario);
+        }
+
+        .empty-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 480px) {
+            .stats-mini {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .pedido-acciones {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== LOADING ==================== */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success/Error Messages */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            background: var(--color-exito);
+        }
+
+        .toast.error {
+            background: var(--color-peligro);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== PANTALLA LOGIN ==================== -->
+    <div id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">🏪</div>
+            <h1 class="login-title">YaVoy Comercio</h1>
+            <p class="login-subtitle">Gestiona tus pedidos desde tu celular</p>
+
+            <form id="formLogin" onsubmit="iniciarSesion(event)">
+                <div class="input-group">
+                    <label>WhatsApp del Comercio</label>
+                    <input type="tel" id="loginWhatsapp" placeholder="Ej: 3815551234" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Nombre del Comercio</label>
+                    <input type="text" id="loginNombre" placeholder="Ej: Kiosco El Centro" required>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    Ingresar →
+                </button>
+            </form>
+
+            <p class="login-help">
+                ¿Primera vez? Ingresá tu WhatsApp y nombre para comenzar
+            </p>
+        </div>
+    </div>
+
+    <!-- ==================== PANTALLA APP ==================== -->
+    <div id="appScreen">
+        <!-- Header con stats -->
+        <div class="app-header">
+            <div class="header-top">
+                <div>
+                    <div class="comercio-nombre" id="comercioNombre">Mi Comercio</div>
+                    <div class="text-sm opacity-90" id="comercioCategoria">Categoría</div>
+                </div>
+                <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+            </div>
+
+            <div class="stats-mini">
+                <div class="stat-mini">
+                    <span class="stat-mini-value" id="statActivos">0</span>
+                    <span class="stat-mini-label">Activos</span>
+                </div>
+                <div class="stat-mini">
+                    <span class="stat-mini-value" id="statHoy">0</span>
+                    <span class="stat-mini-label">Hoy</span>
+                </div>
+                <div class="stat-mini">
+                    <span class="stat-mini-value" id="statTotal">0</span>
+                    <span class="stat-mini-label">Total</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: INICIO -->
+        <div id="tabInicio" class="tab-content active">
+            <div class="quick-actions">
+                <div class="quick-action-btn" onclick="cambiarTab('crear')">
+                    <div class="quick-action-icon">➕</div>
+                    <div class="quick-action-text">Crear Pedido</div>
+                </div>
+                <div class="quick-action-btn" onclick="cambiarTab('activos')">
+                    <div class="quick-action-icon">📦</div>
+                    <div class="quick-action-text">Ver Activos</div>
+                </div>
+                <div class="quick-action-btn" onclick="cambiarTab('historial')">
+                    <div class="quick-action-icon">📊</div>
+                    <div class="quick-action-text">Historial</div>
+                </div>
+                <div class="quick-action-btn" onclick="cambiarTab('perfil')">
+                    <div class="quick-action-icon">👤</div>
+                    <div class="quick-action-text">Mi Perfil</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">📦 Pedidos Recientes</h2>
+            <div class="pedidos-recientes" id="pedidosRecientes">
+                <!-- Se llenan dinámicamente -->
+            </div>
+        </div>
+
+        <!-- TAB: CREAR PEDIDO -->
+        <div id="tabCrear" class="tab-content">
+            <h2 class="section-title">➕ Nuevo Pedido</h2>
+            
+            <form class="form-crear-pedido" onsubmit="crearPedido(event)">
+                <div class="urgencia-toggle">
+                    <input type="checkbox" id="pedidoUrgente">
+                    <label for="pedidoUrgente">🔥 Pedido Urgente (entrega prioritaria)</label>
+                </div>
+
+                <div class="form-group">
+                    <label>Cliente (Nombre)</label>
+                    <input type="text" id="clienteNombre" placeholder="Nombre del cliente" required>
+                </div>
+
+                <div class="form-group">
+                    <label>WhatsApp Cliente</label>
+                    <input type="tel" id="clienteWhatsapp" placeholder="3815551234" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección de Entrega</label>
+                    <input type="text" id="direccionEntrega" placeholder="Calle, número, barrio" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Pago</label>
+                        <select id="tipoPago" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="efectivo">💵 Efectivo</option>
+                            <option value="transferencia">💳 Transferencia</option>
+                            <option value="mercadopago">📱 MercadoPago</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Monto Total</label>
+                        <input type="number" id="montoTotal" placeholder="0" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción del Pedido</label>
+                    <textarea id="descripcionPedido" placeholder="Detalle de productos, cantidad, observaciones..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-crear-pedido">
+                    ✓ Crear Pedido
+                </button>
+            </form>
+        </div>
+
+        <!-- TAB: PEDIDOS ACTIVOS -->
+        <div id="tabActivos" class="tab-content">
+            <h2 class="section-title">📦 Pedidos en Curso</h2>
+            <div class="pedidos-activos-list" id="pedidosActivosList">
+                <!-- Se llenan dinámicamente -->
+            </div>
+        </div>
+
+        <!-- TAB: HISTORIAL -->
+        <div id="tabHistorial" class="tab-content">
+            <h2 class="section-title">📊 Historial de Entregas</h2>
+            
+            <div class="historial-filters">
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="hoy">Hoy</button>
+                <button class="filter-btn" data-filter="semana">Esta Semana</button>
+                <button class="filter-btn" data-filter="mes">Este Mes</button>
+            </div>
+
+            <div class="historial-list" id="historialList">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+
+        <!-- TAB: PERFIL -->
+        <div id="tabPerfil" class="tab-content">
+            <div class="perfil-section">
+                <div class="perfil-header">
+                    <div class="perfil-avatar" id="perfilAvatar">🏪</div>
+                    <h2 class="perfil-nombre" id="perfilNombre">Mi Comercio</h2>
+                    <p class="perfil-categoria" id="perfilCategoria">Categoría</p>
+                </div>
+
+                <div class="perfil-stats">
+                    <div class="perfil-stat">
+                        <div class="perfil-stat-value" id="perfilTotalPedidos">0</div>
+                        <div class="perfil-stat-label">Pedidos</div>
+                    </div>
+                    <div class="perfil-stat">
+                        <div class="perfil-stat-value" id="perfilRating">5.0</div>
+                        <div class="perfil-stat-label">Rating</div>
+                    </div>
+                    <div class="perfil-stat">
+                        <div class="perfil-stat-value" id="perfilMonto">$0</div>
+                        <div class="perfil-stat-label">Facturado</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="perfil-section">
+                <h3 class="mb-md text-lg">Información del Comercio</h3>
+                
+                <div class="perfil-info-item">
+                    <span class="perfil-info-label">📱 WhatsApp</span>
+                    <span class="perfil-info-value" id="perfilWhatsapp">-</span>
+                </div>
+                
+                <div class="perfil-info-item">
+                    <span class="perfil-info-label">📍 Dirección</span>
+                    <span class="perfil-info-value" id="perfilDireccion">-</span>
+                </div>
+                
+                <div class="perfil-info-item">
+                    <span class="perfil-info-label">🏷️ Categoría</span>
+                    <span class="perfil-info-value" id="perfilCategoriaInfo">-</span>
+                </div>
+                
+                <div class="perfil-info-item">
+                    <span class="perfil-info-label">📅 Miembro desde</span>
+                    <span class="perfil-info-value" id="perfilFechaRegistro">-</span>
+                </div>
+
+                <button class="btn-editar-perfil" onclick="editarPerfil()">
+                    ✏️ Editar Información
+                </button>
+            </div>
+
+            <!-- Sección Estado del Comercio -->
+            <div class="perfil-section">
+                <h3 class="mb-md text-lg">Estado del Comercio</h3>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin-bottom: 20px;">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 5px;" id="estadoTexto">🟢 Activo</div>
+                        <div style="font-size: 14px; color: rgba(255, 255, 255, 0.6);">Los clientes pueden ver tu comercio</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggleEstado" onchange="cambiarEstadoComercio()" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Sección Fotos de Productos -->
+            <div class="perfil-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 class="text-lg">Fotos de Productos</h3>
+                    <button id="btnAgregarFoto" class="btn-secundario" onclick="abrirAgregarFoto()" style="padding: 8px 16px; font-size: 14px;">
+                        ➕ Agregar
+                    </button>
+                </div>
+                
+                <div id="fotosProductosContainer" style="display: grid; gap: 15px;">
+                    <!-- Fotos dinámicas -->
+                </div>
+
+                <div style="font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-top: 10px; text-align: center;">
+                    Máximo 3 fotos gratuitas · <span id="contadorFotos">0/3</span> usadas
+                </div>
+                
+                <!-- Promoción Tienda Premium -->
+                <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%); border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 12px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🔒 🏪</div>
+                    <h4 style="font-size: 18px; font-weight: 700; color: #fbbf24; margin-bottom: 8px;">Crea Tu Tienda Completa</h4>
+                    <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">
+                        ✨ Fotos ilimitadas<br>
+                        🎨 Catálogo personalizado<br>
+                        📊 Estadísticas avanzadas<br>
+                        🚀 Mayor visibilidad
+                    </p>
+                    <button class="btn-premium" onclick="abrirModalTienda()" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #1f2937; font-weight: 700; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4); transition: all 0.3s ease;">
+                        🔓 Desbloquear por $50.000
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sección Publicidad -->
+            <div class="perfil-section">
+                <h3 class="mb-md text-lg">Promociona Tu Negocio</h3>
+                
+                <div style="padding: 20px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(109, 40, 217, 0.1) 100%); border: 2px solid rgba(139, 92, 246, 0.3); border-radius: 12px;">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📢</div>
+                        <h4 style="font-size: 18px; font-weight: 700; color: #a78bfa; margin-bottom: 8px;">Publicidad Premium</h4>
+                        <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">
+                            Aparece destacado en la plataforma y llega a más clientes
+                        </p>
+                    </div>
+
+                    <div style="display: grid; gap: 10px; margin-bottom: 20px; text-align: left;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 20px;">⭐</span>
+                            <span style="font-size: 14px;">Aparece en la página principal</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 20px;">🎯</span>
+                            <span style="font-size: 14px;">Banner destacado en búsquedas</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 20px;">📱</span>
+                            <span style="font-size: 14px;">Notificaciones a clientes cercanos</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 20px;">📊</span>
+                            <span style="font-size: 14px;">Reportes de alcance y visitas</span>
+                        </div>
+                    </div>
+
+                    <div id="estadoPublicidad" style="margin-bottom: 15px; padding: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; text-align: center; font-size: 14px;">
+                        Sin publicidad activa
+                    </div>
+
+                    <button id="btnSolicitarPublicidad" class="btn-premium" onclick="abrirModalPublicidad()" style="width: 100%; background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); color: white; font-weight: 700; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); transition: all 0.3s ease;">
+                        📢 Solicitar Publicidad
+                    </button>
+
+                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); text-align: center; margin-top: 10px;">
+                        Planes desde $20.000
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="cambiarTab('inicio')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Inicio</span>
+            </div>
+            <div class="nav-item" onclick="cambiarTab('crear')">
+                <span class="nav-icon">➕</span>
+                <span class="nav-label">Crear</span>
+            </div>
+            <div class="nav-item" onclick="cambiarTab('activos')">
+                <span class="nav-icon">📦</span>
+                <span class="nav-label">Activos</span>
+            </div>
+            <div class="nav-item" onclick="cambiarTab('historial')">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Historial</span>
+            </div>
+            <div class="nav-item" onclick="cambiarTab('perfil')">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Perfil</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL CHAT ==================== -->
+    <div id="modalChat" class="modal">
+        <div class="modal-header">
+            <button class="btn-close-modal" onclick="cerrarChat()">←</button>
+            <div>
+                <div class="modal-title" id="chatNombre">Chat</div>
+                <div class="text-xs text-secondary">Repartidor</div>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Mensajes dinámicos -->
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Escribe un mensaje...">
+            <button class="btn-send" onclick="enviarMensaje()">▶</button>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL EDITAR PERFIL ==================== -->
+    <div id="modalEditarPerfil" class="modal">
+        <div class="modal-header">
+            <button class="btn-close-modal" onclick="cerrarModalPerfil()">←</button>
+            <div>
+                <div class="modal-title">✏️ Editar Perfil</div>
+                <div class="text-xs text-secondary">Actualiza tu información</div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; max-height: calc(100vh - 120px); overflow-y: auto;">
+            <form id="formEditarPerfil" onsubmit="guardarPerfilComercio(event)">
+                <div class="input-group">
+                    <label>Nombre del Comercio</label>
+                    <input type="text" id="editNombreComercio" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Categoría</label>
+                    <select id="editCategoria" required>
+                        <option value="alimentacion">🍔 Alimentación</option>
+                        <option value="salud">💊 Salud</option>
+                        <option value="bazar">🛍️ Bazar</option>
+                        <option value="indumentaria">👕 Indumentaria</option>
+                        <option value="kiosco">🍬 Kiosco</option>
+                        <option value="otros">📦 Otros</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>WhatsApp</label>
+                    <input type="tel" id="editWhatsApp" required placeholder="Ej: 2215690902">
+                </div>
+
+                <div class="input-group">
+                    <label>Dirección</label>
+                    <input type="text" id="editDireccion" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Email (opcional)</label>
+                    <input type="email" id="editEmail">
+                </div>
+
+                <div class="input-group">
+                    <label>Horario (opcional)</label>
+                    <input type="text" id="editHorario" placeholder="Ej: 9:00 - 18:00">
+                </div>
+
+                <div class="input-group">
+                    <label>Descripción (opcional)</label>
+                    <textarea id="editDescripcion" rows="3" style="width: 100%; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: var(--color-texto); font-family: inherit;"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>📸 Foto de Perfil</label>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div id="previsualizacionFoto" style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid rgba(255, 255, 255, 0.2); display: none; margin: 0 auto;">
+                            <img id="imagenPrevia" src="" alt="Vista previa" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <input type="file" id="inputFotoPerfil" accept="image/*" style="display: none;" onchange="previsualizarFoto(event)">
+                        <button type="button" class="btn-secundario" onclick="document.getElementById('inputFotoPerfil').click()" style="width: 100%;">
+                            📷 Seleccionar Foto
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primario" style="width: 100%; margin-top: 20px;">
+                    💾 Guardar Cambios
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL AGREGAR FOTO PRODUCTO ==================== -->
+    <div id="modalAgregarFoto" class="modal">
+        <div class="modal-header">
+            <button class="btn-close-modal" onclick="cerrarModalFoto()">←</button>
+            <div>
+                <div class="modal-title">📸 Agregar Foto de Producto</div>
+                <div class="text-xs text-secondary">Muestra lo que ofreces</div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; max-height: calc(100vh - 120px); overflow-y: auto;">
+            <form id="formAgregarFoto" onsubmit="guardarFotoProducto(event)">
+                <div class="input-group">
+                    <label>📷 Seleccionar Imagen</label>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div id="previsualizacionFotoProducto" style="width: 100%; height: 200px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.2); display: none; background: rgba(255, 255, 255, 0.05);">
+                            <img id="imagenPreviaProducto" src="" alt="Vista previa" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <input type="file" id="inputFotoProducto" accept="image/*" style="display: none;" onchange="previsualizarFotoProducto(event)" required>
+                        <button type="button" class="btn-secundario" onclick="document.getElementById('inputFotoProducto').click()" style="width: 100%;">
+                            📷 Seleccionar Foto
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>💰 Precio (opcional)</label>
+                    <input type="text" id="inputPrecioProducto" placeholder="Ej: $2.500">
+                </div>
+
+                <div class="input-group">
+                    <label>🔗 Enlace de Contacto (opcional)</label>
+                    <input type="url" id="inputEnlaceProducto" placeholder="https://wa.me/542215690902">
+                </div>
+
+                <div class="input-group">
+                    <label>📝 Descripción (opcional)</label>
+                    <textarea id="inputDescripcionProducto" rows="3" placeholder="Describe tu producto o servicio" style="width: 100%; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: var(--color-texto); font-family: inherit;"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primario" style="width: 100%; margin-top: 20px;">
+                    💾 Agregar Foto
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL SOLICITAR TIENDA ==================== -->
+    <div id="modalSolicitarTienda" class="modal">
+        <div class="modal-header">
+            <button class="btn-close-modal" onclick="cerrarModalTienda()">←</button>
+            <div>
+                <div class="modal-title">🏪 Crear Mi Tienda Premium</div>
+                <div class="text-xs text-secondary">Inversión única: $50.000</div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; max-height: calc(100vh - 120px); overflow-y: auto;">
+            <!-- Beneficios -->
+            <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%); border: 2px solid rgba(251, 191, 36, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="font-size: 18px; font-weight: 700; color: #fbbf24; margin-bottom: 15px; text-align: center;">✨ Beneficios Premium</h3>
+                
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <div style="font-size: 24px;">📸</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 3px;">Fotos Ilimitadas</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">Sube todas las fotos que necesites de tus productos</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <div style="font-size: 24px;">🎨</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 3px;">Catálogo Personalizado</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">Tu propia página web con diseño profesional</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <div style="font-size: 24px;">📊</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 3px;">Estadísticas Avanzadas</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">Seguimiento de visitas, pedidos y ventas</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <div style="font-size: 24px;">🚀</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 3px;">Mayor Visibilidad</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">Aparece destacado en búsquedas de clientes</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <div style="font-size: 24px;">💳</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 3px;">Pagos Online</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">Integración con MercadoPago y otros métodos</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <div style="font-size: 24px;">🎯</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 3px;">Marketing Incluido</div>
+                            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">Promociones y descuentos automatizados</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Solicitud -->
+            <form id="formSolicitarTienda" onsubmit="enviarSolicitudTienda(event)">
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: rgba(255, 255, 255, 0.9);">Información de Contacto</h4>
+                    
+                    <div class="input-group">
+                        <label>Nombre del Comercio</label>
+                        <input type="text" id="tiendaNombre" required readonly style="background: rgba(255, 255, 255, 0.1);">
+                    </div>
+
+                    <div class="input-group">
+                        <label>WhatsApp de Contacto</label>
+                        <input type="tel" id="tiendaWhatsapp" required readonly style="background: rgba(255, 255, 255, 0.1);">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email (opcional)</label>
+                        <input type="email" id="tiendaEmail" placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Comentarios Adicionales (opcional)</label>
+                        <textarea id="tiendaComentarios" rows="3" placeholder="¿Algo específico que quieras en tu tienda?" style="width: 100%; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: var(--color-texto); font-family: inherit;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Resumen del Costo -->
+                <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%); border: 2px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 16px; font-weight: 600;">Inversión Total:</span>
+                        <span style="font-size: 28px; font-weight: 700; color: #10b981;">$50.000</span>
+                    </div>
+                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.7); text-align: center;">
+                        💳 Pago único · ✅ Sin mensualidades · 🔄 Actualización incluida
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primario" style="width: 100%; padding: 16px; font-size: 18px; font-weight: 700;">
+                    📨 Enviar Solicitud
+                </button>
+
+                <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); text-align: center; margin-top: 15px;">
+                    Nos contactaremos contigo en las próximas 24 horas
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL SOLICITAR PUBLICIDAD ==================== -->
+    <div id="modalSolicitarPublicidad" class="modal">
+        <div class="modal-header">
+            <button class="btn-close-modal" onclick="cerrarModalPublicidad()">←</button>
+            <div>
+                <div class="modal-title">📢 Solicitar Publicidad</div>
+                <div class="text-xs text-secondary">Impulsa tu negocio</div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; max-height: calc(100vh - 120px); overflow-y: auto;">
+            <!-- Planes de Publicidad -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; text-align: center; color: rgba(255, 255, 255, 0.9);">Elige Tu Plan</h3>
+                
+                <!-- Plan Básico -->
+                <div class="plan-card" onclick="seleccionarPlan('basico', 20000)" style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="font-size: 18px; font-weight: 700; color: #10b981; margin-bottom: 5px;">📱 Plan Básico</h4>
+                            <p style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">Ideal para empezar</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 700; color: #10b981;">$20.000</div>
+                            <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">por mes</div>
+                        </div>
+                    </div>
+                    <div style="display: grid; gap: 8px; font-size: 14px;">
+                        <div>✓ Banner en búsquedas locales</div>
+                        <div>✓ Destacado en tu categoría</div>
+                        <div>✓ Logo destacado en el mapa</div>
+                        <div>✓ Hasta 1.000 impresiones/mes</div>
+                    </div>
+                </div>
+
+                <!-- Plan Estándar -->
+                <div class="plan-card" onclick="seleccionarPlan('estandar', 40000)" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(109, 40, 217, 0.1) 100%); border: 2px solid rgba(139, 92, 246, 0.5); border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease; position: relative;">
+                    <div style="position: absolute; top: 10px; right: 10px; background: #a78bfa; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;">POPULAR</div>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="font-size: 18px; font-weight: 700; color: #a78bfa; margin-bottom: 5px;">🚀 Plan Estándar</h4>
+                            <p style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">Más exposición</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 700; color: #a78bfa;">$40.000</div>
+                            <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">por mes</div>
+                        </div>
+                    </div>
+                    <div style="display: grid; gap: 8px; font-size: 14px;">
+                        <div>✓ Todo del Plan Básico</div>
+                        <div>✓ Banner en página principal</div>
+                        <div>✓ Notificaciones push a clientes</div>
+                        <div>✓ Destacado en 3 categorías</div>
+                        <div>✓ Hasta 5.000 impresiones/mes</div>
+                        <div>✓ Reporte semanal de métricas</div>
+                    </div>
+                </div>
+
+                <!-- Plan Premium -->
+                <div class="plan-card" onclick="seleccionarPlan('premium', 80000)" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%); border: 2px solid rgba(251, 191, 36, 0.5); border-radius: 12px; padding: 20px; margin-bottom: 20px; cursor: pointer; transition: all 0.3s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="font-size: 18px; font-weight: 700; color: #fbbf24; margin-bottom: 5px;">⭐ Plan Premium</h4>
+                            <p style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">Máxima visibilidad</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 700; color: #fbbf24;">$80.000</div>
+                            <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">por mes</div>
+                        </div>
+                    </div>
+                    <div style="display: grid; gap: 8px; font-size: 14px;">
+                        <div>✓ Todo del Plan Estándar</div>
+                        <div>✓ Banner premium en homepage</div>
+                        <div>✓ Prioridad en resultados de búsqueda</div>
+                        <div>✓ Destacado en todas las categorías</div>
+                        <div>✓ Impresiones ilimitadas</div>
+                        <div>✓ Reporte diario de métricas</div>
+                        <div>✓ Soporte prioritario 24/7</div>
+                        <div>✓ Post destacado en redes sociales</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Solicitud -->
+            <form id="formSolicitarPublicidad" onsubmit="enviarSolicitudPublicidad(event)">
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: rgba(255, 255, 255, 0.9);">Información de Contacto</h4>
+                    
+                    <input type="hidden" id="publicidadPlan" value="">
+                    <input type="hidden" id="publicidadMonto" value="">
+
+                    <div class="input-group">
+                        <label>Plan Seleccionado</label>
+                        <input type="text" id="publicidadPlanNombre" required readonly style="background: rgba(255, 255, 255, 0.1); font-weight: 600;">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Nombre del Comercio</label>
+                        <input type="text" id="publicidadNombre" required readonly style="background: rgba(255, 255, 255, 0.1);">
+                    </div>
+
+                    <div class="input-group">
+                        <label>WhatsApp de Contacto</label>
+                        <input type="tel" id="publicidadWhatsapp" required readonly style="background: rgba(255, 255, 255, 0.1);">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email (opcional)</label>
+                        <input type="email" id="publicidadEmail" placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Duración (meses)</label>
+                        <select id="publicidadDuracion" onchange="calcularTotalPublicidad()" style="width: 100%; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: var(--color-texto); font-family: inherit; font-size: 16px;">
+                            <option value="1">1 mes</option>
+                            <option value="3" selected>3 meses (5% descuento)</option>
+                            <option value="6">6 meses (10% descuento)</option>
+                            <option value="12">12 meses (15% descuento)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Mensaje o Requisitos Especiales (opcional)</label>
+                        <textarea id="publicidadMensaje" rows="3" placeholder="Ej: Quiero promocionar mi nuevo menú de desayunos..." style="width: 100%; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: var(--color-texto); font-family: inherit;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Resumen del Costo -->
+                <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(109, 40, 217, 0.1) 100%); border: 2px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 14px;">Costo mensual:</span>
+                            <span id="costoMensualPublicidad" style="font-size: 14px; font-weight: 600;">$0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 14px;">Duración:</span>
+                            <span id="duracionPublicidad" style="font-size: 14px; font-weight: 600;">3 meses</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 14px; color: #10b981;">Descuento:</span>
+                            <span id="descuentoPublicidad" style="font-size: 14px; font-weight: 600; color: #10b981;">-$0</span>
+                        </div>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 16px; font-weight: 600;">Total a Pagar:</span>
+                        <span id="totalPublicidad" style="font-size: 28px; font-weight: 700; color: #a78bfa;">$0</span>
+                    </div>
+                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.7); text-align: center; margin-top: 10px;">
+                        💳 Pago mensual · 🔄 Renovación automática (opcional)
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primario" style="width: 100%; padding: 16px; font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);">
+                    📨 Enviar Solicitud
+                </button>
+
+                <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); text-align: center; margin-top: 15px;">
+                    Te contactaremos en las próximas 24 horas
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .plan-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .plan-card.selected {
+            border-color: #a78bfa !important;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--color-primario);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .foto-producto-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .foto-producto-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .foto-producto-info {
+            padding: 15px;
+        }
+
+        .foto-producto-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-premium {
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+        }
+
+        .btn-premium:active {
+            transform: translateY(0);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+            }
+        }
+
+        #btnAgregarFoto {
+            transition: all 0.3s ease;
+        }
+
+        #btnAgregarFoto:hover {
+            transform: scale(1.05);
+        }
+    </style>
+
+    <script>
+        // ==================== VARIABLES GLOBALES ====================
+        let comercioData = null;
+        let pedidosActivos = [];
+        let pedidosHistorial = [];
+
+        // ==================== LOGIN ====================
+        function iniciarSesion(event) {
+            event.preventDefault();
+            
+            const whatsapp = document.getElementById('loginWhatsapp').value;
+            const nombre = document.getElementById('loginNombre').value;
+
+            // Simular autenticación (en producción conectar con API)
+            comercioData = {
+                id: Date.now(),
+                whatsapp: whatsapp,
+                nombre: nombre,
+                categoria: 'Kiosco', // Se puede hacer dinámico
+                direccion: 'Dirección del comercio',
+                fechaRegistro: new Date().toLocaleDateString(),
+                totalPedidos: 0,
+                rating: 5.0,
+                montoFacturado: 0
+            };
+
+            localStorage.setItem('comercioYaVoy', JSON.stringify(comercioData));
+            
+            mostrarApp();
+        }
+
+        function mostrarApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            
+            cargarDatosComercio();
+            cargarPedidos();
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Seguro que quieres salir?')) {
+                localStorage.removeItem('comercioYaVoy');
+                location.reload();
+            }
+        }
+
+        // ==================== CARGAR DATOS ====================
+        function cargarDatosComercio() {
+            if (!comercioData) return;
+
+            document.getElementById('comercioNombre').textContent = comercioData.nombre;
+            document.getElementById('comercioCategoria').textContent = comercioData.categoria;
+            
+            document.getElementById('perfilNombre').textContent = comercioData.nombre;
+            document.getElementById('perfilCategoria').textContent = comercioData.categoria;
+            document.getElementById('perfilWhatsapp').textContent = comercioData.whatsapp;
+            document.getElementById('perfilDireccion').textContent = comercioData.direccion;
+            document.getElementById('perfilCategoriaInfo').textContent = comercioData.categoria;
+            document.getElementById('perfilFechaRegistro').textContent = comercioData.fechaRegistro;
+            document.getElementById('perfilTotalPedidos').textContent = comercioData.totalPedidos;
+            document.getElementById('perfilRating').textContent = comercioData.rating;
+            document.getElementById('perfilMonto').textContent = '$' + comercioData.montoFacturado;
+
+            // Actualizar foto de perfil si existe
+            const avatarElement = document.getElementById('perfilAvatar');
+            if (comercioData.fotoPerfil) {
+                avatarElement.innerHTML = `<img src="${comercioData.fotoPerfil}" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                avatarElement.textContent = '🏪';
+            }
+
+            // Actualizar estado activo/inactivo
+            const activo = comercioData.activo !== undefined ? comercioData.activo : true;
+            document.getElementById('toggleEstado').checked = activo;
+            document.getElementById('estadoTexto').innerHTML = activo ? '🟢 Activo' : '🔴 Inactivo';
+
+            // Cargar fotos de productos
+            cargarFotosProductos();
+            actualizarContadorFotos();
+            actualizarEstadoPublicidad();
+        }
+
+        function actualizarContadorFotos() {
+            const totalFotos = comercioData.fotosProductos ? comercioData.fotosProductos.length : 0;
+            const tieneTiendaPremium = comercioData.tieneTiendaPremium || false;
+            const solicitudEnviada = comercioData.solicitudTiendaEnviada || false;
+            const contadorElement = document.getElementById('contadorFotos');
+            const btnAgregar = document.getElementById('btnAgregarFoto');
+            
+            if (tieneTiendaPremium) {
+                contadorElement.textContent = `${totalFotos} · Premium ✨`;
+                contadorElement.style.color = '#fbbf24';
+                btnAgregar.innerHTML = '➕ Agregar';
+            } else {
+                contadorElement.textContent = `${totalFotos}/3`;
+                if (totalFotos >= 3) {
+                    contadorElement.style.color = '#ef4444';
+                    btnAgregar.innerHTML = '🔒 Agregar más';
+                    btnAgregar.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
+                    btnAgregar.style.color = '#1f2937';
+                    btnAgregar.style.fontWeight = '600';
+                } else {
+                    contadorElement.style.color = 'rgba(255, 255, 255, 0.6)';
+                    btnAgregar.innerHTML = '➕ Agregar';
+                    btnAgregar.style.background = '';
+                    btnAgregar.style.color = '';
+                    btnAgregar.style.fontWeight = '';
+                }
+            }
+
+            // Si ya envió solicitud, mostrar estado
+            if (solicitudEnviada && totalFotos >= 3) {
+                btnAgregar.innerHTML = '📨 Solicitud Enviada';
+                btnAgregar.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                btnAgregar.style.color = 'white';
+                btnAgregar.style.cursor = 'default';
+                btnAgregar.onclick = function() {
+                    mostrarToast('✅ Ya enviaste tu solicitud. Nos contactaremos pronto.', 'info');
+                };
+            }
+        }
+
+        function cargarFotosProductos() {
+            const container = document.getElementById('fotosProductosContainer');
+            
+            if (!comercioData.fotosProductos || comercioData.fotosProductos.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.5);">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📸</div>
+                        <div>No hay fotos de productos aún</div>
+                        <div style="font-size: 14px; margin-top: 5px;">Agrega hasta 3 fotos para mostrar tus productos</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = comercioData.fotosProductos.map(foto => `
+                <div class="foto-producto-card">
+                    <img src="${foto.url}" alt="Producto" class="foto-producto-img">
+                    <div class="foto-producto-info">
+                        ${foto.precio ? `<div style="font-weight: 600; font-size: 18px; color: var(--color-primario); margin-bottom: 5px;">${foto.precio}</div>` : ''}
+                        ${foto.descripcion ? `<div style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;">${foto.descripcion}</div>` : ''}
+                        ${foto.enlace ? `<a href="${foto.enlace}" target="_blank" style="font-size: 13px; color: var(--color-primario); text-decoration: none;">🔗 Ver más</a>` : ''}
+                        <div class="foto-producto-actions">
+                            <button onclick="eliminarFotoProducto('${foto.id}')" class="btn-secundario" style="flex: 1; padding: 8px; font-size: 14px;">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function cargarPedidos() {
+            try {
+                // En producción: const response = await fetch(`/api/comercio/${comercioData.id}/pedidos`);
+                // Por ahora simulamos datos
+                
+                pedidosActivos = [
+                    {
+                        id: 'P001',
+                        cliente: 'Juan Pérez',
+                        whatsapp: '3815551234',
+                        direccion: 'Av. Siempre Viva 123',
+                        monto: 2500,
+                        tipoPago: 'efectivo',
+                        estado: 'en-camino',
+                        urgente: false,
+                        repartidor: {
+                            nombre: 'Carlos López',
+                            whatsapp: '3815559876'
+                        },
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+
+                actualizarStats();
+                renderPedidosRecientes();
+                renderPedidosActivos();
+                
+            } catch (error) {
+                console.error('Error al cargar pedidos:', error);
+            }
+        }
+
+        function actualizarStats() {
+            const activos = pedidosActivos.length;
+            const hoy = pedidosActivos.filter(p => {
+                const fecha = new Date(p.createdAt);
+                const hoyFecha = new Date();
+                return fecha.toDateString() === hoyFecha.toDateString();
+            }).length;
+
+            document.getElementById('statActivos').textContent = activos;
+            document.getElementById('statHoy').textContent = hoy;
+            document.getElementById('statTotal').textContent = comercioData.totalPedidos;
+        }
+
+        // ==================== CREAR PEDIDO ====================
+        async function crearPedido(event) {
+            event.preventDefault();
+
+            const pedido = {
+                comercioId: comercioData.id,
+                comercioNombre: comercioData.nombre,
+                cliente: document.getElementById('clienteNombre').value,
+                whatsapp: document.getElementById('clienteWhatsapp').value,
+                direccion: document.getElementById('direccionEntrega').value,
+                tipoPago: document.getElementById('tipoPago').value,
+                monto: parseFloat(document.getElementById('montoTotal').value),
+                descripcion: document.getElementById('descripcionPedido').value,
+                urgente: document.getElementById('pedidoUrgente').checked,
+                estado: 'pendiente',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                // En producción: await fetch('/api/pedidos', { method: 'POST', body: JSON.stringify(pedido) });
+                
+                // Simulación
+                pedido.id = 'P' + Date.now();
+                pedidosActivos.push(pedido);
+                
+                mostrarToast('Pedido creado exitosamente', 'success');
+                document.querySelector('.form-crear-pedido').reset();
+                
+                cambiarTab('activos');
+                cargarPedidos();
+                
+            } catch (error) {
+                mostrarToast('Error al crear pedido', 'error');
+                console.error(error);
+            }
+        }
+
+        // ==================== RENDER PEDIDOS ====================
+        function renderPedidosRecientes() {
+            const container = document.getElementById('pedidosRecientes');
+            const recientes = pedidosActivos.slice(0, 5);
+
+            if (recientes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <div class="empty-text">No hay pedidos recientes</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recientes.map(pedido => `
+                <div class="pedido-card-mini">
+                    <div class="pedido-header-mini">
+                        <span class="pedido-id">${pedido.id}</span>
+                        <span class="pedido-estado-badge estado-${pedido.estado}">
+                            ${getEstadoTexto(pedido.estado)}
+                        </span>
+                    </div>
+                    <div class="pedido-info-mini">
+                        👤 ${pedido.cliente}
+                    </div>
+                    <div class="pedido-info-mini">
+                        💵 $${pedido.monto} - ${pedido.tipoPago}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPedidosActivos() {
+            const container = document.getElementById('pedidosActivosList');
+
+            if (pedidosActivos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <div class="empty-text">No hay pedidos activos</div>
+                        <button class="btn-crear-pedido mt-lg max-w-sm mx-auto" onclick="cambiarTab('crear')">
+                            ➕ Crear Primer Pedido
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = pedidosActivos.map(pedido => `
+                <div class="pedido-card">
+                    <div class="pedido-card-header">
+                        <span class="pedido-numero">${pedido.id}</span>
+                        <span class="pedido-estado-badge estado-${pedido.estado}">
+                            ${getEstadoTexto(pedido.estado)}
+                        </span>
+                    </div>
+
+                    ${renderTimeline(pedido.estado)}
+
+                    <div class="pedido-detalles">
+                        <div class="detalle-row">
+                            <span class="detalle-label">Cliente</span>
+                            <span class="detalle-valor">${pedido.cliente}</span>
+                        </div>
+                        <div class="detalle-row">
+                            <span class="detalle-label">Dirección</span>
+                            <span class="detalle-valor">${pedido.direccion}</span>
+                        </div>
+                        <div class="detalle-row">
+                            <span class="detalle-label">Monto</span>
+                            <span class="detalle-valor">$${pedido.monto}</span>
+                        </div>
+                        <div class="detalle-row">
+                            <span class="detalle-label">Pago</span>
+                            <span class="detalle-valor">${pedido.tipoPago}</span>
+                        </div>
+                    </div>
+
+                    ${pedido.repartidor ? `
+                        <div class="repartidor-info">
+                            <div class="repartidor-avatar">🚴</div>
+                            <div class="repartidor-datos">
+                                <div class="repartidor-nombre">${pedido.repartidor.nombre}</div>
+                                <div class="repartidor-telefono">${pedido.repartidor.whatsapp}</div>
+                            </div>
+                            <button class="btn-llamar" onclick="llamarRepartidor('${pedido.repartidor.whatsapp}')">
+                                📞
+                            </button>
+                        </div>
+                    ` : ''}
+
+                    <div class="pedido-acciones">
+                        <button class="btn-accion btn-chat" onclick="abrirChat('${pedido.id}')">
+                            💬 Chat
+                        </button>
+                        <button class="btn-accion btn-mapa" onclick="verEnMapa('${pedido.id}')">
+                            🗺️ Mapa
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTimeline(estado) {
+            const estados = ['pendiente', 'aceptado', 'en-camino', 'entregado'];
+            const iconos = ['⏳', '✓', '🚴', '📦'];
+            const labels = ['Pendiente', 'Aceptado', 'En Camino', 'Entregado'];
+            
+            const estadoIndex = estados.indexOf(estado);
+
+            return `
+                <div class="pedido-timeline">
+                    ${estados.map((e, i) => `
+                        <div class="timeline-step ${i <= estadoIndex ? 'completed' : ''} ${i === estadoIndex ? 'active' : ''}">
+                            <div class="timeline-icon">${iconos[i]}</div>
+                            <div class="timeline-label">${labels[i]}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // ==================== NAVEGACIÓN ====================
+        function cambiarTab(tab) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            // Mostrar tab seleccionado
+            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+            
+            // Activar nav item correspondiente
+            const navItems = document.querySelectorAll('.nav-item');
+            const navLabels = ['inicio', 'crear', 'activos', 'historial', 'perfil'];
+            const index = navLabels.indexOf(tab);
+            if (index !== -1) {
+                navItems[index].classList.add('active');
+            }
+        }
+
+        // ==================== CHAT ====================
+        function abrirChat(pedidoId) {
+            const pedido = pedidosActivos.find(p => p.id === pedidoId);
+            if (!pedido) return;
+
+            document.getElementById('chatNombre').textContent = 
+                pedido.repartidor ? pedido.repartidor.nombre : 'Repartidor';
+            
+            document.getElementById('modalChat').classList.add('active');
+            
+            // Cargar mensajes
+            cargarMensajes(pedidoId);
+        }
+
+        function cerrarChat() {
+            document.getElementById('modalChat').classList.remove('active');
+        }
+
+        function cargarMensajes(pedidoId) {
+            const container = document.getElementById('chatMessages');
+            
+            // Mensajes de ejemplo
+            container.innerHTML = `
+                <div class="mensaje">
+                    <div class="mensaje-bubble">
+                        <div class="mensaje-texto">Hola! Ya salí con tu pedido</div>
+                        <div class="mensaje-hora">14:30</div>
+                    </div>
+                </div>
+                <div class="mensaje enviado">
+                    <div class="mensaje-bubble">
+                        <div class="mensaje-texto">Perfecto! Gracias</div>
+                        <div class="mensaje-hora">14:31</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function enviarMensaje() {
+            const input = document.getElementById('chatInput');
+            const texto = input.value.trim();
+            
+            if (!texto) return;
+
+            const container = document.getElementById('chatMessages');
+            const hora = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            
+            container.innerHTML += `
+                <div class="mensaje enviado">
+                    <div class="mensaje-bubble">
+                        <div class="mensaje-texto">${texto}</div>
+                        <div class="mensaje-hora">${hora}</div>
+                    </div>
+                </div>
+            `;
+
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ==================== UTILIDADES ====================
+        function getEstadoTexto(estado) {
+            const estados = {
+                'pendiente': '⏳ Pendiente',
+                'aceptado': '✓ Aceptado',
+                'en-camino': '🚴 En Camino',
+                'entregado': '📦 Entregado'
+            };
+            return estados[estado] || estado;
+        }
+
+        function mostrarToast(mensaje, tipo = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.textContent = mensaje;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function llamarRepartidor(whatsapp) {
+            window.open(`https://wa.me/${whatsapp}`, '_blank');
+        }
+
+        function verEnMapa(pedidoId) {
+            // Abrir mapa con tracking (implementar según necesidad)
+            alert('Abriendo mapa de tracking...');
+        }
+
+        function editarPerfil() {
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            // Cargar datos actuales en el formulario
+            document.getElementById('editNombreComercio').value = comercioData.nombre || '';
+            document.getElementById('editCategoria').value = comercioData.categoria || 'otros';
+            document.getElementById('editWhatsApp').value = comercioData.whatsapp || '';
+            document.getElementById('editDireccion').value = comercioData.direccion || '';
+            document.getElementById('editEmail').value = comercioData.email || '';
+            document.getElementById('editHorario').value = comercioData.horario || '';
+            document.getElementById('editDescripcion').value = comercioData.descripcion || '';
+
+            // Mostrar foto actual si existe
+            if (comercioData.fotoPerfil) {
+                document.getElementById('imagenPrevia').src = comercioData.fotoPerfil;
+                document.getElementById('previsualizacionFoto').style.display = 'block';
+            } else {
+                document.getElementById('previsualizacionFoto').style.display = 'none';
+            }
+
+            // Mostrar modal
+            document.getElementById('modalEditarPerfil').classList.add('active');
+        }
+
+        function cerrarModalPerfil() {
+            document.getElementById('modalEditarPerfil').classList.remove('active');
+        }
+
+        // ==================== GESTIÓN DE ESTADO ACTIVO/INACTIVO ====================
+        async function cambiarEstadoComercio() {
+            const activo = document.getElementById('toggleEstado').checked;
+            
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/comercio/${comercioData.id}/estado`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activo })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    comercioData.activo = activo;
+                    localStorage.setItem('comercioYaVoy', JSON.stringify(comercioData));
+                    
+                    document.getElementById('estadoTexto').innerHTML = activo ? '🟢 Activo' : '🔴 Inactivo';
+                    mostrarToast(activo ? '✅ Comercio activado' : '🔴 Comercio desactivado', 'success');
+                } else {
+                    mostrarToast('❌ Error al cambiar estado', 'error');
+                    document.getElementById('toggleEstado').checked = !activo;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('❌ Error de conexión', 'error');
+                document.getElementById('toggleEstado').checked = !activo;
+            }
+        }
+
+        // ==================== GESTIÓN DE FOTOS DE PRODUCTOS ====================
+        function abrirAgregarFoto() {
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            const totalFotos = comercioData.fotosProductos ? comercioData.fotosProductos.length : 0;
+            const tieneTiendaPremium = comercioData.tieneTiendaPremium || false;
+
+            // Si ya tiene 3 fotos y no tiene tienda premium, mostrar modal de upgrade
+            if (totalFotos >= 3 && !tieneTiendaPremium) {
+                abrirModalTienda();
+                return;
+            }
+
+            document.getElementById('formAgregarFoto').reset();
+            document.getElementById('previsualizacionFotoProducto').style.display = 'none';
+            document.getElementById('modalAgregarFoto').classList.add('active');
+        }
+
+        function cerrarModalFoto() {
+            document.getElementById('modalAgregarFoto').classList.remove('active');
+        }
+
+        function previsualizarFotoProducto(event) {
+            const archivo = event.target.files[0];
+            if (archivo) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagenPreviaProducto').src = e.target.result;
+                    document.getElementById('previsualizacionFotoProducto').style.display = 'block';
+                };
+                reader.readAsDataURL(archivo);
+            }
+        }
+
+        async function guardarFotoProducto(event) {
+            event.preventDefault();
+
+            const inputFoto = document.getElementById('inputFotoProducto');
+            if (!inputFoto.files || !inputFoto.files[0]) {
+                mostrarToast('❌ Selecciona una imagen', 'error');
+                return;
+            }
+
+            const archivo = inputFoto.files[0];
+            const precio = document.getElementById('inputPrecioProducto').value;
+            const enlace = document.getElementById('inputEnlaceProducto').value;
+            const descripcion = document.getElementById('inputDescripcionProducto').value;
+
+            try {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const response = await fetch(`/api/comercio/${comercioData.id}/fotos-productos`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fotoBase64: e.target.result,
+                            precio: precio || null,
+                            enlace: enlace || null,
+                            descripcion: descripcion || null,
+                            nombre: comercioData.nombre,
+                            categoria: comercioData.categoria
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        if (!comercioData.fotosProductos) {
+                            comercioData.fotosProductos = [];
+                        }
+                        comercioData.fotosProductos.push(data.foto);
+                        localStorage.setItem('comercioYaVoy', JSON.stringify(comercioData));
+
+                        cargarFotosProductos();
+                        actualizarContadorFotos();
+                        cerrarModalFoto();
+                        mostrarToast('✅ Foto agregada correctamente', 'success');
+                    } else {
+                        mostrarToast('❌ ' + (data.error || 'Error al subir foto'), 'error');
+                    }
+                };
+                reader.readAsDataURL(archivo);
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('❌ Error al subir foto', 'error');
+            }
+        }
+
+        async function eliminarFotoProducto(fotoId) {
+            if (!confirm('¿Eliminar esta foto?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/comercio/${comercioData.id}/fotos-productos/${fotoId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    comercioData.fotosProductos = comercioData.fotosProductos.filter(f => f.id !== fotoId);
+                    localStorage.setItem('comercioYaVoy', JSON.stringify(comercioData));
+
+                    cargarFotosProductos();
+                    actualizarContadorFotos();
+                    mostrarToast('✅ Foto eliminada', 'success');
+                } else {
+                    mostrarToast('❌ Error al eliminar foto', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('❌ Error al eliminar foto', 'error');
+            }
+        }
+
+        // ==================== GESTIÓN DE TIENDA PREMIUM ====================
+        function abrirModalTienda() {
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            // Verificar si ya tiene tienda premium
+            if (comercioData.tieneTiendaPremium) {
+                mostrarToast('✨ Ya tienes una Tienda Premium activa', 'success');
+                return;
+            }
+
+            // Verificar si ya envió solicitud
+            if (comercioData.solicitudTiendaEnviada) {
+                mostrarToast('📨 Ya enviaste una solicitud. Nos contactaremos pronto.', 'info');
+                return;
+            }
+
+            // Pre-llenar formulario
+            document.getElementById('tiendaNombre').value = comercioData.nombre || '';
+            document.getElementById('tiendaWhatsapp').value = comercioData.whatsapp || '';
+            document.getElementById('tiendaEmail').value = comercioData.email || '';
+            document.getElementById('tiendaComentarios').value = '';
+
+            document.getElementById('modalSolicitarTienda').classList.add('active');
+        }
+
+        function cerrarModalTienda() {
+            document.getElementById('modalSolicitarTienda').classList.remove('active');
+        }
+
+        async function enviarSolicitudTienda(event) {
+            event.preventDefault();
+
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            const solicitud = {
+                comercioId: comercioData.id,
+                nombreComercio: document.getElementById('tiendaNombre').value,
+                whatsapp: document.getElementById('tiendaWhatsapp').value,
+                email: document.getElementById('tiendaEmail').value,
+                comentarios: document.getElementById('tiendaComentarios').value,
+                fechaSolicitud: new Date().toISOString(),
+                monto: 50000,
+                estado: 'pendiente'
+            };
+
+            try {
+                const response = await fetch('/api/comercio/solicitar-tienda', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(solicitud)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    comercioData.solicitudTiendaEnviada = true;
+                    comercioData.fechaSolicitudTienda = solicitud.fechaSolicitud;
+                    localStorage.setItem('comercioYaVoy', JSON.stringify(comercioData));
+
+                    cerrarModalTienda();
+                    
+                    // Mostrar mensaje de éxito más elaborado
+                    mostrarMensajeExito();
+                } else {
+                    mostrarToast('❌ Error al enviar solicitud: ' + (data.error || 'Error desconocido'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('❌ Error de conexión', 'error');
+            }
+        }
+
+        function mostrarMensajeExito() {
+            const mensajeHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); max-width: 400px; width: 90%; text-align: center;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
+                    <h3 style="font-size: 24px; font-weight: 700; color: #10b981; margin-bottom: 15px;">¡Solicitud Enviada!</h3>
+                    <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">
+                        Hemos recibido tu solicitud para crear tu Tienda Premium.
+                    </p>
+                    <div style="background: #f3f4f6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                        <p style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">
+                            📱 Te contactaremos por WhatsApp<br>
+                            ⏱️ En las próximas 24 horas<br>
+                            💳 Para coordinar el pago
+                        </p>
+                    </div>
+                    <button onclick="this.parentElement.remove()" style="background: #10b981; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        Entendido
+                    </button>
+                </div>
+                <div onclick="this.remove(); this.nextElementSibling.remove();" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999;"></div>
+            `;
+            
+            const div = document.createElement('div');
+            div.innerHTML = mensajeHTML;
+            document.body.appendChild(div);
+        }
+
+        // ==================== GESTIÓN DE PUBLICIDAD ====================
+        function abrirModalPublicidad() {
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            // Verificar si ya tiene publicidad activa
+            if (comercioData.publicidadActiva) {
+                mostrarToast('✨ Ya tienes publicidad activa', 'info');
+                return;
+            }
+
+            // Verificar si ya envió solicitud
+            if (comercioData.solicitudPublicidadEnviada) {
+                mostrarToast('📨 Ya enviaste una solicitud. Nos contactaremos pronto.', 'info');
+                return;
+            }
+
+            // Pre-llenar formulario
+            document.getElementById('publicidadNombre').value = comercioData.nombre || '';
+            document.getElementById('publicidadWhatsapp').value = comercioData.whatsapp || '';
+            document.getElementById('publicidadEmail').value = comercioData.email || '';
+            document.getElementById('publicidadMensaje').value = '';
+            
+            // Seleccionar plan estándar por defecto
+            seleccionarPlan('estandar', 40000);
+
+            document.getElementById('modalSolicitarPublicidad').classList.add('active');
+        }
+
+        function cerrarModalPublicidad() {
+            document.getElementById('modalSolicitarPublicidad').classList.remove('active');
+        }
+
+        function seleccionarPlan(plan, monto) {
+            // Remover selección anterior
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Agregar selección al plan actual
+            if (event && event.target) {
+                event.target.closest('.plan-card').classList.add('selected');
+            }
+
+            // Actualizar campos ocultos
+            document.getElementById('publicidadPlan').value = plan;
+            document.getElementById('publicidadMonto').value = monto;
+
+            // Actualizar nombre del plan
+            const nombresPlan = {
+                'basico': '📱 Plan Básico',
+                'estandar': '🚀 Plan Estándar',
+                'premium': '⭐ Plan Premium'
+            };
+            document.getElementById('publicidadPlanNombre').value = nombresPlan[plan] || plan;
+
+            // Calcular total
+            calcularTotalPublicidad();
+        }
+
+        function calcularTotalPublicidad() {
+            const montoMensual = parseFloat(document.getElementById('publicidadMonto').value) || 0;
+            const duracion = parseInt(document.getElementById('publicidadDuracion').value) || 1;
+            
+            // Calcular descuentos según duración
+            let descuentoPorcentaje = 0;
+            if (duracion === 3) descuentoPorcentaje = 0.05; // 5%
+            else if (duracion === 6) descuentoPorcentaje = 0.10; // 10%
+            else if (duracion === 12) descuentoPorcentaje = 0.15; // 15%
+
+            const subtotal = montoMensual * duracion;
+            const descuento = subtotal * descuentoPorcentaje;
+            const total = subtotal - descuento;
+
+            // Actualizar UI
+            document.getElementById('costoMensualPublicidad').textContent = `$${montoMensual.toLocaleString('es-AR')}`;
+            document.getElementById('duracionPublicidad').textContent = `${duracion} ${duracion === 1 ? 'mes' : 'meses'}`;
+            document.getElementById('descuentoPublicidad').textContent = descuento > 0 ? `-$${descuento.toLocaleString('es-AR')}` : '$0';
+            document.getElementById('totalPublicidad').textContent = `$${total.toLocaleString('es-AR')}`;
+        }
+
+        async function enviarSolicitudPublicidad(event) {
+            event.preventDefault();
+
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            const plan = document.getElementById('publicidadPlan').value;
+            const montoMensual = parseFloat(document.getElementById('publicidadMonto').value);
+            const duracion = parseInt(document.getElementById('publicidadDuracion').value);
+            
+            if (!plan || !montoMensual) {
+                mostrarToast('❌ Por favor selecciona un plan', 'error');
+                return;
+            }
+
+            // Calcular descuento y total
+            let descuentoPorcentaje = 0;
+            if (duracion === 3) descuentoPorcentaje = 0.05;
+            else if (duracion === 6) descuentoPorcentaje = 0.10;
+            else if (duracion === 12) descuentoPorcentaje = 0.15;
+
+            const subtotal = montoMensual * duracion;
+            const descuento = subtotal * descuentoPorcentaje;
+            const total = subtotal - descuento;
+
+            const solicitud = {
+                comercioId: comercioData.id,
+                nombreComercio: document.getElementById('publicidadNombre').value,
+                whatsapp: document.getElementById('publicidadWhatsapp').value,
+                email: document.getElementById('publicidadEmail').value,
+                plan: plan,
+                montoMensual: montoMensual,
+                duracion: duracion,
+                descuento: descuento,
+                total: total,
+                mensaje: document.getElementById('publicidadMensaje').value,
+                fechaSolicitud: new Date().toISOString(),
+                estado: 'pendiente'
+            };
+
+            try {
+                const response = await fetch('/api/comercio/solicitar-publicidad', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(solicitud)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    comercioData.solicitudPublicidadEnviada = true;
+                    comercioData.fechaSolicitudPublicidad = solicitud.fechaSolicitud;
+                    localStorage.setItem('comercioYaVoy', JSON.stringify(comercioData));
+
+                    cerrarModalPublicidad();
+                    actualizarEstadoPublicidad();
+                    
+                    // Mostrar mensaje de éxito
+                    mostrarMensajeExitoPublicidad(plan, total);
+                } else {
+                    mostrarToast('❌ Error al enviar solicitud: ' + (data.error || 'Error desconocido'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('❌ Error de conexión', 'error');
+            }
+        }
+
+        function mostrarMensajeExitoPublicidad(plan, total) {
+            const nombresPlan = {
+                'basico': 'Plan Básico',
+                'estandar': 'Plan Estándar',
+                'premium': 'Plan Premium'
+            };
+
+            const mensajeHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); max-width: 400px; width: 90%; text-align: center;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">📢</div>
+                    <h3 style="font-size: 24px; font-weight: 700; color: #a78bfa; margin-bottom: 15px;">¡Solicitud Enviada!</h3>
+                    <p style="font-size: 16px; color: #4b5563; margin-bottom: 20px;">
+                        Hemos recibido tu solicitud de publicidad<br>
+                        <strong>${nombresPlan[plan] || plan}</strong>
+                    </p>
+                    <div style="background: #f3f4f6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                        <div style="font-size: 20px; font-weight: 700; color: #a78bfa; margin-bottom: 10px;">
+                            Total: $${total.toLocaleString('es-AR')}
+                        </div>
+                        <p style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">
+                            📱 Te contactaremos por WhatsApp<br>
+                            ⏱️ En las próximas 24 horas<br>
+                            💳 Para coordinar el pago
+                        </p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: #a78bfa; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        Entendido
+                    </button>
+                </div>
+                <div onclick="this.remove(); this.previousElementSibling.remove();" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999;"></div>
+            `;
+            
+            const div = document.createElement('div');
+            div.innerHTML = mensajeHTML;
+            document.body.appendChild(div);
+        }
+
+        function actualizarEstadoPublicidad() {
+            const estadoElement = document.getElementById('estadoPublicidad');
+            const btnElement = document.getElementById('btnSolicitarPublicidad');
+            
+            if (comercioData.publicidadActiva) {
+                estadoElement.innerHTML = '✨ Publicidad Activa';
+                estadoElement.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%)';
+                estadoElement.style.color = '#10b981';
+                btnElement.disabled = true;
+                btnElement.style.opacity = '0.5';
+                btnElement.style.cursor = 'not-allowed';
+            } else if (comercioData.solicitudPublicidadEnviada) {
+                estadoElement.innerHTML = '📨 Solicitud Enviada - Pendiente de aprobación';
+                estadoElement.style.background = 'rgba(251, 191, 36, 0.2)';
+                estadoElement.style.color = '#fbbf24';
+                btnElement.innerHTML = '📨 Solicitud Enviada';
+                btnElement.style.cursor = 'not-allowed';
+            } else {
+                estadoElement.innerHTML = 'Sin publicidad activa';
+                estadoElement.style.background = 'rgba(255, 255, 255, 0.1)';
+                estadoElement.style.color = 'rgba(255, 255, 255, 0.6)';
+            }
+        }
+
+        // Previsualizar foto seleccionada
+        function previsualizarFoto(event) {
+            const archivo = event.target.files[0];
+            if (archivo) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagenPrevia').src = e.target.result;
+                    document.getElementById('previsualizacionFoto').style.display = 'block';
+                };
+                reader.readAsDataURL(archivo);
+            }
+        }
+
+        // Subir foto de perfil al servidor
+        async function subirFotoPerfil(archivo) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const response = await fetch(`/api/comercio/${comercioData.id}/foto-perfil`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ fotoBase64: e.target.result })
+                        });
+
+                        const data = await response.json();
+                        
+                        if (data.success && data.fotoPerfil) {
+                            comercioData.fotoPerfil = data.fotoPerfil;
+                            mostrarToast('📸 Foto de perfil actualizada', 'success');
+                            resolve(data.fotoPerfil);
+                        } else {
+                            reject(new Error('Error al subir foto'));
+                        }
+                    } catch (error) {
+                        console.error('Error al subir foto:', error);
+                        reject(error);
+                    }
+                };
+                reader.readAsDataURL(archivo);
+            });
+        }
+
+        async function guardarPerfilComercio(event) {
+            event.preventDefault();
+
+            if (!comercioData || !comercioData.id) {
+                mostrarToast('Error: No hay sesión activa', 'error');
+                return;
+            }
+
+            const datosActualizados = {
+                nombre: document.getElementById('editNombreComercio').value,
+                categoria: document.getElementById('editCategoria').value,
+                telefono: document.getElementById('editWhatsApp').value,
+                direccion: document.getElementById('editDireccion').value,
+                email: document.getElementById('editEmail').value,
+                horario: document.getElementById('editHorario').value,
+                descripcion: document.getElementById('editDescripcion').value
+            };
+
+            try {
+                const response = await fetch(`/api/comercio/${comercioData.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosActualizados)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Actualizar datos locales
+                    comercioData = {
+                        ...comercioData,
+                        nombre: datosActualizados.nombre,
+                        categoria: datosActualizados.categoria,
+                        whatsapp: datosActualizados.telefono,
+                        direccion: datosActualizados.direccion,
+                        email: datosActualizados.email,
+                        horario: datosActualizados.horario,
+                        descripcion: datosActualizados.descripcion
+                    };
+
+                    // Subir foto si se seleccionó una
+                    const inputFoto = document.getElementById('inputFotoPerfil');
+                    if (inputFoto.files && inputFoto.files[0]) {
+                        await subirFotoPerfil(inputFoto.files[0]);
+                    }
+
+                    // Guardar en localStorage
+                    localStorage.setItem('comercioYaVoy', JSON.stringify(comercioData));
+
+                    // Actualizar vista
+                    cargarDatosComercio();
+
+                    // Cerrar modal
+                    cerrarModalPerfil();
+
+                    mostrarToast('✅ Perfil actualizado correctamente', 'success');
+                } else {
+                    mostrarToast('❌ Error al actualizar: ' + (data.error || 'Error desconocido'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('❌ Error de conexión', 'error');
+            }
+        }
+
+        // ==================== INICIALIZACIÓN ====================
+        window.addEventListener('DOMContentLoaded', () => {
+            // Verificar si hay sesión guardada
+            const sesion = localStorage.getItem('comercioYaVoy');
+            
+            if (sesion) {
+                comercioData = JSON.parse(sesion);
+                mostrarApp();
+            }
+        });
+
+        // Enter en chat input
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        enviarMensaje();
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

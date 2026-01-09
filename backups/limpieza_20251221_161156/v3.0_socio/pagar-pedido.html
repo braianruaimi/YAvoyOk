@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar Pedido - YAvoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .pago-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .pago-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .pago-header h1 {
+            color: #1e293b;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .pago-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .pedido-info {
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pedido-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .pedido-info-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .pedido-info-value {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .monto-total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .monto-total .label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .monto-total .valor {
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .qr-image {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            border: 4px solid white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin: 20px 0;
+        }
+
+        .qr-instrucciones {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .qr-instrucciones h3 {
+            color: #1e293b;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qr-instrucciones ol {
+            padding-left: 20px;
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .qr-instrucciones li {
+            margin-bottom: 10px;
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #f1f5f9;
+        }
+
+        .timer-icon {
+            font-size: 24px;
+        }
+
+        .timer-text {
+            font-size: 16px;
+            color: #64748b;
+            margin-right: 10px;
+        }
+
+        .timer-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-value.warning {
+            color: #f59e0b;
+        }
+
+        .timer-value.expired {
+            color: #ef4444;
+        }
+
+        .estado-pago {
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .estado-pago.pending {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #fbbf24;
+        }
+
+        .estado-pago.checking {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #60a5fa;
+            animation: pulse 2s infinite;
+        }
+
+        .estado-pago.approved {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #34d399;
+        }
+
+        .estado-pago.expired {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #f87171;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f4f6;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+        }
+
+        .seguridad-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #166534;
+        }
+
+        .modal-pago-exitoso {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-pago-exitoso.active {
+            display: flex;
+        }
+
+        .modal-content-exitoso {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #d1fae5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+        .success-icon {
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Clases adicionales para elementos inline */
+        .text-subtitle {
+            color: #64748b;
+        }
+
+        .qr-scan-instruction {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .qr-image-hidden {
+            display: none;
+        }
+
+        .qr-loading-text {
+            color: #64748b;
+            margin-top: 10px;
+        }
+
+        .modal-title {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .modal-description {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pago-container">
+        <div class="pago-header">
+            <h1>💳 Pagar Pedido</h1>
+            <p class="text-subtitle">Escanea el código QR con la app de MercadoPago</p>
+        </div>
+
+        <div class="pago-card">
+            <div class="pedido-info">
+                <div class="pedido-info-item">
+                    <span class="pedido-info-label">Pedido #</span>
+                    <span class="pedido-info-value" id="pedidoIdDisplay">-</span>
+                </div>
+                <div class="pedido-info-item">
+                    <span class="pedido-info-label">Comercio</span>
+                    <span class="pedido-info-value" id="comercioDisplay">-</span>
+                </div>
+                <div class="pedido-info-item">
+                    <span class="pedido-info-label">Descripción</span>
+                    <span class="pedido-info-value" id="descripcionDisplay">-</span>
+                </div>
+            </div>
+
+            <div class="monto-total">
+                <div class="label">Total a pagar</div>
+                <div class="valor" id="montoDisplay">$0.00</div>
+            </div>
+
+            <div class="estado-pago pending" id="estadoPago">
+                ⏳ Esperando pago...
+            </div>
+
+            <div class="timer-container">
+                <span class="timer-icon">⏰</span>
+                <span class="timer-text">Tiempo restante:</span>
+                <span class="timer-value" id="timerDisplay">15:00</span>
+            </div>
+
+            <div class="qr-container">
+                <div class="qr-scan-instruction">
+                    📱 Escanea con MercadoPago
+                </div>
+                <img src="" alt="QR de Pago" class="qr-image qr-image-hidden" id="qrImage">
+                <div id="qrLoading">
+                    <div class="loading-spinner"></div>
+                    <p class="qr-loading-text">Generando código QR...</p>
+                </div>
+            </div>
+
+            <div class="qr-instrucciones">
+                <h3>📋 Instrucciones</h3>
+                <ol>
+                    <li>Abre la app de <strong>MercadoPago</strong></li>
+                    <li>Toca el botón <strong>"Pagar con QR"</strong></li>
+                    <li>Escanea este código QR</li>
+                    <li>Confirma el pago de <strong>$<span id="montoInstrucciones">0.00</span></strong></li>
+                    <li>¡Listo! Tu pedido será confirmado automáticamente</li>
+                </ol>
+            </div>
+
+            <div class="seguridad-badge">
+                🔒 Pago 100% seguro con MercadoPago
+            </div>
+
+            <button class="btn-action btn-secondary" onclick="cancelarPago()">
+                ❌ Cancelar Pago
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Pago Exitoso -->
+    <div class="modal-pago-exitoso" id="modalExito">
+        <div class="modal-content-exitoso">
+            <div class="success-icon">✅</div>
+            <h2 class="modal-title">¡Pago Confirmado!</h2>
+            <p class="modal-description">
+                Tu pago fue procesado exitosamente.<br>
+                Tu pedido está siendo preparado.
+            </p>
+            <button class="btn-action btn-primary" onclick="irAPedidos()">
+                📦 Ver Mi Pedido
+            </button>
+        </div>
+    </div>
+
+    <script src="js/mercadopago-integration.js"></script>
+    <script>
+        // Obtener ID del pedido de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const pedidoId = urlParams.get('pedido');
+
+        if (!pedidoId) {
+            alert('No se especificó un pedido');
+            window.location.href = '/pedidos.html';
+        }
+
+        let pollInterval = null;
+
+        // Cargar datos del pedido y generar QR
+        async function iniciarPago() {
+            try {
+                // Obtener datos del pedido
+                const response = await fetch(`/api/pedidos`);
+                const pedidos = await response.json();
+                const pedido = pedidos.find(p => p.id === pedidoId);
+
+                if (!pedido) {
+                    throw new Error('Pedido no encontrado');
+                }
+
+                // Actualizar UI con datos del pedido
+                document.getElementById('pedidoIdDisplay').textContent = pedido.id;
+                document.getElementById('comercioDisplay').textContent = pedido.comercio || 'N/A';
+                document.getElementById('descripcionDisplay').textContent = pedido.descripcion || pedido.producto;
+                document.getElementById('montoDisplay').textContent = `$${pedido.precio.toFixed(2)}`;
+                document.getElementById('montoInstrucciones').textContent = pedido.precio.toFixed(2);
+
+                // Generar QR de pago
+                const qrData = await window.mercadoPagoSecure.generarQRPago({
+                    pedidoId: pedido.id,
+                    monto: pedido.precio,
+                    descripcion: pedido.producto || pedido.descripcion,
+                    comercio: pedido.comercio,
+                    cliente: pedido.cliente,
+                    email: pedido.email || 'cliente@yavoy.com'
+                });
+
+                // Mostrar QR
+                document.getElementById('qrLoading').style.display = 'none';
+                const qrImage = document.getElementById('qrImage');
+                qrImage.src = qrData.qrImage;
+                qrImage.classList.remove('qr-image-hidden');
+
+                // Iniciar countdown
+                iniciarCountdown(qrData.expiresAt);
+
+                // Iniciar polling de estado
+                pollInterval = window.mercadoPagoSecure.startPaymentPolling(pedidoId, onPagoAprobado);
+
+            } catch (error) {
+                console.error('Error al iniciar pago:', error);
+                alert('Error al generar el código QR. Por favor, intenta de nuevo.');
+                window.location.href = '/pedidos.html';
+            }
+        }
+
+        // Countdown del QR
+        function iniciarCountdown(expiresAt) {
+            const updateTimer = () => {
+                const remaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+                const timerElement = document.getElementById('timerDisplay');
+                
+                if (remaining <= 0) {
+                    timerElement.textContent = 'EXPIRADO';
+                    timerElement.classList.add('expired');
+                    document.getElementById('estadoPago').textContent = '❌ QR Expirado';
+                    document.getElementById('estadoPago').className = 'estado-pago expired';
+                    if (pollInterval) clearInterval(pollInterval);
+                    return;
+                }
+
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (remaining < 120) {
+                    timerElement.classList.add('warning');
+                }
+
+                setTimeout(updateTimer, 1000);
+            };
+
+            updateTimer();
+        }
+
+        // Callback cuando el pago es aprobado
+        function onPagoAprobado(paymentDetails) {
+            console.log('✅ Pago aprobado!', paymentDetails);
+            
+            // Actualizar UI
+            document.getElementById('estadoPago').textContent = '✅ ¡Pago Confirmado!';
+            document.getElementById('estadoPago').className = 'estado-pago approved';
+            
+            // Mostrar modal de éxito
+            setTimeout(() => {
+                document.getElementById('modalExito').classList.add('active');
+            }, 500);
+        }
+
+        function cancelarPago() {
+            if (confirm('¿Estás seguro de cancelar el pago?')) {
+                if (pollInterval) clearInterval(pollInterval);
+                window.location.href = '/pedidos.html';
+            }
+        }
+
+        function irAPedidos() {
+            window.location.href = `/pedidos.html?id=${pedidoId}`;
+        }
+
+        // Escuchar eventos de pago
+        window.addEventListener('pagoAprobado', (e) => {
+            if (e.detail.pedidoId === pedidoId) {
+                onPagoAprobado(e.detail.paymentDetails);
+            }
+        });
+
+        window.addEventListener('qrExpirado', (e) => {
+            if (e.detail.pedidoId === pedidoId) {
+                document.getElementById('estadoPago').textContent = '❌ QR Expirado';
+                document.getElementById('estadoPago').className = 'estado-pago expired';
+            }
+        });
+
+        // Iniciar cuando cargue la página
+        window.addEventListener('DOMContentLoaded', iniciarPago);
+    </script>
+</body>
+</html>

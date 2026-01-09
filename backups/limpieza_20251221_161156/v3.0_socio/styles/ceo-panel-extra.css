@@ -1,0 +1,107 @@
+/* ================================================
+   YAvoy v3.1 - Estilos Adicionales Panel CEO
+   Archivo: ceo-panel-extra.css
+   Propósito: Eliminar estilos inline del HTML
+   ================================================ */
+
+/* Filtros de multimedia */
+.ceo-multimedia-filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* Editor con margen superior */
+.ceo-editor-top-margin {
+  margin-top: 20px;
+}
+
+/* Títulos de sección */
+.ceo-section-subtitle {
+  margin-bottom: 15px;
+  color: #2d3748;
+}
+
+/* Alert con margen superior */
+.ceo-alert-top-margin {
+  margin-top: 20px;
+}
+
+/* Stats grid con margen inferior */
+.ceo-stats-grid-margin {
+  margin-bottom: 30px;
+}
+
+/* Stat card variantes de color */
+.ceo-stat-card-red {
+  background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+}
+
+.ceo-stat-card-orange {
+  background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+}
+
+.ceo-stat-card-yellow {
+  background: linear-gradient(135deg, #fbd38d 0%, #f6ad55 100%);
+}
+
+.ceo-stat-card-green {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+/* Editor con margen inferior */
+.ceo-editor-bottom-margin {
+  margin-bottom: 30px;
+}
+
+/* Grid de botones de registros */
+.ceo-registros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+/* Mensaje de placeholder */
+.ceo-placeholder-message {
+  text-align: center;
+  padding: 40px;
+  color: #718096;
+}
+
+/* Controles de exportación */
+.ceo-export-controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Campo de formulario con margen inferior */
+.ceo-editor-field-margin {
+  margin-bottom: 20px;
+}
+
+/* Utilidades generales */
+.mt-20 { margin-top: 20px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-30 { margin-bottom: 30px; }
+
+.flex-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.text-center { text-align: center; }
+.text-gray { color: #718096; }
+.text-dark { color: #2d3748; }
+
+.p-40 { padding: 40px; }

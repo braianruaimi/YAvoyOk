@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="auto">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="YAvoy v3.1 Enterprise - Panel Comercio Pro. Gestión avanzada para comercios">
+    <!-- Theme color compatible comercios PRO -->
+    <meta name="theme-color" content="#f59e0b">
+    <!-- YAvoy Enterprise System -->
+    <link rel="stylesheet" href="css/theme-enhancement.css">
+    <link rel="stylesheet" href="styles/premium-system.css">
+    <script src="js/theme-color-polyfill.js" defer></script>
+    <script src="js/intelligent-router.js" defer></script>
+    <meta name="msapplication-TileColor" content="#f59e0b">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Panel Comercio Pro - YaVoy 🏪</title>
+
+    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/utilities.css">
+    <link rel="stylesheet" href="styles/animations-improved.css?v=1">
+    <link rel="stylesheet" href="styles/responsive-improved.css?v=1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .header-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+        }
+
+        .status-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-base);
+        }
+
+        .status-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .status-toggle.active {
+            background: #10b981;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-size: var(--font-size-lg);
+            transition: all var(--transition-base);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        /* TABS */
+        .nav-tabs {
+            display: flex;
+            gap: var(--spacing-lg);
+            border-bottom: 2px solid var(--color-border-primary);
+            margin-bottom: var(--spacing-2xl);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            padding: var(--spacing-md) 0;
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            transition: all var(--transition-base);
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            margin-bottom: -2px;
+        }
+
+        .nav-tab:hover {
+            color: #f59e0b;
+        }
+
+        .nav-tab.active {
+            color: #f59e0b;
+            border-bottom-color: #f59e0b;
+        }
+
+        /* TAB CONTENT */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: slideInUp var(--transition-base);
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+            border: 1px solid var(--color-border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-label {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: #f59e0b;
+            margin-top: var(--spacing-sm);
+        }
+
+        /* CHARTS */
+        .chart-container {
+            background-color: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-title {
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-lg);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* ORDERS TABLE */
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-lg);
+        }
+
+        .orders-table th {
+            background-color: var(--color-bg-secondary);
+            padding: var(--spacing-lg);
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid var(--color-border-primary);
+        }
+
+        .orders-table td {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-primary);
+        }
+
+        .orders-table tr:hover {
+            background-color: var(--color-bg-secondary);
+        }
+
+        /* STATUS BADGES */
+        .status-pending {
+            background-color: var(--color-warning-light);
+            color: var(--color-warning);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+
+        .status-in-progress {
+            background-color: var(--color-info-light);
+            color: var(--color-info);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background-color: var(--color-success-light);
+            color: var(--color-success);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+
+        /* PRODUCTS GRID */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .product-card {
+            background-color: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: #f59e0b;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .product-info {
+            padding: var(--spacing-lg);
+        }
+
+        .product-name {
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .product-price {
+            color: #f59e0b;
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .product-stats {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--color-border-primary);
+            border-radius: var(--radius-lg);
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-base);
+            font-size: var(--font-size-base);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-size: var(--font-size-base);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                gap: var(--spacing-sm);
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">🏪 Panel del Comercio</div>
+            <div class="d-flex gap-lg align-center">
+                <button class="status-toggle active" id="statusToggle">🟢 Abierto</button>
+                <button class="theme-toggle" id="themeToggle">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- TABS -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">📊 Dashboard</button>
+            <button class="nav-tab" data-tab="orders">📦 Pedidos</button>
+            <button class="nav-tab" data-tab="products">🍔 Productos</button>
+            <button class="nav-tab" data-tab="settings">⚙️ Configuración</button>
+        </nav>
+
+        <!-- TAB: DASHBOARD -->
+        <div class="tab-content active" id="dashboard">
+            <h2 class="mb-lg">Estado del Negocio 📈</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-label">Pedidos Hoy</div>
+                    <div class="stat-value">24</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-label">Ingresos Hoy</div>
+                    <div class="stat-value">$3,600</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-label">Promedio de Ticket</div>
+                    <div class="stat-value">$150</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-label">Calificación</div>
+                    <div class="stat-value">4.8</div>
+                </div>
+            </div>
+
+            <!-- CHARTS -->
+            <div class="chart-container">
+                <div class="chart-title">Ventas por Hora</div>
+                <div class="chart-wrapper">
+                    <canvas id="ventasChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Productos Más Vendidos</div>
+                <div class="chart-wrapper">
+                    <canvas id="productosChart"></canvas>
+                </div>
+            </div>
+
+            <!-- COMMISSIONS -->
+            <div class="chart-container">
+                <div class="chart-title">💵 Comisiones Retenidas (Retención del CEO)</div>
+                <div class="p-lg bg-primary rounded-lg mt-lg">
+                    <div class="grid-auto-fit gap-lg">
+                        <div>
+                            <div class="text-secondary text-sm">Ingresos Totales (Bruto)</div>
+                            <div class="text-2xl font-bold text-success mt-sm">$86,400</div>
+                        </div>
+                        <div>
+                            <div class="text-secondary text-sm">Comisión CEO (15%)</div>
+                            <div class="text-2xl font-bold text-danger mt-sm">$12,960</div>
+                        </div>
+                        <div>
+                            <div class="text-secondary text-sm">Tu Ingreso Neto (85%)</div>
+                            <div class="text-2xl font-bold text-warning mt-sm">$73,440</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PEDIDOS -->
+        <div class="tab-content" id="orders">
+            <h2 class="mb-lg">Pedidos Activos 📦</h2>
+
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Cliente</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th>Repartidor</th>
+                        <th>Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#PED-001</td>
+                        <td>Juan García</td>
+                        <td>$450</td>
+                        <td><span class="status-in-progress">En Reparto</span></td>
+                        <td>Carlos López</td>
+                        <td>2:30 PM</td>
+                    </tr>
+                    <tr>
+                        <td>#PED-002</td>
+                        <td>María López</td>
+                        <td>$320</td>
+                        <td><span class="status-completed">Entregado</span></td>
+                        <td>Pedro Martínez</td>
+                        <td>2:15 PM</td>
+                    </tr>
+                    <tr>
+                        <td>#PED-003</td>
+                        <td>Roberto Díaz</td>
+                        <td>$580</td>
+                        <td><span class="status-pending">Confirmando</span></td>
+                        <td>Pendiente</td>
+                        <td>2:45 PM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB: PRODUCTOS -->
+        <div class="tab-content" id="products">
+            <h2 class="mb-lg">Gestión de Productos 🍔</h2>
+
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">🍕</div>
+                    <div class="product-info">
+                        <div class="product-name">Pizza Margherita</div>
+                        <div class="product-price">$320</div>
+                        <div class="product-stats">
+                            📊 342 ventas este mes
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image">🍔</div>
+                    <div class="product-info">
+                        <div class="product-name">Hamburguesa Premium</div>
+                        <div class="product-price">$250</div>
+                        <div class="product-stats">
+                            📊 156 ventas este mes
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image">🥗</div>
+                    <div class="product-info">
+                        <div class="product-name">Ensalada César</div>
+                        <div class="product-price">$180</div>
+                        <div class="product-stats">
+                            📊 89 ventas este mes
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image">🍝</div>
+                    <div class="product-info">
+                        <div class="product-name">Pasta Carbonara</div>
+                        <div class="product-price">$280</div>
+                        <div class="product-stats">
+                            📊 234 ventas este mes
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CONFIGURACIÓN -->
+        <div class="tab-content" id="settings">
+            <h2 class="mb-lg">Configuración ⚙️</h2>
+
+            <div class="grid gap-2xl">
+                <div class="bg-secondary p-lg rounded-lg">
+                    <h3 class="mb-lg">Información del Comercio</h3>
+                    <div class="form-group">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-input" value="Pizzería La Nonita" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" class="form-input" value="+54 9 11 2345-6789" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Horario de Apertura</label>
+                        <input type="time" class="form-input" value="12:00" />
+                    </div>
+                    <button class="btn btn-primary">💾 Guardar Cambios</button>
+                </div>
+
+                <div class="bg-secondary p-lg rounded-lg">
+                    <h3 class="mb-lg">Zona de Cobertura</h3>
+                    <div class="form-group">
+                        <label class="form-label">Distancia Máxima (km)</label>
+                        <input type="number" class="form-input" value="5" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tiempo Máximo (minutos)</label>
+                        <input type="number" class="form-input" value="45" />
+                    </div>
+                    <button class="btn btn-primary">💾 Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/theme.js"></script>
+
+    <script>
+        // THEME TOGGLE
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            themeManager.toggleTheme();
+            updateThemeIcon();
+        });
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('themeToggle');
+            const theme = themeManager.getCurrentTheme();
+            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // STATUS TOGGLE
+        document.getElementById('statusToggle').addEventListener('click', function () {
+            this.classList.toggle('active');
+            if (this.classList.contains('active')) {
+                this.textContent = '🟢 Abierto';
+            } else {
+                this.textContent = '🔴 Cerrado';
+            }
+        });
+
+        // TAB NAVIGATION
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                document.querySelectorAll('.nav-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+
+                document.getElementById(tabName).classList.add('active');
+                tab.classList.add('active');
+
+                // Redraw charts if needed
+                if (tabName === 'dashboard') {
+                    setTimeout(() => {
+                        if (window.ventasChart) ventasChart.resize();
+                        if (window.productosChart) productosChart.resize();
+                    }, 100);
+                }
+            });
+        });
+
+        // CHARTS
+        function initCharts() {
+            // Ventas por hora
+            const ctxVentas = document.getElementById('ventasChart').getContext('2d');
+            window.ventasChart = new Chart(ctxVentas, {
+                type: 'line',
+                data: {
+                    labels: ['10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'],
+                    datasets: [{
+                        label: 'Ventas',
+                        data: [2, 4, 8, 12, 15, 18, 14, 10],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Productos más vendidos
+            const ctxProductos = document.getElementById('productosChart').getContext('2d');
+            window.productosChart = new Chart(ctxProductos, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pizza', 'Hamburguesa', 'Pasta', 'Ensaladas'],
+                    datasets: [{
+                        data: [40, 25, 20, 15],
+                        backgroundColor: ['#f59e0b', '#667eea', '#764ba2', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeIcon();
+            initCharts();
+        });
+    </script>
+</body>
+
+</html>

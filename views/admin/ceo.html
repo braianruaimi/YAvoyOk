@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEO Dashboard - YaVoy Command Center</title>
+    
+    <!-- Premium Design System -->
+    <link rel="stylesheet" href="../../styles/premium-system.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Dashboard CEO Premium */
+        .ceo-login {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: var(--blur-fuerte);
+            backdrop-filter: var(--blur-fuerte);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header h1 {
+            margin: 0;
+        }
+
+        .login-header p {
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .login-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--color-oro-liquido);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: var(--transicion-suave);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-oro-liquido);
+            box-shadow: var(--glow-oro);
+        }
+
+        .btn-full-width {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .dashboard-container {
+            display: none;
+            padding: 32px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .dashboard-header p {
+            margin-top: 8px;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, var(--color-oro-liquido) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            color: #ef4444;
+            cursor: pointer;
+            transition: var(--transicion-suave);
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: var(--blur-fuerte);
+            backdrop-filter: var(--blur-fuerte);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            transition: var(--transicion-suave);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--glow-oro);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-oro-liquido);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .stat-change.positive {
+            color: #10b981;
+        }
+
+        .stat-change.negative {
+            color: #ef4444;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: var(--blur-fuerte);
+            backdrop-filter: var(--blur-fuerte);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-oro-liquido);
+            margin-bottom: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: var(--blur-fuerte);
+            backdrop-filter: var(--blur-fuerte);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .table-header h3 {
+            margin: 0;
+        }
+
+        .table-content {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+        }
+
+        th {
+            color: var(--color-oro-liquido);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        tr:hover {
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .badge.warning {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--color-oro-liquido);
+        }
+
+        .badge.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .dashboard-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="ceoLogin" class="ceo-login">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">🔐</div>
+                <h1 class="heading-section">CEO Command Center</h1>
+                <p class="text-premium">
+                    Panel de control ejecutivo - Acceso restringido
+                </p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Usuario</label>
+                    <input type="text" id="username" class="form-input" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Contraseña</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-premium btn-full-width">
+                    Acceder al Dashboard
+                </button>
+                <p class="login-footer">
+                    Credenciales predeterminadas: admin / admin123
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="ceoDashboard" class="dashboard-container">
+        
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div>
+                <h1 class="dashboard-title">Command Center</h1>
+                <p class="text-premium">
+                    Vista en tiempo real del ecosistema YaVoy
+                </p>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                🚪 Cerrar Sesión
+            </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="ingresos">$0</div>
+                <div class="stat-label">Ingresos Totales</div>
+                <div class="stat-change positive">↑ +12.5% vs mes anterior</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-value" id="pedidos">0</div>
+                <div class="stat-label">Pedidos Totales</div>
+                <div class="stat-change positive">↑ +8.3% vs semana anterior</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚴</div>
+                <div class="stat-value" id="repartidores">0</div>
+                <div class="stat-label">Repartidores Activos</div>
+                <div class="stat-change positive">↑ +5 nuevos esta semana</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏪</div>
+                <div class="stat-value" id="comercios">0</div>
+                <div class="stat-label">Comercios Registrados</div>
+                <div class="stat-change positive">↑ +15% este mes</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">📈 Ingresos por Día (Últimos 7 días)</h3>
+                <canvas id="ingresosChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">📊 Pedidos por Estado</h3>
+                <canvas id="pedidosChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabla de Transacciones -->
+        <div class="data-table">
+            <div class="table-header">
+                <h3 class="chart-title">💳 Transacciones Recientes</h3>
+            </div>
+            <div class="table-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Comercio</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaccionesBody">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Chatbot Holográfico -->
+    <div id="chatbot-holografico"></div>
+
+    <script>
+        // Sistema de Autenticación
+        const loginForm = document.getElementById('loginForm');
+        const ceoLogin = document.getElementById('ceoLogin');
+        const ceoDashboard = document.getElementById('ceoDashboard');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Verificar si ya está autenticado
+        if (sessionStorage.getItem('ceoAuth') === 'true') {
+            showDashboard();
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Autenticación simple (en producción usar JWT y backend)
+            if (username === 'admin' && password === 'admin123') {
+                sessionStorage.setItem('ceoAuth', 'true');
+                showDashboard();
+            } else {
+                alert('❌ Credenciales incorrectas');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('ceoAuth');
+            location.reload();
+        });
+
+        function showDashboard() {
+            ceoLogin.style.display = 'none';
+            ceoDashboard.style.display = 'block';
+            loadDashboardData();
+        }
+
+        // Cargar datos del dashboard
+        async function loadDashboardData() {
+            try {
+                // Cargar métricas del API
+                const response = await fetch('/api/dashboard-ceo');
+                const data = await response.json();
+
+                // Actualizar estadísticas
+                document.getElementById('ingresos').textContent = `$${data.ingresos?.toLocaleString() || '0'}`;
+                document.getElementById('pedidos').textContent = data.pedidos || '0';
+                document.getElementById('repartidores').textContent = data.repartidores || '0';
+                document.getElementById('comercios').textContent = data.comercios || '0';
+
+                // Crear gráficos
+                createIngresosChart(data.ingresosSemanales || []);
+                createPedidosChart(data.pedidosPorEstado || {});
+
+                // Cargar transacciones
+                loadTransacciones(data.transacciones || []);
+
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                // Datos de demostración
+                useDemoData();
+            }
+        }
+
+        function useDemoData() {
+            document.getElementById('ingresos').textContent = '$45,678';
+            document.getElementById('pedidos').textContent = '1,234';
+            document.getElementById('repartidores').textContent = '89';
+            document.getElementById('comercios').textContent = '156';
+
+            createIngresosChart([5200, 6100, 5800, 7200, 6900, 7500, 8200]);
+            createPedidosChart({
+                completados: 850,
+                enCamino: 125,
+                pendientes: 89,
+                cancelados: 45
+            });
+
+            const demoTransacciones = [
+                { id: 'TXN001', fecha: '2025-12-30 22:45', cliente: 'Juan Pérez', comercio: 'Pizza Express', monto: 1250, estado: 'completado' },
+                { id: 'TXN002', fecha: '2025-12-30 22:40', cliente: 'María López', comercio: 'Burger King', monto: 890, estado: 'completado' },
+                { id: 'TXN003', fecha: '2025-12-30 22:35', cliente: 'Carlos Ruiz', comercio: 'Sushi Bar', monto: 2100, estado: 'en_camino' },
+                { id: 'TXN004', fecha: '2025-12-30 22:30', cliente: 'Ana García', comercio: 'Café Central', monto: 450, estado: 'pendiente' },
+                { id: 'TXN005', fecha: '2025-12-30 22:25', cliente: 'Luis Martínez', comercio: 'Tacos Al Pastor', monto: 780, estado: 'completado' }
+            ];
+
+            loadTransacciones(demoTransacciones);
+        }
+
+        function createIngresosChart(data) {
+            const ctx = document.getElementById('ingresosChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Ingresos ($)',
+                        data: data,
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'rgba(255,255,255,0.7)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.7)' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPedidosChart(data) {
+            const ctx = document.getElementById('pedidosChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completados', 'En Camino', 'Pendientes', 'Cancelados'],
+                    datasets: [{
+                        data: [
+                            data.completados || 0,
+                            data.enCamino || 0,
+                            data.pendientes || 0,
+                            data.cancelados || 0
+                        ],
+                        backgroundColor: [
+                            '#10b981',
+                            '#fbbf24',
+                            '#3b82f6',
+                            '#ef4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: 'rgba(255,255,255,0.7)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadTransacciones(transacciones) {
+            const tbody = document.getElementById('transaccionesBody');
+            tbody.innerHTML = transacciones.map(t => `
+                <tr>
+                    <td><strong>${t.id}</strong></td>
+                    <td>${t.fecha}</td>
+                    <td>${t.cliente}</td>
+                    <td>${t.comercio}</td>
+                    <td><strong>$${t.monto}</strong></td>
+                    <td><span class="badge ${getBadgeClass(t.estado)}">${getEstadoText(t.estado)}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function getBadgeClass(estado) {
+            const classes = {
+                completado: 'success',
+                en_camino: 'warning',
+                pendiente: 'warning',
+                cancelado: 'danger'
+            };
+            return classes[estado] || 'warning';
+        }
+
+        function getEstadoText(estado) {
+            const texts = {
+                completado: 'Completado',
+                en_camino: 'En Camino',
+                pendiente: 'Pendiente',
+                cancelado: 'Cancelado'
+            };
+            return texts[estado] || estado;
+        }
+
+        // Lazy load del chatbot holográfico
+        setTimeout(() => {
+            const script = document.createElement('script');
+            script.src = '../../components/chatbot-holografico.js';
+            script.defer = true;
+            document.body.appendChild(script);
+        }, 2000);
+    </script>
+
+</body>
+</html>

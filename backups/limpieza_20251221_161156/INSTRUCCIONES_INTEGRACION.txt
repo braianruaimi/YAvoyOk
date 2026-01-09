@@ -1,0 +1,351 @@
+📋 GUÍA DE INTEGRACIÓN - Agregar Endpoints Nuevos a server.js
+
+═══════════════════════════════════════════════════════════════════════
+
+PASO 1: UBICAR DONDE INSERTAR EL CÓDIGO
+───────────────────────────────────────────────────────────────────────
+
+Abre server.js y busca esta línea (aproximadamente línea 1850):
+
+    app.get('/api/analytics/dashboard', async (req, res) => {
+      // ... código existente ...
+    });
+
+DESPUÉS de este endpoint (línea ~1900), insertarás todo el código nuevo.
+
+───────────────────────────────────────────────────────────────────────
+PASO 2: CÓDIGO A AGREGAR
+───────────────────────────────────────────────────────────────────────
+
+Copia TODO el contenido de: NUEVOS_ENDPOINTS.txt
+
+Este archivo contiene 400+ líneas con:
+├─ Endpoints de Calificaciones (3 endpoints)
+├─ Endpoints de Logros (2 endpoints)
+├─ Endpoints de Geolocalización (2 endpoints)
+├─ Endpoints de Promociones (3 endpoints)
+└─ Funciones auxiliares
+
+───────────────────────────────────────────────────────────────────────
+PASO 3: INSERCIÓN RÁPIDA
+───────────────────────────────────────────────────────────────────────
+
+Método 1 - Manual (Recomendado):
+1. Abre NUEVOS_ENDPOINTS.txt
+2. Selecciona desde "// ============================================"
+   hasta el final del archivo
+3. Copia (Ctrl+C)
+4. Abre server.js
+5. Busca la línea comentada "// ============================================"
+   que está después de /api/analytics/dashboard
+6. Coloca el cursor ahí (línea ~1900)
+7. Pega (Ctrl+V)
+8. Guarda el archivo
+
+Método 2 - Automático (Usando PowerShell):
+Crea un script PowerShell:
+
+```powershell
+$serverJs = Get-Content "server.js" -Raw
+$newCode = Get-Content "NUEVOS_ENDPOINTS.txt" -Raw
+
+# Encontrar punto de inserción (después de /api/analytics/dashboard)
+$insertPoint = $serverJs.LastIndexOf("});") + 4
+
+$updatedJs = $serverJs.Insert($insertPoint, "`n`n" + $newCode)
+Set-Content "server.js" $updatedJs -Encoding UTF8
+
+Write-Host "✅ Código integrado exitosamente"
+```
+
+───────────────────────────────────────────────────────────────────────
+PASO 4: VERIFICAR INTEGRACIÓN
+───────────────────────────────────────────────────────────────────────
+
+Después de pegar el código, verifica:
+
+1. ✅ No hay errores de sintaxis (busca "}" desapareados)
+2. ✅ Las funciones notificar* están definidas (búsqueda: "function notificar")
+3. ✅ Las rutas de archivos son correctas (BASE_DIR)
+4. ✅ Todas las importaciones necesarias están arriba
+
+───────────────────────────────────────────────────────────────────────
+PASO 5: DEPENDENCIAS REQUERIDAS
+───────────────────────────────────────────────────────────────────────
+
+Verifica que package.json tenga:
+
+```json
+{
+  "dependencies": {
+    "express": "^4.x",
+    "cors": "^2.x",
+    "socket.io": "^4.x",
+    "nodemailer": "^6.x",
+    "web-push": "^3.x"
+  }
+}
+```
+
+Si falta alguno, instala:
+npm install socket.io web-push
+
+───────────────────────────────────────────────────────────────────────
+PASO 6: REINICIA EL SERVIDOR
+───────────────────────────────────────────────────────────────────────
+
+Abre terminal en el directorio del proyecto:
+
+PowerShell:
+```powershell
+# Detener servidor anterior
+Stop-Process -Name node -Force -ErrorAction SilentlyContinue
+
+# Esperar
+Start-Sleep -Seconds 2
+
+# Iniciar con nuevo código
+node server.js
+```
+
+Bash/Terminal:
+```bash
+killall node 2>/dev/null || true
+sleep 2
+node server.js
+```
+
+Deberías ver:
+  ✅ Server listening on port 5501
+  ✅ Todos los endpoints registrados
+
+───────────────────────────────────────────────────────────────────────
+PASO 7: PROBAR ENDPOINTS
+───────────────────────────────────────────────────────────────────────
+
+Usa una herramienta como Postman, curl, o VS Code Thunder Client:
+
+1. PROBAR CALIFICACIONES
+───────────────────────────
+POST http://localhost:5501/api/calificaciones
+Content-Type: application/json
+
+{
+  "pedidoId": "PED-001",
+  "repartidorId": "REP-01",
+  "clienteId": "CLI-01",
+  "estrellas": 5,
+  "comentario": "¡Excelente servicio!",
+  "aspecto": {
+    "puntualidad": 5,
+    "amabilidad": 5,
+    "limpieza": 4,
+    "exactitud": 5
+  }
+}
+
+Esperado: { "success": true, "calificacion": { ... } }
+
+
+2. PROBAR LOGROS
+─────────────────
+POST http://localhost:5501/api/logros/desbloquear
+Content-Type: application/json
+
+{
+  "repartidorId": "REP-01",
+  "logro": {
+    "id": "PRIMER_PEDIDO",
+    "nombre": "🚀 Primeros Pasos",
+    "descripcion": "Completar tu primer pedido",
+    "icono": "🚀",
+    "color": "#667eea"
+  }
+}
+
+Esperado: { "success": true, "logros": [ ... ] }
+
+
+3. PROBAR GEOLOCALIZACIÓN
+──────────────────────────
+POST http://localhost:5501/api/ubicacion/actualizar
+Content-Type: application/json
+
+{
+  "repartidorId": "REP-01",
+  "lat": -34.6037,
+  "lng": -58.3816,
+  "accuracy": 5
+}
+
+Esperado: { "success": true }
+
+
+4. PROBAR PROMOCIONES
+──────────────────────
+POST http://localhost:5501/api/promociones
+Content-Type: application/json
+
+{
+  "nombre": "Black Friday",
+  "tipo": "descuento",
+  "valor": 15,
+  "codigo": "BLACKFRI2025",
+  "descripcion": "15% descuento en todo",
+  "vigencia": {
+    "desde": "2025-12-13",
+    "hasta": "2025-12-15"
+  },
+  "usoMaximo": 1000
+}
+
+Esperado: { "success": true, "promocion": { ... } }
+
+
+5. VALIDAR PROMOCIÓN
+─────────────────────
+POST http://localhost:5501/api/promociones/BLACKFRI2025/validar
+
+Esperado: { "success": true, "promocion": { ... } }
+
+
+6. OBTENER CALIFICACIONES
+──────────────────────────
+GET http://localhost:5501/api/repartidores/REP-01/calificaciones
+
+Esperado: { "success": true, "calificaciones": [ ... ], "estadisticas": { ... } }
+
+
+7. OBTENER RANKING
+──────────────────
+GET http://localhost:5501/api/repartidores/ranking/top?limite=10
+
+Esperado: { "success": true, "ranking": [ ... ] }
+
+───────────────────────────────────────────────────────────────────────
+PASO 8: CONECTAR FRONTEND
+───────────────────────────────────────────────────────────────────────
+
+En los HTML nuevos (panel-*-pro.html), verifica que:
+
+1. Socket.IO esté conectando:
+   const socket = io('http://localhost:5501');
+
+2. Las URLs de API sean correctas:
+   fetch('http://localhost:5501/api/calificaciones', { ... })
+
+3. Los scripts de temas y geo estén cargados:
+   <script src="js/theme.js"></script>
+   <script src="js/geo.js"></script>
+   <script src="js/ratings.js"></script>
+
+───────────────────────────────────────────────────────────────────────
+PASO 9: CONFIGURACIÓN FINAL
+───────────────────────────────────────────────────────────────────────
+
+1. GOOGLE MAPS API (Opcional pero recomendado)
+   ➜ Obtener key: https://console.cloud.google.com
+   ➜ Reemplazar en js/geo.js línea 6
+   ➜ Reemplazar en HTML donde está: YOUR_GOOGLE_MAPS_API_KEY
+
+2. EMAIL CONFIGURATION (Já configurado en server.js)
+   ➜ Si es Gmail, generar App Password:
+      https://myaccount.google.com/apppasswords
+   ➜ Reemplazar en server.js líneas 38-44
+
+3. SOCKET.IO CORS (Producción)
+   ➜ Cambiar línea 17-20 de:
+      origin: "*"
+      A: origin: ["https://tudominio.com"]
+
+───────────────────────────────────────────────────────────────────────
+PASO 10: TESTING COMPLETO
+───────────────────────────────────────────────────────────────────────
+
+✅ Todos los paneles cargan sin errores
+✅ Modo oscuro/claro funciona
+✅ Socket.IO conecta (ver console: "✅ Conectado")
+✅ Endpoints responden (probar con Postman)
+✅ Chat real-time funciona
+✅ Mapas cargan (si está configurado API key)
+✅ Calificaciones se guardan
+✅ Logros se desbloquean
+✅ Promociones se validan
+
+Si algo no funciona:
+1. Abre DevTools (F12)
+2. Mira la consola (Console tab)
+3. Busca errores en rojo
+4. Verifica que las URLs sean correctas
+
+───────────────────────────────────────────────────────────────────────
+⚠️ ERRORES COMUNES Y SOLUCIONES
+───────────────────────────────────────────────────────────────────────
+
+ERROR: Cannot POST /api/calificaciones
+↳ Solución: El código no fue pegado correctamente en server.js
+
+ERROR: Socket.IO connection refused
+↳ Solución: Socket.IO no está iniciado. Verifica que server.js use:
+   server.listen(PORT) no app.listen(PORT)
+
+ERROR: res.json is not a function
+↳ Solución: Verifica que req, res tengan los parametros correctamente
+
+ERROR: Cannot read property 'mkdir' of undefined
+↳ Solución: Falta const fs = require('fs').promises al inicio
+
+ERROR: Theme not applying
+↳ Solución: Verifica que styles/theme.css esté cargado
+   <link rel="stylesheet" href="styles/theme.css">
+
+ERROR: Google Maps not loading
+↳ Solución: API Key no configurada o inválida
+   Obtener en: https://console.cloud.google.com
+
+───────────────────────────────────────────────────────────────────────
+✅ CHECKLIST FINAL
+───────────────────────────────────────────────────────────────────────
+
+Server.js:
+☐ NUEVOS_ENDPOINTS.txt pegado completo
+☐ Sin errores de sintaxis
+☐ server.listen() usado (no app.listen())
+☐ Socket.IO configurado
+☐ Nodemailer configurado
+
+Archivos Frontend:
+☐ js/theme.js presente
+☐ js/geo.js presente
+☐ js/ratings.js presente
+☐ styles/theme.css presente
+☐ panel-repartidor-pro.html presente
+☐ panel-cliente-pro.html presente
+☐ panel-comercio-pro.html presente
+
+Documentación:
+☐ docs/YAVOY_PRO_FEATURES.md leído
+☐ NUEVOS_ENDPOINTS.txt pegado en server.js
+☐ YAVOY_PRO_SETUP.txt guardado
+
+Testing:
+☐ Servidor inicia sin errores
+☐ Todos los paneles cargan
+☐ Socket.IO conecta
+☐ Endpoints responden
+☐ Chat funciona
+☐ Temas funcionan
+
+───────────────────────────────────────────────────────────────────────
+
+¡LISTO! Ya puedes usar YAVOY PRO 2.0 completo con todas las características.
+
+Próxima fase:
+1. Implementar seguridad (JWT, validación, rate limiting)
+2. Conectar base de datos real (MongoDB/Firebase)
+3. Configurar CI/CD para deployment
+4. Testing exhaustivo
+5. Documentar API OpenAPI/Swagger
+6. Deploy a producción
+
+───────────────────────────────────────────────────────────────────────

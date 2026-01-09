@@ -1,0 +1,49 @@
+# ====================================
+# YAVOY v3.1 - ARCHIVOS IGNORADOS
+# ====================================
+
+# 🔐 Variables de entorno (¡NUNCA SUBIR!)
+.env
+.env.local
+.env.production
+.env.*.local
+
+# 📁 Node modules
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+
+# 📦 Registros locales (contienen datos sensibles)
+registros/
+*.json.backup
+
+# 🔧 Configuraciones IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 💻 Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 📝 Logs
+logs/
+*.log
+
+# 🧪 Testing
+coverage/
+.nyc_output/
+
+# 🔒 Certificados SSL
+*.pem
+*.key
+*.crt
+
+# 🏗️ Build output
+dist/
+build/
