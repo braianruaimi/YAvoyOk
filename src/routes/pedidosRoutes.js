@@ -9,6 +9,8 @@
 const express = require('express');
 const router = express.Router();
 const pedidosController = require('../controllers/pedidosController');
+const { requireAuth } = require('../middleware/auth');
+const { schemas, validate, validateAll } = require('../validation/schemas');
 
 /**
  * @route   POST /api/pedidos
@@ -16,9 +18,12 @@ const pedidosController = require('../controllers/pedidosController');
  * @access  Public
  * @body    { nombreCliente, telefonoCliente, direccionEntrega, descripcion, monto, comercioId?, clienteId?, email?, notas?, destinatario?, telefonoDestinatario? }
  */
-router.post('/', (req, res) => {
-  pedidosController.crearPedido(req, res);
-});
+router.post('/', 
+  // validate(schemas.crearPedido), // Temporal: desactivar validación
+  (req, res) => {
+    pedidosController.crearPedido(req, res);
+  }
+);
 
 /**
  * @route   GET /api/pedidos
@@ -62,6 +67,20 @@ router.patch('/:id/estado', (req, res) => {
  */
 router.put('/:id/estado', (req, res) => {
   pedidosController.actualizarEstadoPedido(req, res);
+});
+
+/**
+ * @route   PATCH /api/pedidos/:id/pago-confirmado
+ * @desc    Confirmar pago de un pedido
+ * @access  Public
+ * @param   id - ID del pedido
+ * @body    { paymentId, paymentStatus, transactionAmount, paymentMethod, timestamp }
+ */
+router.patch('/:id/pago-confirmado', (req, res) => {
+  // Redireccionar a MercadoPago controller
+  const mercadopagoController = require('../controllers/mercadopagoController');
+  req.params.pedidoId = req.params.id; // Mapear parámetro
+  mercadopagoController.confirmarPago(req, res);
 });
 
 module.exports = router;

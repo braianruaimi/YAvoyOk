@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Pendiente - YAvoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .pending-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .pending-card {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
+        }
+
+        .pending-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .pending-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .pending-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .status-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 60%;
+            border-radius: 10px;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 30%; }
+            50% { width: 70%; }
+            100% { width: 30%; }
+        }
+
+        .actions {
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #f59e0b;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #f59e0b;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 40px;
+            text-align: left;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-section h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fef3c7;
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .info-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #f59e0b;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .info-description {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .timer {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .timer-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .pedido-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pending-container">
+        <div class="pending-card">
+            <div class="pending-icon">⏳</div>
+            <h1 class="pending-title">Pago Pendiente</h1>
+            <p class="pending-subtitle">Tu pago está siendo procesado</p>
+
+            <div class="status-info">
+                <h4>🔄 Estado del Proceso</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <p>Verificando el pago con el banco...</p>
+                
+                <div class="timer">
+                    <div>⏰ Tiempo estimado de procesamiento:</div>
+                    <div class="timer-value" id="timerDisplay">5:00</div>
+                </div>
+                
+                <div class="pedido-info">
+                    <strong>Pedido #<span id="pedidoId">-</span></strong>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="#" class="btn btn-primary" onclick="verificarEstado()">🔄 Verificar Estado</a>
+                <a href="index.html" class="btn btn-secondary">🏠 Volver al Inicio</a>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>ℹ️ ¿Por qué está pendiente?</h3>
+            
+            <div class="info-item">
+                <div class="info-icon">🏦</div>
+                <div class="info-text">
+                    <div class="info-title">Verificación bancaria</div>
+                    <div class="info-description">Tu banco está procesando la transacción. Esto puede tomar algunos minutos.</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">🔐</div>
+                <div class="info-text">
+                    <div class="info-title">Validación de seguridad</div>
+                    <div class="info-description">Se están realizando verificaciones de seguridad adicionales.</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">💳</div>
+                <div class="info-text">
+                    <div class="info-title">Método de pago</div>
+                    <div class="info-description">Algunos métodos de pago requieren más tiempo para confirmarse.</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">📱</div>
+                <div class="info-text">
+                    <div class="info-title">Te notificaremos</div>
+                    <div class="info-description">Recibirás una confirmación por email y WhatsApp cuando se procese el pago.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        let timeRemaining = 300; // 5 minutos
+
+        // Obtener parámetros de la URL
+        function getURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                collection_id: params.get('collection_id'),
+                collection_status: params.get('collection_status'),
+                payment_id: params.get('payment_id'),
+                status: params.get('status'),
+                external_reference: params.get('external_reference'),
+                payment_type: params.get('payment_type'),
+                merchant_order_id: params.get('merchant_order_id'),
+                preference_id: params.get('preference_id')
+            };
+        }
+
+        // Mostrar información del pedido
+        function mostrarInfoPedido() {
+            const params = getURLParams();
+            
+            if (params.external_reference) {
+                const pedidoId = params.external_reference.replace('YAVOY_', '');
+                document.getElementById('pedidoId').textContent = pedidoId;
+            }
+
+            console.log('⏳ Parámetros de pago pendiente:', params);
+        }
+
+        // Timer countdown
+        function iniciarTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                document.getElementById('timerDisplay').textContent = display;
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerDisplay').textContent = 'Verificando...';
+                    verificarEstado();
+                }
+            }, 1000);
+        }
+
+        // Verificar estado del pago
+        async function verificarEstado() {
+            const params = getURLParams();
+            
+            if (!params.payment_id) {
+                alert('No se puede verificar el estado sin ID de pago');
+                return;
+            }
+
+            try {
+                // Mostrar estado de carga
+                document.querySelector('.pending-subtitle').textContent = 'Verificando estado...';
+                
+                // Simular verificación (en producción, consultar API de MercadoPago)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Redirigir según el resultado
+                // En una implementación real, harías una consulta a la API
+                const random = Math.random();
+                if (random < 0.7) {
+                    // 70% probabilidad de éxito
+                    window.location.href = `pago-exitoso.html?${window.location.search.substring(1)}&status=approved`;
+                } else if (random < 0.9) {
+                    // 20% probabilidad de rechazo
+                    window.location.href = `pago-fallido.html?${window.location.search.substring(1)}&status=rejected`;
+                } else {
+                    // 10% probabilidad de seguir pendiente
+                    document.querySelector('.pending-subtitle').textContent = 'Tu pago sigue siendo procesado';
+                    timeRemaining = 300; // Reiniciar timer
+                }
+                
+            } catch (error) {
+                console.error('❌ Error verificando estado:', error);
+                alert('Error al verificar el estado. Intenta nuevamente.');
+            }
+        }
+
+        // Verificación automática cada 30 segundos
+        function iniciarVerificacionAutomatica() {
+            setInterval(async () => {
+                const params = getURLParams();
+                if (params.payment_id) {
+                    try {
+                        const response = await fetch(`/api/mercadopago/verificar-pago/${params.external_reference?.replace('YAVOY_', '')}`);
+                        const result = await response.json();
+                        
+                        if (result.success && result.status !== 'pending') {
+                            if (result.status === 'approved') {
+                                window.location.href = `pago-exitoso.html?${window.location.search.substring(1)}&status=approved`;
+                            } else {
+                                window.location.href = `pago-fallido.html?${window.location.search.substring(1)}&status=${result.status}`;
+                            }
+                        }
+                    } catch (error) {
+                        console.log('Verificación automática fallida:', error);
+                    }
+                }
+            }, 30000); // Cada 30 segundos
+        }
+
+        // Notificar al backend sobre el pago pendiente
+        async function notificarPagoPendiente() {
+            const params = getURLParams();
+            
+            if (params.payment_id && params.external_reference) {
+                try {
+                    const pedidoId = params.external_reference.replace('YAVOY_', '');
+                    
+                    const response = await fetch(`/api/pedidos/${pedidoId}/pago-confirmado`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            paymentId: params.payment_id,
+                            paymentStatus: 'pending',
+                            transactionAmount: 0,
+                            paymentMethod: params.payment_type,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    if (response.ok) {
+                        console.log('✅ Pago pendiente registrado en el backend');
+                    }
+                } catch (error) {
+                    console.error('❌ Error notificando pago pendiente:', error);
+                }
+            }
+        }
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarInfoPedido();
+            iniciarTimer();
+            iniciarVerificacionAutomatica();
+            notificarPagoPendiente();
+        });
+
+        // Limpiar intervals al salir de la página
+        window.addEventListener('beforeunload', () => {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        });
+    </script>
+</body>
+</html>

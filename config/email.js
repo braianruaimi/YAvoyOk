@@ -9,34 +9,62 @@ const nodemailer = require('nodemailer');
 // 📧 CONFIGURACIÓN SMTP HOSTINGER
 // ========================================
 const emailConfig = {
-    host: process.env.SMTP_HOST || 'smtp.hostinger.com',
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true' || false,
+    host: process.env.EMAIL_HOST || 'smtp.hostinger.com',
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: process.env.EMAIL_SECURE === 'true' || false,
     auth: {
-        user: process.env.SMTP_USER || 'univerzasite@gmail.com',
-        pass: process.env.SMTP_PASS || 'Univerzasite25!'
+        user: process.env.EMAIL_USER || 'soporte@yavoy.space',
+        pass: process.env.EMAIL_PASS || null
     },
     tls: {
         rejectUnauthorized: false
     }
 };
 
+// Verificar configuración
+const isEmailConfigured = emailConfig.auth.user && emailConfig.auth.pass && 
+                          emailConfig.auth.pass !== 'your-email-password';
+
+if (!isEmailConfigured) {
+    console.log('ℹ️  Email no configurado (opcional). El servidor funcionará sin notificaciones por email.');
+}
+
 // ========================================
 // 🚀 CREAR TRANSPORTER
 // ========================================
-let transporter;
+let transporter = null;
 
-try {
-    transporter = nodemailer.createTransporter(emailConfig);
-    console.log('📧 Transporter de email Hostinger configurado');
-} catch (error) {
-    console.error('❌ Error configurando email:', error.message);
+if (isEmailConfigured) {
+    try {
+        transporter = nodemailer.createTransporter(emailConfig);
+        console.log('✅ Transporter de email configurado correctamente');
+        
+        // Verificar conexión
+        transporter.verify((error, success) => {
+            if (error) {
+                console.error('❌ Error de conexión SMTP:', error.message);
+                transporter = null;
+            } else {
+                console.log('✅ Servidor SMTP listo para enviar emails');
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Error configurando email:', error.message);
+        transporter = null;
+    }
 }
 
 // ========================================
 // 📨 FUNCIÓN PARA ENVIAR EMAILS
 // ========================================
 async function sendEmail(options) {
+    // Si email no está configurado, simular éxito sin enviar
+    if (!transporter || !isEmailConfigured) {
+        console.log('ℹ️  Email simulado (SMTP no configurado):', options.subject);
+        return { success: true, messageId: 'simulated-' + Date.now(), simulated: true };
+    }
+
     try {
         const mailOptions = {
             from: `${options.fromName || 'YAvoy Enterprise'} <${emailConfig.auth.user}>`,
@@ -203,17 +231,34 @@ async function sendOrderNotification(userEmail, orderDetails) {
 }
 
 // ========================================
-// 🔍 VERIFICAR CONEXIÓN
+// 🔍 VERIFICAR CONEXIÓN Y DIAGNÓSTICO
 // ========================================
 async function verifyEmailConnection() {
+    if (!transporter || !isEmailConfigured) {
+        return { success: false, message: 'Email no configurado', configured: false };
+    }
+
     try {
         await transporter.verify();
-        console.log('✅ Conexión de email Hostinger verificada exitosamente');
-        return true;
+        console.log('✅ Conexión de email verificada exitosamente');
+        return { success: true, message: 'Conexión SMTP exitosa', configured: true };
     } catch (error) {
         console.error('❌ Error verificando conexión de email:', error.message);
-        return false;
+        return { success: false, message: error.message, configured: true };
     }
+}
+
+async function getEmailStatus() {
+    return {
+        configured: isEmailConfigured,
+        connected: transporter !== null,
+        config: {
+            host: emailConfig.host,
+            port: emailConfig.port,
+            secure: emailConfig.secure,
+            user: isEmailConfigured ? emailConfig.auth.user : 'No configurado'
+        }
+    };
 }
 
 module.exports = {
@@ -222,7 +267,9 @@ module.exports = {
     sendPasswordResetEmail,
     sendOrderNotification,
     verifyEmailConnection,
-    transporter
+    getEmailStatus,
+    transporter,
+    isEmailConfigured
 };
 
 // ====================================

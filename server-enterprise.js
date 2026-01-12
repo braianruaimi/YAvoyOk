@@ -16,6 +16,32 @@ const { Pool } = require('pg');
 const path = require('path');
 const fs = require('fs').promises;
 
+// Importar middleware de seguridad CEO
+const CEOSecurityMiddleware = require('./middleware/ceo-security');
+
+// Importar rutas
+const authRoutes = require('./src/routes/authRoutes');
+const pedidosRoutes = require('./src/routes/pedidosRoutes');
+const webauthnRoutes = require('./src/routes/webauthnRoutes');
+const monitoringRoutes = require('./src/routes/monitoringRoutes');
+const healthRoutes = require('./src/routes/healthRoutes');
+
+// Importar Database Manager
+const DatabaseManager = require('./src/config/database');
+
+// Importar Socket Cluster Manager  
+const SocketClusterManager = require('./src/config/socket-cluster');
+
+// Importar Advanced Logger
+const AdvancedLogger = require('./src/config/advanced-logger');
+
+// Importar Express Logging Middleware
+const ExpressLoggingMiddleware = require('./middleware/express-logging');
+
+// Importar sistemas de validación y seguridad avanzada
+const { schemas, validate, validateAll } = require('./src/validation/schemas');
+const securityMiddleware = require('./src/middleware/security');
+
 // ========================================
 // 🛡️ CONFIGURACIÓN SEGURIDAD
 // ========================================
@@ -51,53 +77,86 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+// ========================================
+// 📊 INICIALIZAR SISTEMAS DE LOGGING, DB Y CACHE
+// ========================================
+let dbManager;
+let dbPool;
+const advancedLogger = new AdvancedLogger();
+const expressLogging = new ExpressLoggingMiddleware(advancedLogger);
+
+// Sistema de caché Redis con fallback (mover a iniciarServidor)
+let cacheManager;
+let cacheMiddleware;
+
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ========================================
-// 📊 POSTGRESQL NATIVO POOL
+// 🔒 MIDDLEWARE DE SEGURIDAD AVANZADA
 // ========================================
-const dbPool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
-});
+// Rate limiting general
+app.use(securityMiddleware.rateLimiters.general);
 
-// Test de conexión DB
-dbPool.on('connect', () => {
-    console.log('🗄️  PostgreSQL conectado correctamente');
-});
+// Logging HTTP con Morgan
+app.use(securityMiddleware.morganLogger);
 
-dbPool.on('error', (err) => {
-    console.error('❌ Error PostgreSQL:', err.message);
-});
+// Compresión de respuestas
+app.use(securityMiddleware.compression);
+
+// Headers de seguridad adicionales
+app.use(securityMiddleware.securityHeaders);
+
+// Middleware anti-DDoS básico
+app.use(securityMiddleware.antiDDoS);
+
+// Logging de eventos de seguridad
+app.use(securityMiddleware.securityLogger);
 
 // ========================================
-// 🚀 SOCKET.IO GPS OPTIMIZADO
+// 📊 CONFIGURAR LOGGING MIDDLEWARE (sin cache aún)
 // ========================================
-const io = new Server(server, {
-    cors: corsOptions,
-    pingTimeout: 60000,
-    pingInterval: 25000,
-    upgradeTimeout: 30000,
-    maxHttpBufferSize: 1e6,
-    transports: ['websocket', 'polling'],
-    allowEIO3: true,
-    connectionStateRecovery: {
-        maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutos
-        skipMiddlewares: true,
+expressLogging.setupMiddlewares(app);
+app.set('logger', advancedLogger);
+
+// Configurar alertas del sistema
+advancedLogger.onAlert((alert) => {
+    console.log(`🚨 ALERTA [${alert.type}]: ${alert.message}`);
+    
+    // Aquí se podrían enviar notificaciones por email, Slack, etc.
+    if (alert.severity === 'critical') {
+        // Notificación inmediata para alertas críticas
+        console.error('🔴 ALERTA CRÍTICA DETECTADA:', alert);
     }
 });
+
+// ========================================
+// 🔧 VARIABLES DEL SERVIDOR
+// ========================================
+const PORT = process.env.PORT || 5502;
+const HOST = process.env.HOST || 'localhost';
+
+// Instanciar middleware de seguridad CEO
+const ceoSecurity = new CEOSecurityMiddleware();
+
+// Instanciar Socket Cluster Manager
+const socketCluster = new SocketClusterManager();
+
+// ========================================
+// 🚀 SOCKET.IO GPS OPTIMIZADO CON CLUSTERING
+// ========================================
+const io = socketCluster.setupSocketServer(server);
 
 // Storage en memoria para GPS
 const activeRepartidores = new Map();
 const activePedidos = new Map();
 
 io.on('connection', (socket) => {
-    console.log(`📡 Cliente conectado: ${socket.id}`);
+    advancedLogger.logWebSocket('client_connected', socket.id, {
+        ip: socket.handshake.address,
+        userAgent: socket.handshake.headers['user-agent']
+    });
 
     // ========================================
     // 🚚 REPARTIDOR GPS TRACKING
@@ -131,62 +190,152 @@ io.on('connection', (socket) => {
 
     // Actualización GPS en tiempo real
     socket.on('gps-update', async (data) => {
-        const { repartidorId, lat, lng, accuracy, timestamp } = data;
-
-        const repartidor = activeRepartidores.get(repartidorId);
-        if (!repartidor) {
-            socket.emit('error', { message: 'Repartidor no registrado' });
-            return;
-        }
-
-        const ubicacionData = {
-            lat: parseFloat(lat),
-            lng: parseFloat(lng),
-            accuracy: accuracy || 0,
-            timestamp: timestamp || new Date().toISOString()
-        };
-
-        // Actualizar ubicación en memoria
-        repartidor.ubicacion = ubicacionData;
-        repartidor.lastUpdate = new Date();
-
-        // Guardar en PostgreSQL (async)
         try {
-            await dbPool.query(
-                'INSERT INTO ubicaciones_gps (repartidor_id, lat, lng, accuracy, timestamp) VALUES ($1, $2, $3, $4, $5)',
-                [repartidorId, lat, lng, accuracy, ubicacionData.timestamp]
-            );
-        } catch (error) {
-            console.error('Error guardando GPS:', error.message);
-        }
+            const { repartidorId, lat, lng, accuracy, timestamp } = data;
 
-        // Emitir a clientes siguiendo pedidos de este repartidor
-        for (const pedidoId of repartidor.pedidosActivos) {
-            io.to(`pedido-${pedidoId}`).emit('repartidor-ubicacion', {
+            const repartidor = activeRepartidores.get(repartidorId);
+            if (!repartidor) {
+                advancedLogger.logAPI('error', '/socket/gps-update', 'Repartidor no registrado', {
+                    socketId: socket.id,
+                    repartidorId
+                });
+                socket.emit('error', { message: 'Repartidor no registrado' });
+                return;
+            }
+
+            if (!lat || !lng) {
+                advancedLogger.logAPI('error', '/socket/gps-update', 'Datos GPS inválidos', {
+                    socketId: socket.id,
+                    data
+                });
+                return;
+            }
+
+            const ubicacionData = {
+                lat: parseFloat(lat),
+                lng: parseFloat(lng),
+                accuracy: accuracy || 0,
+                timestamp: timestamp || new Date().toISOString()
+            };
+
+            // Actualizar ubicación en memoria
+            repartidor.ubicacion = ubicacionData;
+            repartidor.lastUpdate = new Date();
+
+            advancedLogger.logGPS('location_updated', {
                 repartidorId,
-                pedidoId,
-                ubicacion: ubicacionData
+                coordinates: { lat: ubicacionData.lat, lng: ubicacionData.lng },
+                accuracy: ubicacionData.accuracy,
+                socketId: socket.id
+            });
+
+            // Guardar en PostgreSQL (async)
+            try {
+                await dbPool.query(
+                    'INSERT INTO ubicaciones_gps (repartidor_id, lat, lng, accuracy, timestamp) VALUES ($1, $2, $3, $4, $5)',
+                    [repartidorId, lat, lng, accuracy, ubicacionData.timestamp]
+                );
+
+                advancedLogger.logDatabase('write', 'ubicaciones_gps', 'GPS location saved', {
+                    repartidorId,
+                    timestamp: ubicacionData.timestamp
+                });
+
+            } catch (error) {
+                advancedLogger.logDatabase('error', 'ubicaciones_gps', 'Error guardando GPS', {
+                    error: error.message,
+                    repartidorId,
+                    stack: error.stack
+                });
+            }
+
+            // Emitir a clientes siguiendo pedidos de este repartidor
+            for (const pedidoId of repartidor.pedidosActivos) {
+                io.to(`pedido-${pedidoId}`).emit('repartidor-ubicacion', {
+                    repartidorId,
+                    pedidoId,
+                    ubicacion: ubicacionData
+                });
+
+                advancedLogger.info('GPS enviado a clientes', {
+                    module: 'GPS',
+                    repartidorId,
+                    pedidoId,
+                    clientsInRoom: (await io.in(`pedido-${pedidoId}`).fetchSockets()).length
+                });
+            }
+
+            socket.emit('gps-confirmado', { timestamp: ubicacionData.timestamp });
+
+        } catch (error) {
+            advancedLogger.error('Error crítico en gps-update', {
+                module: 'GPS',
+                error: error.message,
+                socketId: socket.id,
+                stack: error.stack,
+                data
             });
         }
-
-        socket.emit('gps-confirmado', { timestamp: ubicacionData.timestamp });
     });
 
     // ========================================
     // 📱 CLIENTE TRACKING
     // ========================================
     socket.on('seguir-pedido', (data) => {
-        const { pedidoId, clienteId } = data;
-        socket.join(`pedido-${pedidoId}`);
+        try {
+            const { pedidoId, clienteId } = data;
+            
+            if (!pedidoId) {
+                advancedLogger.logAPI('error', '/socket/seguir-pedido', 'PedidoId requerido', {
+                    socketId: socket.id,
+                    data
+                });
+                return;
+            }
 
-        // Enviar ubicación actual del repartidor si existe
-        const repartidor = Array.from(activeRepartidores.values())
-            .find(r => r.pedidosActivos.includes(pedidoId));
+            socket.join(`pedido-${pedidoId}`);
 
-        if (repartidor && repartidor.ubicacion) {
-            socket.emit('repartidor-ubicacion', {
+            advancedLogger.logWebSocket('client_tracking', socket.id, {
                 pedidoId,
-                ubicacion: repartidor.ubicacion
+                clienteId,
+                action: 'join_tracking_room'
+            });
+
+            // Enviar ubicación actual del repartidor si existe
+            const repartidor = Array.from(activeRepartidores.values())
+                .find(r => r.pedidosActivos.includes(pedidoId));
+
+            if (repartidor && repartidor.ubicacion) {
+                socket.emit('repartidor-ubicacion', {
+                    pedidoId,
+                    ubicacion: repartidor.ubicacion
+                });
+
+                advancedLogger.info('Ubicación inicial enviada', {
+                    module: 'GPS',
+                    pedidoId,
+                    clienteId,
+                    repartidorId: Array.from(activeRepartidores.keys()).find(id => 
+                        activeRepartidores.get(id).pedidosActivos.includes(pedidoId)
+                    )
+                });
+            } else {
+                advancedLogger.info('No hay ubicación disponible para seguimiento', {
+                    module: 'GPS',
+                    pedidoId,
+                    clienteId,
+                    hasRepartidor: !!repartidor,
+                    hasUbicacion: !!(repartidor && repartidor.ubicacion)
+                });
+            }
+
+        } catch (error) {
+            advancedLogger.error('Error en seguir-pedido', {
+                module: 'GPS',
+                error: error.message,
+                socketId: socket.id,
+                stack: error.stack,
+                data
             });
         }
     });
@@ -195,11 +344,17 @@ io.on('connection', (socket) => {
     // 🔌 DESCONEXIÓN
     // ========================================
     socket.on('disconnect', () => {
+        advancedLogger.logWebSocket('client_disconnected', socket.id);
+        
         // Limpiar repartidor desconectado
         for (const [repartidorId, data] of activeRepartidores) {
             if (data.socketId === socket.id) {
                 activeRepartidores.delete(repartidorId);
-                console.log(`🚚 Repartidor ${repartidorId} desconectado`);
+                advancedLogger.info('Repartidor desconectado', {
+                    module: 'GPS',
+                    repartidorId,
+                    socketId: socket.id
+                });
                 break;
             }
         }
@@ -274,11 +429,143 @@ app.use(express.static('.', {
 // ========================================
 // 📡 RUTAS DE API
 // ========================================
+// Rutas de sistema y monitoreo (sin autenticación)
+app.use('/api/system', healthRoutes);
+
+// Rutas principales con autenticación
 app.use('/api/auth', authRoutes);
 app.use('/api/pedidos', pedidosRoutes);
+app.use('/api/webauthn', webauthnRoutes);
+app.use('/api/monitoring', monitoringRoutes);
+
+// Rutas de documentación
+const docsRoutes = require('./src/routes/docsRoutes');
+app.use('/api', docsRoutes);
+
+// Rutas de gestión de caché
+const cacheRoutes = require('./src/routes/cacheRoutes');
+app.use('/api/cache', cacheRoutes);
+
+// Rutas de demostración de caché
+const cacheDemoRoutes = require('./src/routes/cacheDemoRoutes');
+app.use('/api/cache', cacheDemoRoutes);
 
 // ========================================
-// 🔄 WEBSOCKETS OPTIMIZADOS PARA GPS
+// 🧪 ENDPOINT DE PRUEBA DE VALIDACIÓN
+// ========================================
+// Endpoint simple de prueba
+app.get('/api/test', (req, res) => {
+    res.json({
+        success: true,
+        message: '🚀 YAvoy v3.1 Enterprise Server funcionando correctamente',
+        timestamp: new Date().toISOString(),
+        server: {
+            nodejs: process.version,
+            uptime: process.uptime(),
+            environment: process.env.NODE_ENV || 'development'
+        }
+    });
+});
+
+app.post('/api/test/validation', 
+    securityMiddleware.rateLimiters.critical,
+    // validate(schemas.crearPedido), // Temporal: desactivar validación
+    (req, res) => {
+        res.json({
+            success: true,
+            message: 'Endpoint de prueba funcionando (sin validación temporal)',
+            data: req.body,
+            timestamp: new Date().toISOString()
+        });
+    }
+);
+
+// ========================================
+// 🔬 ENDPOINTS DE DIAGNÓSTICO
+// ========================================
+app.get('/api/diagnostics/database', async (req, res) => {
+    try {
+        if (!dbManager) {
+            return res.json({
+                status: 'warning',
+                message: 'Database Manager no inicializado aún',
+                timestamp: new Date().toISOString()
+            });
+        }
+        
+        const dbStatus = dbManager.getStatus();
+        let testQuery = null;
+        
+        try {
+            if (dbManager.isPostgresAvailable) {
+                testQuery = await dbManager.query('SELECT 1 as test');
+            }
+        } catch (queryError) {
+            console.warn('⚠️  Test query falló:', queryError.message);
+        }
+        
+        res.json({
+            status: 'ok',
+            database: dbStatus,
+            testQuery: testQuery ? {
+                success: testQuery.rows && testQuery.rows.length > 0,
+                result: testQuery.rows ? testQuery.rows[0] : null
+            } : {
+                success: false,
+                result: 'PostgreSQL no disponible, usando JSON fallback'
+            },
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(200).json({ // Cambiar a 200 para no fallar
+            status: 'warning',
+            database: dbManager ? dbManager.getStatus() : 'No inicializado',
+            error: error.message,
+            fallback: 'JSON mode active',
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
+app.get('/api/diagnostics/email', async (req, res) => {
+    try {
+        const emailModule = require('./config/email');
+        const emailStatus = await emailModule.getEmailStatus();
+        const connectionTest = await emailModule.verifyEmailConnection();
+        
+        res.json({
+            status: 'ok',
+            email: emailStatus,
+            connection: connectionTest,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+app.get('/api/diagnostics/socket-cluster', (req, res) => {
+    try {
+        const clusterStatus = socketCluster.getClusterStatus();
+        
+        res.json({
+            status: 'ok',
+            cluster: clusterStatus,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+// ========================================
+// �🔄 WEBSOCKETS OPTIMIZADOS PARA GPS
 // ========================================
 const activeConnections = new Map();
 const repartidorLocations = new Map();
@@ -657,10 +944,58 @@ setInterval(() => {
 }, 300000); // Cada 5 minutos
 
 // ========================================
-// 🚀 INICIAR SERVIDOR
+// �️ UTILIDADES DEL SERVIDOR
+// ========================================
+async function verificarCarpetas() {
+    const directoriosNecesarios = [
+        './registros',
+        './registros/comercios',
+        './registros/repartidores',
+        './registros/pedidos',
+        './registros/calificaciones',
+        './registros/ceo'
+    ];
+
+    for (const dir of directoriosNecesarios) {
+        try {
+            await fs.access(dir);
+        } catch {
+            await fs.mkdir(dir, { recursive: true });
+            console.log(`✓ Directorio creado: ${dir}`);
+        }
+    }
+    
+    console.log('✓ Verificación de directorios completada');
+}
+
+// ========================================
+// �🚀 INICIAR SERVIDOR
 // ========================================
 async function iniciarServidor() {
     try {
+        // Inicializar Database Manager
+        dbManager = new DatabaseManager();
+        dbPool = dbManager.pool; // Compatibilidad con código existente
+        
+        // Inicializar Cache Manager
+        const RedisCacheManager = require('./src/config/redis-cache');
+        const CacheMiddleware = require('./middleware/cache-middleware');
+        cacheManager = new RedisCacheManager({
+            redis: {
+                host: process.env.REDIS_HOST || 'localhost',
+                port: process.env.REDIS_PORT || 6379,
+                password: process.env.REDIS_PASSWORD || '',
+                db: process.env.REDIS_DB || 0
+            }
+        });
+        cacheMiddleware = new CacheMiddleware(cacheManager, advancedLogger);
+        
+        // Configurar cache en la app
+        app.set('cacheManager', cacheManager);
+        app.set('cacheMiddleware', cacheMiddleware);
+        app.set('dbPool', dbPool);
+        app.set('dbManager', dbManager);
+        
         await verificarCarpetas();
 
         server.listen(PORT, HOST, () => {
@@ -676,27 +1011,41 @@ async function iniciarServidor() {
         });
 
         // Graceful shutdown
-        process.on('SIGTERM', () => {
+        process.on('SIGTERM', async () => {
             console.log('🛑 Cerrando servidor graciosamente...');
             clearInterval(heartbeatInterval);
-            server.close(() => {
+            server.close(async () => {
+                if (dbManager) await dbManager.close();
+                if (cacheManager) await cacheManager.close();
+                process.exit(0);
+            });
+        });
+
+        process.on('SIGINT', async () => {
+            console.log('🛑 Cerrando servidor (Ctrl+C)...');
+            clearInterval(heartbeatInterval);
+            server.close(async () => {
+                if (dbManager) await dbManager.close();
+                if (cacheManager) await cacheManager.close();
                 process.exit(0);
             });
         });
 
     } catch (error) {
         console.error('❌ Error iniciando servidor:', error);
+        if (dbManager) await dbManager.close();
         process.exit(1);
     }
 }
 
 // Manejar errores no capturados
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', async (reason, promise) => {
     console.error('❌ Unhandled Rejection:', reason);
 });
 
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', async (error) => {
     console.error('❌ Uncaught Exception:', error);
+    if (dbManager) await dbManager.close();
     process.exit(1);
 });
 

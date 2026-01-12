@@ -13,6 +13,8 @@
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
+const morgan = require('morgan');
+const compression = require('compression');
 
 // ========================================
 // 🛡️ HELMET: HEADERS DE SEGURIDAD HTTP
@@ -165,16 +167,71 @@ function securityLogger(req, res, next) {
 }
 
 // ========================================
-// 📤 EXPORTACIONES
+// �️ MIDDLEWARE DE COMPRESIÓN
+// ========================================
+const compressionMiddleware = compression({
+    level: 6,
+    threshold: 1024,
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) {
+            return false;
+        }
+        return compression.filter(req, res);
+    }
+});
+
+// ========================================
+// 📊 MIDDLEWARE DE LOGGING HTTP
+// ========================================
+const morganLogger = morgan('combined', {
+    skip: (req, res) => {
+        return req.url === '/health' || req.url === '/api/health';
+    }
+});
+
+// ========================================
+// 🛡️ HEADERS DE SEGURIDAD ADICIONALES
+// ========================================
+const securityHeaders = (req, res, next) => {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('X-Download-Options', 'noopen');
+    res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    next();
+};
+
+// ========================================
+// 🚫 MIDDLEWARE ANTI-DDOS BÁSICO
+// ========================================
+const antiDDoS = (req, res, next) => {
+    const contentLength = parseInt(req.get('Content-Length')) || 0;
+    if (contentLength > 50 * 1024 * 1024) { // 50MB
+        return res.status(413).json({
+            success: false,
+            error: 'Request demasiado grande'
+        });
+    }
+    next();
+};
+
+// ========================================
+// �📤 EXPORTACIONES
 // ========================================
 module.exports = {
     helmetConfig,
-    generalLimiter,
-    authLimiter,
-    pedidosLimiter,
-    webhookLimiter,
+    rateLimiters: {
+        general: generalLimiter,
+        auth: authLimiter,
+        pedidos: pedidosLimiter,
+        webhook: webhookLimiter,
+        critical: authLimiter // Re-usar auth limiter para endpoints críticos
+    },
     corsConfig,
-    sanitizeInputs,
+    compression: compressionMiddleware,
+    morganLogger,
+    securityHeaders,
+    antiDDoS,
     securityLogger,
+    sanitizeInputs,
     sanitizeString
 };
