@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Fallido - YAvoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .error-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .error-card {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3);
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: shake 1s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .error-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .error-details {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+
+        .error-reason {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .error-reason h4 {
+            margin: 0 0 10px 0;
+            color: #ffe4e6;
+        }
+
+        .actions {
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #ef4444;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #ef4444;
+        }
+
+        .help-section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 40px;
+            text-align: left;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-section h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .help-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fef2f2;
+            border-radius: 10px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .help-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #ef4444;
+        }
+
+        .help-text {
+            flex: 1;
+        }
+
+        .help-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .help-description {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .contact-card h4 {
+            margin: 0 0 15px 0;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-item .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .contact-item .label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .contact-item .value {
+            font-weight: bold;
+        }
+
+        .pedido-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon">❌</div>
+            <h1 class="error-title">Pago Fallido</h1>
+            <p class="error-subtitle">No se pudo procesar tu pago</p>
+
+            <div class="error-details" id="errorDetails">
+                <div class="error-reason">
+                    <h4>🔍 Razón del fallo:</h4>
+                    <p id="errorReason">El pago no pudo ser procesado. Esto puede deberse a varios motivos.</p>
+                </div>
+                
+                <div class="pedido-info">
+                    <strong>Pedido #<span id="pedidoId">-</span></strong>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="#" class="btn btn-primary" onclick="intentarNuevamente()">🔄 Intentar Nuevamente</a>
+                <a href="index.html" class="btn btn-secondary">🏠 Volver al Inicio</a>
+            </div>
+        </div>
+
+        <div class="help-section">
+            <h3>💡 ¿Qué puedes hacer?</h3>
+            
+            <div class="help-item">
+                <div class="help-icon">💳</div>
+                <div class="help-text">
+                    <div class="help-title">Verificar fondos</div>
+                    <div class="help-description">Asegúrate de tener saldo suficiente en tu cuenta o tarjeta</div>
+                </div>
+            </div>
+
+            <div class="help-item">
+                <div class="help-icon">🔐</div>
+                <div class="help-text">
+                    <div class="help-title">Verificar datos</div>
+                    <div class="help-description">Confirma que los datos de tu tarjeta o cuenta sean correctos</div>
+                </div>
+            </div>
+
+            <div class="help-item">
+                <div class="help-icon">📡</div>
+                <div class="help-text">
+                    <div class="help-title">Conexión a internet</div>
+                    <div class="help-description">Verifica que tengas una conexión estable a internet</div>
+                </div>
+            </div>
+
+            <div class="help-item">
+                <div class="help-icon">🏦</div>
+                <div class="help-text">
+                    <div class="help-title">Contactar al banco</div>
+                    <div class="help-description">Tu banco puede estar bloqueando la transacción por seguridad</div>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <h4>🆘 ¿Necesitas ayuda?</h4>
+                <p>Nuestro equipo está aquí para asistirte</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="icon">📱</div>
+                        <div class="label">WhatsApp</div>
+                        <div class="value">+54 9 11 1234-5678</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">📧</div>
+                        <div class="label">Email</div>
+                        <div class="value">soporte@yavoy.space</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">🕒</div>
+                        <div class="label">Horario</div>
+                        <div class="value">24/7</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obtener parámetros de la URL
+        function getURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                collection_id: params.get('collection_id'),
+                collection_status: params.get('collection_status'),
+                payment_id: params.get('payment_id'),
+                status: params.get('status'),
+                external_reference: params.get('external_reference'),
+                payment_type: params.get('payment_type'),
+                merchant_order_id: params.get('merchant_order_id'),
+                preference_id: params.get('preference_id'),
+                site_id: params.get('site_id'),
+                processing_mode: params.get('processing_mode'),
+                merchant_account_id: params.get('merchant_account_id'),
+                // Parámetros adicionales de error
+                status_detail: params.get('status_detail'),
+                error_message: params.get('error_message')
+            };
+        }
+
+        // Mostrar información del error
+        function mostrarInfoError() {
+            const params = getURLParams();
+            
+            if (params.external_reference) {
+                const pedidoId = params.external_reference.replace('YAVOY_', '');
+                document.getElementById('pedidoId').textContent = pedidoId;
+            }
+
+            // Mostrar razón específica del fallo
+            let errorReason = 'El pago no pudo ser procesado.';
+            
+            if (params.status === 'rejected') {
+                errorReason = 'El pago fue rechazado por el procesador.';
+            } else if (params.status === 'cancelled') {
+                errorReason = 'El pago fue cancelado por el usuario.';
+            } else if (params.status_detail) {
+                switch (params.status_detail) {
+                    case 'cc_rejected_insufficient_amount':
+                        errorReason = 'Fondos insuficientes en la tarjeta.';
+                        break;
+                    case 'cc_rejected_bad_filled_card_number':
+                        errorReason = 'Número de tarjeta incorrecto.';
+                        break;
+                    case 'cc_rejected_bad_filled_date':
+                        errorReason = 'Fecha de vencimiento incorrecta.';
+                        break;
+                    case 'cc_rejected_bad_filled_security_code':
+                        errorReason = 'Código de seguridad incorrecto.';
+                        break;
+                    default:
+                        errorReason = `Error: ${params.status_detail}`;
+                }
+            }
+
+            document.getElementById('errorReason').textContent = errorReason;
+
+            console.log('❌ Parámetros de pago fallido:', params);
+        }
+
+        // Intentar pago nuevamente
+        function intentarNuevamente() {
+            const params = getURLParams();
+            
+            if (params.external_reference) {
+                const pedidoId = params.external_reference.replace('YAVOY_', '');
+                // Redirigir a la página de pago con el pedido
+                window.location.href = `pagar-pedido.html?pedido=${pedidoId}&retry=true`;
+            } else {
+                // Si no hay referencia, volver al inicio
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Notificar al backend sobre el pago fallido
+        async function notificarPagoFallido() {
+            const params = getURLParams();
+            
+            if (params.payment_id && params.external_reference) {
+                try {
+                    const pedidoId = params.external_reference.replace('YAVOY_', '');
+                    
+                    const response = await fetch(`/api/pedidos/${pedidoId}/pago-confirmado`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            paymentId: params.payment_id,
+                            paymentStatus: 'failed',
+                            transactionAmount: 0,
+                            paymentMethod: params.payment_type,
+                            timestamp: new Date().toISOString(),
+                            errorReason: params.status_detail || 'unknown'
+                        })
+                    });
+
+                    if (response.ok) {
+                        console.log('✅ Pago fallido registrado en el backend');
+                    }
+                } catch (error) {
+                    console.error('❌ Error notificando pago fallido:', error);
+                }
+            }
+        }
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarInfoError();
+            notificarPagoFallido();
+        });
+    </script>
+</body>
+</html>

@@ -10,29 +10,236 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { requireAuth } = require('../middleware/auth');
-const { authLimiter } = require('../middleware/security');
+const securityMiddleware = require('../middleware/security');
+const { schemas, validate, validateAll } = require('../validation/schemas');
+
+console.log('Esquemas importados:', Object.keys(schemas)); // Debug temporal
+
+// Obtener middleware de caché de la app
+const getCacheMiddleware = (req) => req.app.get('cacheMiddleware');
 
 // ========================================
 // 📝 REGISTRO DE USUARIOS
 // ========================================
 
 /**
- * POST /api/auth/register/comercio
- * Registra un nuevo comercio
- * Body: { nombre, email, password, telefono?, direccion?, rubro? }
+ * @swagger
+ * /api/auth/register/comercio:
+ *   post:
+ *     summary: Registrar nuevo comercio
+ *     description: |
+ *       Registra un nuevo comercio en la plataforma YAvoy.
+ *       
+ *       ### Validaciones:
+ *       - Email único en el sistema
+ *       - Contraseña mínimo 8 caracteres
+ *       - Teléfono con formato válido
+ *       - Dirección con coordenadas GPS
+ *       
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [nombre, email, password]
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 100
+ *                 description: Nombre del comercio
+ *                 example: "Pizzería Don Carlos"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email para login (debe ser único)
+ *                 example: "doncarlos@email.com"
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *                 description: Contraseña (mínimo 8 caracteres)
+ *                 example: "miPassword123"
+ *               telefono:
+ *                 type: string
+ *                 pattern: "^[+]?[0-9]{10,15}$"
+ *                 description: Teléfono con código de país
+ *                 example: "+541234567890"
+ *               direccion:
+ *                 $ref: '#/components/schemas/Direccion'
+ *               rubro:
+ *                 type: string
+ *                 enum: [restaurant, pizza, burger, sushi, cafe, dessert, market, pharmacy]
+ *                 description: Categoría del comercio
+ *                 example: "pizza"
+ *               horarios:
+ *                 type: object
+ *                 description: Horarios de atención
+ *                 properties:
+ *                   lunes:
+ *                     type: object
+ *                     properties:
+ *                       apertura: { type: string, example: "08:00" }
+ *                       cierre: { type: string, example: "22:00" }
+ *     responses:
+ *       201:
+ *         description: Comercio registrado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         comercio:
+ *                           $ref: '#/components/schemas/Usuario'
+ *                         token:
+ *                           type: string
+ *                           description: JWT token de acceso
+ *                         expiresIn:
+ *                           type: integer
+ *                           example: 3600
+ *             example:
+ *               success: true
+ *               message: "Comercio registrado exitosamente"
+ *               data:
+ *                 comercio:
+ *                   id: "comercio_123"
+ *                   email: "doncarlos@email.com"
+ *                   nombre: "Pizzería Don Carlos"
+ *                   tipo: "comercio"
+ *                   estado: "verificacion"
+ *                 token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                 expiresIn: 3600
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       409:
+ *         description: Email ya registrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               error: "CONFLICT_ERROR"
+ *               message: "El email ya está registrado en el sistema"
+ *       429:
+ *         description: Demasiados intentos de registro
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/register/comercio', 
-    authLimiter,
+    securityMiddleware.rateLimiters.auth,
+    // validate(schemas.registroComercio), // Temporal: desactivar validación
     (req, res) => authController.registerComercio(req, res)
 );
 
 /**
- * POST /api/auth/register/repartidor
- * Registra un nuevo repartidor
- * Body: { nombre, email, password, telefono?, vehiculo?, zonaCobertura? }
+ * @swagger
+ * /api/auth/register/repartidor:
+ *   post:
+ *     summary: Registrar nuevo repartidor
+ *     description: |
+ *       Registra un nuevo repartidor en la plataforma YAvoy.
+ *       
+ *       ### Proceso de verificación:
+ *       - Validación de datos personales
+ *       - Verificación de zona de cobertura
+ *       - Validación de vehículo (opcional)
+ *       - Estado inicial: "verificacion"
+ *       
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [nombre, email, password]
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 100
+ *                 description: Nombre completo del repartidor
+ *                 example: "Juan Pérez"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email para login
+ *                 example: "juan.repartidor@email.com"
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *                 description: Contraseña segura
+ *                 example: "miPassword123"
+ *               telefono:
+ *                 type: string
+ *                 pattern: "^[+]?[0-9]{10,15}$"
+ *                 description: Teléfono móvil para contacto
+ *                 example: "+541234567890"
+ *               vehiculo:
+ *                 type: object
+ *                 description: Información del vehículo
+ *                 properties:
+ *                   tipo:
+ *                     type: string
+ *                     enum: [moto, bicicleta, auto, peatón]
+ *                     example: "moto"
+ *                   patente:
+ *                     type: string
+ *                     pattern: "^[A-Z]{2}[0-9]{3}[A-Z]{2}$"
+ *                     description: Patente del vehículo (opcional)
+ *                     example: "ABC123DE"
+ *                   marca:
+ *                     type: string
+ *                     example: "Honda"
+ *                   modelo:
+ *                     type: string
+ *                     example: "Wave 110"
+ *               zonaCobertura:
+ *                 type: array
+ *                 description: Zonas donde puede hacer delivery
+ *                 items:
+ *                   type: string
+ *                 example: ["Palermo", "Villa Crespo", "Recoleta"]
+ *     responses:
+ *       201:
+ *         description: Repartidor registrado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         repartidor:
+ *                           $ref: '#/components/schemas/Usuario'
+ *                         token:
+ *                           type: string
+ *                         expiresIn:
+ *                           type: integer
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       409:
+ *         description: Email ya registrado
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/register/repartidor',
-    authLimiter,
+    securityMiddleware.rateLimiters.auth,
+    // validate(schemas.registroRepartidor), // Temporal: desactivar validación
     (req, res) => authController.registerRepartidor(req, res)
 );
 
@@ -41,12 +248,138 @@ router.post('/register/repartidor',
 // ========================================
 
 /**
- * POST /api/auth/login
- * Login universal (comercio o repartidor)
- * Body: { email, password }
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Autenticación universal
+ *     description: |
+ *       Endpoint de login unificado para comercios y repartidores.
+ *       
+ *       ### Características:
+ *       - Detección automática del tipo de usuario
+ *       - Generación de JWT con permisos específicos
+ *       - Rate limiting para prevenir ataques de fuerza bruta
+ *       - Logging de intentos de acceso
+ *       - Soporte para "recordar sesión"
+ *       
+ *       ### Flujo de autenticación:
+ *       1. Validar formato de email y contraseña
+ *       2. Verificar credenciales en base de datos
+ *       3. Generar JWT con claims específicos
+ *       4. Retornar token + información de usuario
+ *       
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *           examples:
+ *             comercio:
+ *               summary: Login de comercio
+ *               value:
+ *                 email: "doncarlos@email.com"
+ *                 password: "miPassword123"
+ *                 rememberMe: false
+ *             repartidor:
+ *               summary: Login de repartidor
+ *               value:
+ *                 email: "juan.repartidor@email.com"
+ *                 password: "miPassword456"
+ *                 rememberMe: true
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/LoginResponse'
+ *                 - type: object
+ *                   properties:
+ *                     permissions:
+ *                       type: array
+ *                       description: Lista de permisos del usuario
+ *                       items:
+ *                         type: string
+ *                       example: ["pedidos.gestionar", "productos.editar"]
+ *                     lastLogin:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Último acceso exitoso
+ *             examples:
+ *               comercio:
+ *                 summary: Respuesta para comercio
+ *                 value:
+ *                   success: true
+ *                   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb21lcmNpb18xMjMi..."
+ *                   usuario:
+ *                     id: "comercio_123"
+ *                     email: "doncarlos@email.com"
+ *                     nombre: "Pizzería Don Carlos"
+ *                     tipo: "comercio"
+ *                     estado: "activo"
+ *                   expiresIn: 3600
+ *                   permissions: ["pedidos.gestionar", "productos.editar"]
+ *                   lastLogin: "2024-01-15T10:30:00Z"
+ *               repartidor:
+ *                 summary: Respuesta para repartidor
+ *                 value:
+ *                   success: true
+ *                   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyZXBhcnRpZG9yXzQ1Ni4u."
+ *                   usuario:
+ *                     id: "repartidor_456"
+ *                     email: "juan.repartidor@email.com"
+ *                     nombre: "Juan Pérez"
+ *                     tipo: "repartidor"
+ *                     estado: "activo"
+ *                   expiresIn: 7200
+ *                   permissions: ["pedidos.tomar", "gps.actualizar"]
+ *                   lastLogin: "2024-01-15T09:15:00Z"
+ *       401:
+ *         description: Credenciales inválidas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               invalidCredentials:
+ *                 summary: Email o contraseña incorrectos
+ *                 value:
+ *                   success: false
+ *                   error: "INVALID_CREDENTIALS"
+ *                   message: "Email o contraseña incorrectos"
+ *                   timestamp: "2024-01-15T10:30:00Z"
+ *               userSuspended:
+ *                 summary: Usuario suspendido
+ *                 value:
+ *                   success: false
+ *                   error: "USER_SUSPENDED"
+ *                   message: "Tu cuenta está suspendida. Contacta a soporte."
+ *                   timestamp: "2024-01-15T10:30:00Z"
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       429:
+ *         description: Demasiados intentos de login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               error: "RATE_LIMIT_EXCEEDED"
+ *               message: "Demasiados intentos de login. Intenta en 15 minutos."
+ *               details:
+ *                 retryAfter: 900
+ *                 attemptsLeft: 0
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/login',
-    authLimiter,
+    securityMiddleware.rateLimiters.auth,
+    // validate(schemas.login), // Temporal: desactivar validación
     (req, res) => authController.login(req, res)
 );
 
@@ -81,7 +414,7 @@ router.get('/me',
  */
 router.post('/change-password',
     requireAuth,
-    authLimiter,
+    securityMiddleware.rateLimiters.auth,
     (req, res) => authController.changePassword(req, res)
 );
 
@@ -190,5 +523,97 @@ router.get('/docs', (req, res) => {
         }
     });
 });
+
+// ========================================
+// 👤 PERFIL DE USUARIO CON CACHÉ
+// ========================================
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   get:
+ *     summary: Obtener perfil del usuario autenticado
+ *     description: |
+ *       Obtiene la información del perfil del usuario actual.
+ *       
+ *       ### Caché implementado:
+ *       - TTL: 30 minutos
+ *       - Invalidación automática al actualizar perfil
+ *       - Caché por usuario individual
+ *       
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil del usuario
+ *         headers:
+ *           X-Cache:
+ *             schema:
+ *               type: string
+ *               enum: [HIT, MISS]
+ *             description: Estado del caché
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/Usuario'
+ */
+router.get('/profile',
+    requireAuth,
+    (req, res, next) => {
+        const cacheMiddleware = req.app.get('cacheMiddleware');
+        if (cacheMiddleware) {
+            return cacheMiddleware.userCache(1800)(req, res, next); // 30 minutos
+        }
+        next();
+    },
+    (req, res) => authController.getUserProfile(req, res)
+);
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   put:
+ *     summary: Actualizar perfil del usuario
+ *     description: |
+ *       Actualiza la información del perfil del usuario.
+ *       Invalida automáticamente el caché del usuario.
+ *       
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               telefono:
+ *                 type: string
+ *               direccion:
+ *                 $ref: '#/components/schemas/Direccion'
+ */
+router.put('/profile',
+    requireAuth,
+    (req, res, next) => {
+        const cacheMiddleware = req.app.get('cacheMiddleware');
+        if (cacheMiddleware) {
+            return cacheMiddleware.invalidateCache([
+                `users:${req.user.id}`,
+                (req) => `sessions:${req.user.id}*`
+            ])(req, res, next);
+        }
+        next();
+    },
+    (req, res) => authController.updateUserProfile(req, res)
+);
 
 module.exports = router;

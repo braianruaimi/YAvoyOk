@@ -5,8 +5,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=5.0, user-scalable=yes">
   <meta name="description" content="YAvoy v3.1 Enterprise - La plataforma de delivery más rápida y segura del mercado.">
+  <!-- Standard theme-color for supported browsers -->
   <meta name="theme-color" content="#020617">
+  <!-- Windows Phone/IE fallback -->
   <meta name="msapplication-TileColor" content="#020617">
+  <meta name="msapplication-navbutton-color" content="#020617">
+  <!-- iOS Safari -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- Firefox Android fallback -->
+  <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#020617" media="(prefers-color-scheme: light)">
+  <!-- Opera Mini fallback -->
+  <meta name="format-detection" content="telephone=no">
+  <style>
+    /* CSS fallback for browsers that don't support theme-color */
+    @supports not (color: var(--theme-color)) {
+      html { 
+        background-color: #020617; 
+      }
+    }
+  </style>
+  <!-- Additional fallbacks for unsupported browsers -->
+  <meta name="msapplication-starturl" content="/">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
   <!-- PWA & Icons -->
   <link rel="manifest" href="manifest.json">
@@ -14,6 +36,20 @@
   <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
 
   <!-- Polyfill para compatibilidad theme-color (Firefox/Opera) -->
+  <script>
+    // Theme-color polyfill for Firefox/Opera
+    (function() {
+      if (!CSS.supports || !CSS.supports('color', 'var(--color)')) {
+        // For older browsers, apply theme color via viewport meta
+        var metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme && !window.chrome) {
+          var themeColor = metaTheme.getAttribute('content');
+          // Apply fallback styling for browsers that don't support theme-color
+          document.documentElement.style.setProperty('--browser-theme-color', themeColor);
+        }
+      }
+    })();
+  </script>
   <script src="js/theme-color-polyfill.js" defer></script>
 
   <!-- MercadoPago SDK -->

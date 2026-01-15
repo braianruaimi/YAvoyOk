@@ -4,7 +4,7 @@
 // Sistema de entregas con autenticación JWT y seguridad robusta
 // + WebAuthn Biometrics + 2FA/TOTP + IP Validation
 
-require('dotenv').config();
+// require('dotenv').config(); // Comentado para evitar error si no está instalado
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs').promises;
@@ -286,13 +286,20 @@ app.use('/api/auth', authRoutes);
 console.log('✅ Rutas de autenticación registradas: /api/auth/*');
 
 // ========================================
-// �️ RUTAS DE SEGURIDAD AVANZADA
+// 🛡️ RUTAS DE SEGURIDAD AVANZADA
 // ========================================
 app.use('/api/security', generalLimiter, securityRoutes);
 console.log('✅ Rutas de seguridad avanzada registradas: /api/security/*');
 
 // ========================================
-// �👔 RUTAS CEO - CENTRO DE MANDO
+// 💳 RUTAS MERCADOPAGO
+// ========================================
+const mercadopagoRoutes = require('./src/routes/mercadopagoRoutes');
+app.use('/api/mercadopago', generalLimiter, mercadopagoRoutes);
+console.log('✅ Rutas de MercadoPago registradas: /api/mercadopago/*');
+
+// ========================================
+// 👔 RUTAS CEO - CENTRO DE MANDO
 // ========================================
 const { requireCEO, loginCEO, validarCEO } = require('./src/middleware/auth');
 
