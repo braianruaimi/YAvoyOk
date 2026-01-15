@@ -45,13 +45,14 @@ class CEOSecurityMiddleware {
                 // Skip para IPs de admin autorizadas
                 return this.ADMIN_IPS.includes(req.ip);
             },
-            onLimitReached: (req, res, options) => {
+            handler: (req, res, next, options) => {
                 this.logSecurityEvent('RATE_LIMIT_EXCEEDED', {
                     ip: req.ip,
                     userAgent: req.get('User-Agent'),
                     path: req.path,
                     timestamp: new Date().toISOString()
                 });
+                res.status(options.statusCode).json(options.message);
             }
         });
     }
@@ -69,17 +70,17 @@ class CEOSecurityMiddleware {
                 retryAfter: '30 minutes'
             },
             skipSuccessfulRequests: true,
-            onLimitReached: (req, res, options) => {
+            handler: (req, res, next, options) => {
                 this.addSuspiciousActivity(req.ip, 'EXCESSIVE_LOGIN_ATTEMPTS');
                 this.logSecurityEvent('CEO_LOGIN_BLOCKED', {
                     ip: req.ip,
                     userAgent: req.get('User-Agent'),
-                    attempts: req.rateLimit.current,
                     timestamp: new Date().toISOString()
                 });
                 
                 // Notificar al sistema de alertas
                 this.triggerSecurityAlert('CEO_LOGIN_BLOCKED', req);
+                res.status(options.statusCode).json(options.message);
             }
         });
     }

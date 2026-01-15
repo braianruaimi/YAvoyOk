@@ -1,0 +1,30 @@
+{
+  "watch": [
+    "*.html",
+    "*.js",
+    "js/**/*.js",
+    "css/**/*.css",
+    "styles/**/*.css",
+    "middleware/**/*.js",
+    "src/**/*.js",
+    "utils/**/*.js",
+    "config/**/*.js",
+    "server-enterprise.js"
+  ],
+  "ext": "js,json,html,css",
+  "ignore": [
+    "node_modules/**",
+    "logs/**",
+    "backup/**",
+    "data/**",
+    ".git/**"
+  ],
+  "verbose": true,
+  "execMap": {
+    "js": "node"
+  },
+  "events": {
+    "restart": "cls && echo. && echo ╔═══════════════════════════════════════╗ && echo ║  ✨ SERVIDOR REINICIADO               ║ && echo ║  🔄 Presiona F5 en el navegador      ║ && echo ╚═══════════════════════════════════════╝ && echo."
+  },
+  "delay": 500
+}

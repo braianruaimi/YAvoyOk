@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=5.0, user-scalable=yes">
     <meta name="description"
         content="YAvoy v3.1 Enterprise - Panel Repartidor Pro. Centro de control para repartidores">
     <!-- Theme color compatible repartidores -->
@@ -29,11 +29,35 @@
             box-sizing: border-box;
         }
 
+        /* Variables para modo oscuro (default) */
+        :root,
+        [data-theme="dark"] {
+            --color-bg-primary: #0f172a;
+            --color-bg-secondary: #1e293b;
+            --color-text-primary: #f8fafc;
+            --color-text-secondary: #cbd5e1;
+            --color-border-primary: #334155;
+            --color-primary: #667eea;
+            --color-secondary: #764ba2;
+        }
+
+        /* Variables para modo claro */
+        [data-theme="light"] {
+            --color-bg-primary: #ffffff;
+            --color-bg-secondary: #f8fafc;
+            --color-text-primary: #0f172a;
+            --color-text-secondary: #64748b;
+            --color-border-primary: #e2e8f0;
+            --color-primary: #667eea;
+            --color-secondary: #764ba2;
+        }
+
         body {
             font-family: var(--font-family-base);
             background-color: var(--color-bg-primary);
             color: var(--color-text-primary);
             min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* HEADER */
@@ -708,15 +732,28 @@
         });
 
         // THEME TOGGLE
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            themeManager.toggleTheme();
-            updateThemeIcon();
+        const themeToggle = document.getElementById('themeToggle');
+        
+        // Cargar tema guardado o usar oscuro por defecto
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
         });
 
-        function updateThemeIcon() {
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            // Actualizar icono
             const icon = document.getElementById('themeToggle');
-            const theme = themeManager.getCurrentTheme();
             icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            icon.title = theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+            
+            console.log('✅ Tema cambiado a:', theme);
         }
 
         // Socket.IO

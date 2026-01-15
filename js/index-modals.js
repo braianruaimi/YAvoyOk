@@ -11,6 +11,7 @@ class ModalManager {
         this.modals = {
             repartidor: document.getElementById('modalRepartidor'),
             pedido: document.getElementById('modalPedido'),
+            beneficios: document.getElementById('modalBeneficios'),
             comercio: document.getElementById('modalComercio'),
             verificacionRepartidor: document.getElementById('modalVerificacionRepartidor'),
             verificacionComercio: document.getElementById('modalVerificacionComercio'),
@@ -361,3 +362,89 @@ if (!document.getElementById('modal-animations')) {
 
 // Exportar para uso en otros módulos
 window.modalManager = modalManager;
+
+// ==========================================
+// FUNCIONES GLOBALES PARA MODALES
+// ==========================================
+
+/**
+ * Scroll suave a la sección de clientes
+ */
+window.scrollToClientes = function() {
+    console.log('🔵 Haciendo scroll a sección clientes...');
+    const seccionClientes = document.getElementById('seccion-clientes');
+    if (seccionClientes) {
+        seccionClientes.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
+    }
+}
+
+/**
+ * Abrir modal de beneficios (se muestra primero antes de hacer pedido)
+ */
+window.abrirModalPedido = function() {
+    console.log('🔵 Abriendo modal de beneficios...');
+    modalManager.open('beneficios');
+}
+
+/**
+ * Cerrar modal de beneficios
+ */
+window.cerrarModalBeneficios = function() {
+    console.log('🔵 Cerrando modal de beneficios...');
+    modalManager.close('beneficios');
+}
+
+/**
+ * Continuar del modal de beneficios al modal de pedido
+ */
+window.continuarAPedido = function() {
+    console.log('🔵 Continuando a formulario de pedido...');
+    modalManager.close('beneficios');
+    setTimeout(() => {
+        modalManager.open('pedido');
+    }, 300);
+}
+
+/**
+ * Cerrar modal de pedido
+ */
+window.cerrarModalPedido = function() {
+    console.log('🔵 Cerrando modal de pedido...');
+    modalManager.close('pedido');
+}
+
+/**
+ * Abrir modal de repartidor
+ */
+window.abrirModalRepartidor = function() {
+    console.log('🔵 Abriendo modal de repartidor...');
+    modalManager.open('repartidor');
+}
+
+/**
+ * Cerrar modal de repartidor
+ */
+window.cerrarModalRepartidor = function() {
+    console.log('🔵 Cerrando modal de repartidor...');
+    modalManager.close('repartidor');
+}
+
+/**
+ * Abrir modal de comercio
+ */
+window.abrirModalComercio = function() {
+    console.log('🔵 Abriendo modal de comercio...');
+    modalManager.open('comercio');
+}
+
+/**
+ * Cerrar modal de comercio
+ */
+window.cerrarModalComercio = function() {
+    console.log('🔵 Cerrando modal de comercio...');
+    modalManager.close('comercio');
+}
+

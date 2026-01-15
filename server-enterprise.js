@@ -12,9 +12,11 @@ const helmet = require('helmet');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 const path = require('path');
 const fs = require('fs').promises;
+const CEOSecurityMiddleware = require('./middleware/ceo-security');
+const ceoSecurity = new CEOSecurityMiddleware();
 
 // ========================================
 // 🛡️ CONFIGURACIÓN SEGURIDAD
@@ -55,25 +57,39 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Configuración del servidor
+const PORT = process.env.PORT || 5502;
+const HOST = process.env.HOST || '0.0.0.0';
+
 // ========================================
-// 📊 POSTGRESQL NATIVO POOL
+// 📊 MYSQL HOSTINGER POOL
 // ========================================
-const dbPool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+const dbPool = mysql.createPool({
+    host: process.env.DB_HOST || 'srv1722.hstgr.io',
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || 'u695828542_yavoyspace',
+    password: process.env.DB_PASSWORD || 'Yavoy25!',
+    database: process.env.DB_NAME || 'u695828542_yavoysql',
+    waitForConnections: true,
+    connectionLimit: 20,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0,
+    charset: 'utf8mb4'
 });
 
 // Test de conexión DB
-dbPool.on('connect', () => {
-    console.log('🗄️  PostgreSQL conectado correctamente');
-});
-
-dbPool.on('error', (err) => {
-    console.error('❌ Error PostgreSQL:', err.message);
-});
+(async () => {
+    try {
+        const connection = await dbPool.getConnection();
+        console.log('🗄️  MySQL Hostinger conectado correctamente');
+        console.log('📍 Host:', process.env.DB_HOST);
+        console.log('🗂️  Base de datos:', process.env.DB_NAME);
+        connection.release();
+    } catch (err) {
+        console.error('❌ Error MySQL:', err.message);
+    }
+})();
 
 // ========================================
 // 🚀 SOCKET.IO GPS OPTIMIZADO
@@ -95,6 +111,31 @@ const io = new Server(server, {
 // Storage en memoria para GPS
 const activeRepartidores = new Map();
 const activePedidos = new Map();
+
+// ========================================
+// 🛠️ FUNCIONES AUXILIARES
+// ========================================
+async function verificarCarpetas() {
+    const carpetas = [
+        'data',
+        'data/pedidos',
+        'data/usuarios',
+        'data/chats',
+        'logs',
+        'registros'
+    ];
+    
+    for (const carpeta of carpetas) {
+        try {
+            await fs.mkdir(carpeta, { recursive: true });
+        } catch (error) {
+            if (error.code !== 'EEXIST') {
+                console.error(`Error creando carpeta ${carpeta}:`, error);
+            }
+        }
+    }
+    console.log('✅ Estructura de carpetas verificada');
+}
 
 io.on('connection', (socket) => {
     console.log(`📡 Cliente conectado: ${socket.id}`);
@@ -274,8 +315,8 @@ app.use(express.static('.', {
 // ========================================
 // 📡 RUTAS DE API
 // ========================================
-app.use('/api/auth', authRoutes);
-app.use('/api/pedidos', pedidosRoutes);
+// app.use('/api/auth', authRoutes); // TODO: Implementar authRoutes
+// app.use('/api/pedidos', pedidosRoutes); // TODO: Implementar pedidosRoutes
 
 // ========================================
 // 🔄 WEBSOCKETS OPTIMIZADOS PARA GPS

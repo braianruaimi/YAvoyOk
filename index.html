@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=5.0, user-scalable=yes">
   <meta name="description" content="YAvoy v3.1 Enterprise - La plataforma de delivery más rápida y segura del mercado.">
   <meta name="theme-color" content="#020617">
   <meta name="msapplication-TileColor" content="#020617">
@@ -47,6 +47,31 @@
     }
 
     /* ==================== TIPOGRAFÍA ==================== */
+    html {
+      font-size: 16px;
+    }
+
+    /* Ajuste de zoom para pantallas grandes */
+    @media (min-width: 1920px) {
+      html {
+        font-size: 18px;
+      }
+    }
+
+    /* Ajuste para tablets */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      html {
+        font-size: 15px;
+      }
+    }
+
+    /* Ajuste para móviles */
+    @media (max-width: 767px) {
+      html {
+        font-size: 14px;
+      }
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg-primary);
@@ -54,28 +79,30 @@
       line-height: 1.6;
       overflow-x: hidden;
       scroll-behavior: smooth;
+      min-height: 100vh;
+      width: 100%;
     }
 
     h1 {
-      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-size: clamp(2rem, 4vw, 3.2rem);
       font-weight: 700;
       line-height: 1.2;
     }
 
     h2 {
-      font-size: clamp(2rem, 4vw, 3rem);
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
       font-weight: 600;
       line-height: 1.3;
     }
 
     h3 {
-      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
       font-weight: 600;
       line-height: 1.4;
     }
 
     h4 {
-      font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
       font-weight: 500;
       line-height: 1.4;
     }
@@ -1021,8 +1048,8 @@
             <div class="role-icon" aria-hidden="true">🛍️</div>
             <h3>Quiero Pedir</h3>
             <p>Solicita productos de comercios locales con entrega rápida y segura</p>
-            <button class="btn-role btn-cliente" onclick="abrirModalPedido()"
-              aria-label="Abrir formulario para hacer un pedido">Hacer Pedido</button>
+            <button class="btn-role btn-cliente" onclick="scrollToClientes()"
+              aria-label="Ver cómo hacer un pedido">Hacer Pedido</button>
           </div>
 
           <div class="role-card hover-lift">
@@ -1056,7 +1083,7 @@
 
         <div class="funciona-grid">
           <!-- Para Clientes -->
-          <div class="funciona-card">
+          <div class="funciona-card" id="seccion-clientes">
             <div class="funciona-icono">🛍️</div>
             <h3>Para Clientes</h3>
             <div class="pasos">
@@ -1381,6 +1408,52 @@
         <button onclick="irAPanelComercio()" class="btn-primario flex-2">🏪 Ir a Mi Panel</button>
       </div>
       <button onclick="cerrarModalVerificacionComercio()" class="btn-outline">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal Beneficios YAvoy -->
+  <div id="modalBeneficios" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog" style="max-width: 700px;">
+      <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalBeneficios()">&times;</button>
+      <h3 style="color: var(--accent-gold); font-size: 2rem; margin-bottom: 1rem;">🚀 Bienvenido a YAvoy</h3>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">La mejor plataforma de delivery local</p>
+
+      <!-- Beneficios Grid -->
+      <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Beneficio 1 -->
+        <div style="background: var(--glassmorphism-bg); border: 1px solid var(--glassmorphism-border); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px);">
+          <h4 style="color: var(--accent-gold); font-size: 1.3rem; margin-bottom: 0.5rem;">🚴 Repartidores Certificados</h4>
+          <p style="color: var(--text-light); line-height: 1.6;">Todos nuestros repartidores están verificados y capacitados. <strong>80% de las ganancias van directo para ellos</strong>, incentivando un servicio rápido y de calidad.</p>
+        </div>
+
+        <!-- Beneficio 2 -->
+        <div style="background: var(--glassmorphism-bg); border: 1px solid var(--glassmorphism-border); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px);">
+          <h4 style="color: var(--accent-gold); font-size: 1.3rem; margin-bottom: 0.5rem;">🏪 Comercios Locales de Confianza</h4>
+          <p style="color: var(--text-light); line-height: 1.6;">Trabajamos con comercios verificados de tu zona: pizzerías, farmacias, kioscos, boutiques y más. <strong>Apoyas a tu economía local</strong> con cada pedido.</p>
+        </div>
+
+        <!-- Beneficio 3 -->
+        <div style="background: var(--glassmorphism-bg); border: 1px solid var(--glassmorphism-border); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px);">
+          <h4 style="color: var(--accent-gold); font-size: 1.3rem; margin-bottom: 0.5rem;">⚡ Envíos Rápidos y Económicos</h4>
+          <p style="color: var(--text-light); line-height: 1.6;">Entregas locales en <strong>menos de 45 minutos</strong>. Sin costos ocultos, precios transparentes. Seguimiento GPS en tiempo real de tu pedido.</p>
+        </div>
+
+        <!-- Beneficio 4 -->
+        <div style="background: var(--glassmorphism-bg); border: 1px solid var(--glassmorphism-border); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px);">
+          <h4 style="color: var(--accent-gold); font-size: 1.3rem; margin-bottom: 0.5rem;">🔗 Navegación Integrada</h4>
+          <p style="color: var(--text-light); line-height: 1.6;">Accede fácilmente al <a href="panel-cliente-pro.html" style="color: var(--accent-gold); text-decoration: underline;">Panel Cliente</a> para seguir tus pedidos, o al <a href="panel-repartidor-pro.html" style="color: var(--accent-gold); text-decoration: underline;">Panel Repartidor</a> para ver pedidos disponibles. Todo conectado en un solo lugar.</p>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button onclick="continuarAPedido()" style="flex: 1; min-width: 200px; padding: 1rem 2rem; background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%); color: var(--bg-primary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(251, 191, 36, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(251, 191, 36, 0.3)';">
+          ✅ ¡Hacer mi Pedido Ahora!
+        </button>
+        <a href="panel-repartidor-pro.html" style="flex: 1; min-width: 200px; padding: 1rem 2rem; background: var(--glassmorphism-bg); border: 2px solid var(--accent-gold); color: var(--accent-gold); border-radius: 8px; font-weight: 600; font-size: 1.1rem; text-decoration: none; text-align: center; transition: all 0.2s; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);" onmouseover="this.style.transform='translateY(-2px)'; this.style.background='var(--accent-gold)'; this.style.color='var(--bg-primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.background='var(--glassmorphism-bg)'; this.style.color='var(--accent-gold)';">
+          🚴 Ver Panel Repartidor
+        </a>
+      </div>
     </div>
   </div>
 
