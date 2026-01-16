@@ -217,9 +217,15 @@ class YAvoyIntelligentRouter {
     handleUnauthenticatedUser() {
         const currentPath = window.location.pathname;
         
+        // EXCEPCIÓN: dashboard-ceo.html tiene su propio sistema de login integrado
+        if (currentPath.includes('dashboard-ceo.html')) {
+            console.log('🔐 Dashboard CEO: sistema de login integrado, no redirigir');
+            return;
+        }
+        
         // Páginas que requieren autenticación
         const protectedPages = [
-            'dashboard', 'panel-', 'admin', 'ceo', 'comercio', 'repartidor', 'cliente'
+            'panel-', 'admin', 'comercio-pro', 'repartidor-pro', 'cliente-pro'
         ];
         
         const requiresAuth = protectedPages.some(pattern => 

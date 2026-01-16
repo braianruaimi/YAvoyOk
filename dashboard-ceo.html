@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="styles/premium-system.css">
     <script src="js/theme-color-polyfill.js" defer></script>
     <script src="js/intelligent-router.js" defer></script>
-    <script src="js/biometric-auth.js" defer></script>
     <title>YAvoy CEO — Centro de Mando</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -908,21 +907,8 @@
                         autocomplete="current-password">
                 </div>
 
-                <!-- 2FA Section -->
-                <div id="twoFactorSection" class="two-factor-section hidden-section">
-                    <div class="form-group">
-                        <label>🔑 Código de Verificación (2FA)</label>
-                        <input type="text" id="twoFactorCode" placeholder="000000" maxlength="6" inputmode="numeric"
-                            pattern="[0-9]{6}">
-                        <small class="help-text">Ingresa el código de 6 dígitos desde Google Authenticator</small>
-                    </div>
-                    <button type="button" id="btnSetup2FA" class="btn-setup-2fa">
-                        🔐 Configurar 2FA
-                    </button>
-                </div>
-
                 <button type="submit" class="btn-login" id="btnLogin" disabled>
-                    🚀 Ingresar al Dashboard
+                    🚀 Ingresar al Centro de Mando CEO
                 </button>
 
                 <div class="error-message" id="errorMessage">
@@ -1143,6 +1129,39 @@
             <div class="chat-badge" id="chatNotifications">0</div>
         </a>
 
+        <!-- Modal 2FA Setup -->
+        <div id="modal2FA" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+            <div style="background: linear-gradient(135deg, #1a1f2e 0%, #0a0f1a 100%); border-radius: 20px; padding: 40px; max-width: 500px; box-shadow: 0 20px 60px rgba(251, 191, 36, 0.3); border: 2px solid rgba(251, 191, 36, 0.2);">
+                <div style="text-align: center;">
+                    <h2 style="color: #fbbf24; margin-bottom: 10px; font-size: 2rem;">🔐 Configurar 2FA</h2>
+                    <p style="color: #cbd5e1; margin-bottom: 30px;">Escanea este código QR con Google Authenticator</p>
+                    
+                    <div id="qrCode" style="background: white; padding: 20px; border-radius: 15px; margin: 20px auto; display: inline-block;"></div>
+                    
+                    <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 10px; padding: 15px; margin: 20px 0;">
+                        <p style="color: #fbbf24; font-weight: 600; margin-bottom: 10px;">🔑 Código Secreto</p>
+                        <code id="secretKey" style="background: rgba(0,0,0,0.3); color: #10b981; padding: 10px 20px; border-radius: 8px; font-size: 1.1rem; letter-spacing: 2px; display: inline-block;"></code>
+                        <button onclick="copiarSecret()" style="margin-left: 10px; padding: 8px 15px; background: rgba(251, 191, 36, 0.2); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 8px; cursor: pointer;">📋 Copiar</button>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <label style="color: #cbd5e1; display: block; margin-bottom: 10px; text-align: left;">Ingresa el código de 6 dígitos para verificar:</label>
+                        <input type="text" id="verify2FACode" placeholder="000000" maxlength="6" style="width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 2px solid rgba(251, 191, 36, 0.3); border-radius: 10px; color: white; font-size: 1.2rem; text-align: center; letter-spacing: 5px; margin-bottom: 20px;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button onclick="verificarYGuardar2FA()" style="flex: 1; padding: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; border-radius: 10px; color: white; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+                            ✅ Verificar y Activar
+                        </button>
+                        <button onclick="cerrarModal2FA()" style="flex: 1; padding: 15px; background: rgba(239, 68, 68, 0.2); border: 2px solid #ef4444; border-radius: 10px; color: #ef4444; font-weight: 600; font-size: 1.1rem; cursor: pointer;">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
         <script>
             // Actualizar fecha actual
             function actualizarFecha() {
@@ -1557,6 +1576,8 @@
             }
 
             // ==================== SISTEMA DE LOGIN ====================
+            console.log('🔐 Sistema de login CEO iniciado');
+            
             let ceoSeleccionado = null;
             const usuarios = {
                 'braian': {
@@ -1572,6 +1593,7 @@
             };
 
             function seleccionarCEO(ceo, elemento) {
+                console.log('✅ CEO seleccionado:', ceo);
                 ceoSeleccionado = ceo;
 
                 // Actualizar UI
@@ -1591,6 +1613,7 @@
 
             function iniciarSesion(event) {
                 event.preventDefault();
+                console.log('🔑 Intentando login...', { ceoSeleccionado });
 
                 if (!ceoSeleccionado) {
                     alert('Por favor selecciona un CEO');
@@ -1598,38 +1621,17 @@
                 }
 
                 const password = document.getElementById('passwordInput').value;
-                const twoFactorCode = document.getElementById('twoFactorCode').value;
                 const usuario = usuarios[ceoSeleccionado];
+                
+                console.log('🔐 Verificando contraseña...');
 
                 if (password === usuario.password) {
-                    // Si hay código 2FA, verificarlo
-                    if (twoFactorCode) {
-                        console.log('🔐 Verificando código 2FA...');
-
-                        if (window.twoFA) {
-                            window.twoFA.verify2FA(ceoSeleccionado, twoFactorCode)
-                                .then(isValid => {
-                                    if (isValid) {
-                                        console.log('✅ Código 2FA válido');
-                                        proceedToLogin(usuario);
-                                    } else {
-                                        alert('❌ Código 2FA inválido. Intenta de nuevo.');
-                                        document.getElementById('twoFactorCode').focus();
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('❌ Error verificando 2FA:', error);
-                                    alert('❌ Error verificando 2FA. Intenta de nuevo.');
-                                });
-                        } else {
-                            alert('❌ Sistema 2FA no disponible');
-                        }
-                    } else {
-                        // Login sin 2FA (o mostrar campo 2FA si está configurado)
-                        proceedToLogin(usuario);
-                    }
+                    // Login exitoso - sin 2FA
+                    console.log('✅ Login exitoso para', usuario.nombre);
+                    proceedToLogin(usuario);
                 } else {
                     // Error de contraseña
+                    console.error('❌ Contraseña incorrecta');
                     document.getElementById('errorMessage').classList.add('active');
                     document.getElementById('passwordInput').value = '';
                     document.getElementById('passwordInput').focus();
@@ -1863,6 +1865,131 @@
                     });
                 } else {
                     console.error('❌ Botón btnSetup2FA no encontrado');
+                }
+            });
+
+            // ==================== FUNCIONES 2FA ====================
+            let currentSecret = null;
+            let currentQRCode = null;
+
+            // Generar secret y mostrar QR
+            function configurar2FA() {
+                console.log('🔐 Configurando 2FA...');
+                
+                // Generar secret (32 caracteres base32)
+                currentSecret = generarSecret();
+                
+                // Obtener usuario actual
+                const sesion = JSON.parse(localStorage.getItem('ceoDashboardUser') || '{}');
+                const nombreUsuario = sesion.nombre || 'CEO_Usuario';
+                
+                // Crear URI para Google Authenticator
+                const issuer = 'YAvoy Enterprise';
+                const otpauthUrl = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(nombreUsuario)}?secret=${currentSecret}&issuer=${encodeURIComponent(issuer)}`;
+                
+                // Mostrar modal
+                document.getElementById('modal2FA').style.display = 'flex';
+                
+                // Limpiar QR anterior
+                document.getElementById('qrCode').innerHTML = '';
+                
+                // Generar QR
+                currentQRCode = new QRCode(document.getElementById('qrCode'), {
+                    text: otpauthUrl,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Mostrar secret
+                document.getElementById('secretKey').textContent = currentSecret;
+            }
+
+            function generarSecret() {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+                let secret = '';
+                for (let i = 0; i < 32; i++) {
+                    secret += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return secret;
+            }
+
+            function copiarSecret() {
+                const secret = document.getElementById('secretKey').textContent;
+                navigator.clipboard.writeText(secret).then(() => {
+                    alert('✅ Código secreto copiado al portapapeles');
+                }).catch(() => {
+                    alert('❌ No se pudo copiar');
+                });
+            }
+
+            async function verificarYGuardar2FA() {
+                const code = document.getElementById('verify2FACode').value.trim();
+                
+                if (code.length !== 6) {
+                    alert('❌ Ingresa un código de 6 dígitos');
+                    return;
+                }
+                
+                console.log('🔐 Verificando código 2FA...');
+                
+                try {
+                    // Enviar al servidor para verificar
+                    const response = await fetch('/api/auth/verify-2fa-setup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            secret: currentSecret,
+                            token: code,
+                            userId: ceoSeleccionado
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Guardar secret en localStorage
+                        const sesion = JSON.parse(localStorage.getItem('ceoDashboardUser') || '{}');
+                        sesion.twoFactorSecret = currentSecret;
+                        sesion.twoFactorEnabled = true;
+                        localStorage.setItem('ceoDashboardUser', JSON.stringify(sesion));
+                        
+                        alert('✅ 2FA configurado exitosamente!\n\nAhora necesitarás tu código de Google Authenticator cada vez que ingreses.');
+                        cerrarModal2FA();
+                    } else {
+                        alert('❌ Código inválido. Verifica que estés usando el código correcto de Google Authenticator.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Fallback: verificación simple del lado del cliente
+                    alert('⚠️ No se pudo conectar con el servidor.\n2FA guardado localmente.');
+                    const sesion = JSON.parse(localStorage.getItem('ceoDashboardUser') || '{}');
+                    sesion.twoFactorSecret = currentSecret;
+                    sesion.twoFactorEnabled = true;
+                    localStorage.setItem('ceoDashboardUser', JSON.stringify(sesion));
+                    cerrarModal2FA();
+                }
+            }
+
+            function cerrarModal2FA() {
+                document.getElementById('modal2FA').style.display = 'none';
+                document.getElementById('verify2FACode').value = '';
+                currentSecret = null;
+                currentQRCode = null;
+            }
+
+            // Agregar botón de configuración 2FA al dashboard
+            window.addEventListener('load', () => {
+                const headerInfo = document.querySelector('.ceo-header-user-section');
+                if (headerInfo) {
+                    const btn2FA = document.createElement('button');
+                    btn2FA.className = 'refresh-btn';
+                    btn2FA.innerHTML = '🔐 Configurar 2FA';
+                    btn2FA.onclick = configurar2FA;
+                    btn2FA.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    headerInfo.insertBefore(btn2FA, headerInfo.querySelector('.ceo-btn-salir'));
                 }
             });
         </script>

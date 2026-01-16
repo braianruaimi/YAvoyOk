@@ -100,7 +100,41 @@ app.get('/api/status', (req, res) => {
 });
 
 // ========================================
-// 📄 RUTAS ESTÁTICAS
+// � ENDPOINTS DE AUTENTICACIÓN 2FA
+// ========================================
+
+// Verificar código 2FA durante setup
+app.post('/api/auth/verify-2fa-setup', express.json(), (req, res) => {
+    const { secret, token, userId } = req.body;
+    
+    console.log('🔐 Verificando código 2FA para setup...');
+    
+    try {
+        const speakeasy = require('speakeasy');
+        
+        // Verificar el token
+        const verified = speakeasy.totp.verify({
+            secret: secret,
+            encoding: 'base32',
+            token: token,
+            window: 2 // Permitir 2 ventanas de tiempo (60 segundos)
+        });
+        
+        if (verified) {
+            console.log('✅ Código 2FA válido');
+            res.json({ success: true, message: '2FA configurado correctamente' });
+        } else {
+            console.log('❌ Código 2FA inválido');
+            res.json({ success: false, message: 'Código inválido' });
+        }
+    } catch (error) {
+        console.error('Error verificando 2FA:', error);
+        res.status(500).json({ success: false, message: 'Error del servidor' });
+    }
+});
+
+// ========================================
+// �📄 RUTAS ESTÁTICAS
 // ========================================
 
 app.get('/', (req, res) => {
