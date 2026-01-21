@@ -1,11 +1,12 @@
-# 🚀 Deploy YAvoy en Hostinger - yavoy.sbs
+# 🚀 Deploy YAvoy en Hostinger - yavoy.space
 
 ## ✅ Pre-requisitos Completados
 
-- ✅ Dominio: yavoy.sbs
+- ✅ Dominio: **yavoy.space**
 - ✅ Base de datos MySQL: u695828542_yavoysql
 - ✅ Host: srv1722.hstgr.io
 - ✅ Usuario: u695828542_yavoyspace
+- ✅ Panel Hostinger: https://hpanel.hostinger.com
 
 ---
 
@@ -15,7 +16,7 @@
 
 1. Ve a: https://hpanel.hostinger.com
 2. Inicia sesión con tus credenciales
-3. Selecciona tu hosting donde está **yavoy.sbs**
+3. Selecciona tu hosting donde está **yavoy.space**
 
 ---
 
@@ -28,7 +29,7 @@
    - **Versión de Node.js**: 18.x o 20.x (la más reciente)
    - **Directorio de la aplicación**: `public_html` (o donde subas el proyecto)
    - **Archivo de inicio**: `server-simple.js`
-   - **Dominio**: yavoy.sbs
+   - **Dominio**: yavoy.space
 
 4. Haz clic en **"Crear"**
 
@@ -144,12 +145,12 @@ pm2 startup
 ### 8️⃣ Verificar Funcionamiento
 
 1. **Abre tu navegador**:
-   - https://yavoy.sbs
-   - https://yavoy.sbs/dashboard-ceo.html
+   - https://yavoy.space
+   - https://yavoy.space/dashboard-ceo.html
 
 2. **Verifica endpoints**:
-   - https://yavoy.sbs/api/test
-   - https://yavoy.sbs/api/health
+   - https://yavoy.space/api/test
+   - https://yavoy.space/api/health
 
 ---
 
@@ -157,7 +158,7 @@ pm2 startup
 
 1. **Panel Hostinger** → **Seguridad** → **SSL**
 2. Si no está activado:
-   - Selecciona tu dominio: yavoy.sbs
+   - Selecciona tu dominio: yavoy.space
    - Haz clic en **"Instalar SSL"**
    - Espera 5-10 minutos
 
@@ -167,12 +168,12 @@ pm2 startup
 
 Si acabas de comprar el dominio:
 
-1. **Panel Hostinger** → **Dominios** → **yavoy.sbs** → **DNS**
+1. **Panel Hostinger** → **Dominios** → **yavoy.space** → **DNS**
 2. Verifica que los registros A apunten a tu IP del servidor
 3. Agrega registro A:
    - Tipo: A
    - Nombre: @
-   - Apunta a: [IP de tu hosting]
+   - Apunta a: IP del servidor Hostinger
    - TTL: 14400
 
 ---
@@ -181,18 +182,19 @@ Si acabas de comprar el dominio:
 
 ### URLs de Acceso:
 
-- **Landing**: https://yavoy.sbs
-- **Panel CEO**: https://yavoy.sbs/dashboard-ceo.html
-- **Panel Comercio**: https://yavoy.sbs/panel-comercio-pro.html
-- **Panel Repartidor**: https://yavoy.sbs/panel-repartidor-pro.html
-- **Panel Cliente**: https://yavoy.sbs/panel-cliente-pro.html
+- **Landing**: https://yavoy.space
+- **Panel CEO**: https://yavoy.space/dashboard-ceo.html
+- **Panel Comercio**: https://yavoy.space/panel-comercio-pro.html
+- **Panel Repartidor**: https://yavoy.space/panel-repartidor.html
+- **Panel Cliente**: https://yavoy.space/panel-cliente-pro.html
+- **Mapa Entregas**: https://yavoy.space/mapa-entregas.html
 
 ### API Endpoints:
 
-- https://yavoy.sbs/api/test
-- https://yavoy.sbs/api/health
-- https://yavoy.sbs/api/metrics
-- https://yavoy.sbs/api/status
+- https://yavoy.space/api/test
+- https://yavoy.space/api/health
+- https://yavoy.space/api/metrics
+- https://yavoy.space/api/status
 
 ### Credenciales CEO:
 
@@ -234,4 +236,27 @@ pm2 logs yavoy
 
 ---
 
-**¡Listo!** Tu aplicación YAvoy estará funcionando en https://yavoy.sbs 🚀
+## 📊 Monitoreo y Mantenimiento
+
+### Ver estado del servidor:
+
+```bash
+pm2 status
+pm2 monit
+```
+
+### Ver logs en tiempo real:
+
+```bash
+pm2 logs yavoy --lines 100
+```
+
+### Reiniciar aplicación después de cambios:
+
+```bash
+pm2 restart yavoy
+```
+
+---
+
+**¡Listo!** Tu aplicación YAvoy estará funcionando en https://yavoy.space 🚀
