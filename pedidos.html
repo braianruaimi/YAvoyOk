@@ -2734,7 +2734,13 @@
         cargarComercios();
         cargarSelectorRepartidores();
         inicializarAutoGuardado();
+        
+        console.log('✅ Sistema YAvoy inicializado completamente');
+        }); // Fin DOMContentLoaded
     </script>
+    
+    <!-- Cargar chatbot después -->
+    <script src="js/chatbot-holografico.js"></script>
 
     <!-- Contenedor de Notificaciones Toast -->
     <div class="toast-container" id="toastContainer"></div>
@@ -2788,35 +2794,46 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/chatbot-holografico.js"></script>
     <script>
         // ========================================
-        // 💡 SISTEMA DE AYUDA MODAL
+        // 🚀 ESPERAR A QUE EL DOM ESTÉ LISTO
         // ========================================
-        function toggleHelpModal() {
-            const modal = document.getElementById('helpModalOverlay');
-            modal.classList.toggle('active');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM cargado - Inicializando funciones');
+            
+            // ========================================
+            // 💡 SISTEMA DE AYUDA MODAL
+            // ========================================
+            window.toggleHelpModal = function() {
+                console.log('🔘 toggleHelpModal llamado');
+                const modal = document.getElementById('helpModalOverlay');
+                if (modal) {
+                    modal.classList.toggle('active');
+                    console.log('✅ Modal toggled, active:', modal.classList.contains('active'));
+                } else {
+                    console.error('❌ No se encontró el modal helpModalOverlay');
+                }
+            };
 
-        function closeHelpModal(event) {
-            const modal = document.getElementById('helpModalOverlay');
-            // Cerrar solo si se hace click en el overlay o en el botón de cerrar
-            if (!event || event.target === modal) {
-                modal.classList.remove('active');
-            }
-        }
+            window.closeHelpModal = function(event) {
+                const modal = document.getElementById('helpModalOverlay');
+                // Cerrar solo si se hace click en el overlay o en el botón de cerrar
+                if (!event || event.target === modal) {
+                    modal.classList.remove('active');
+                }
+            };
 
-        // Cerrar con tecla ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeHelpModal();
-            }
-        });
+            // Cerrar con tecla ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeHelpModal();
+                }
+            });
 
-        // ========================================
-        // 🍞 SISTEMA DE NOTIFICACIONES TOAST
-        // ========================================
-        function showToast(type, title, message) {
+            // ========================================
+            // 🍞 SISTEMA DE NOTIFICACIONES TOAST
+            // ========================================
+            window.showToast = function(type, title, message) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
@@ -2844,11 +2861,17 @@
                 toast.style.animation = 'slideOutRight 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
             }, 5000);
-        }
+        };
 
-        // Calculadora de Costo de Envío
-        function calcularCostoEnvio() {
-            const distanciaKm = parseFloat(document.getElementById('distanciaKm').value) || 1;
+        // ========================================
+        // 🧮 CALCULADORA DE COSTO DE ENVÍO
+        // ========================================
+        window.calcularCostoEnvio = function() {
+            console.log('🧮 calcularCostoEnvio llamado');
+            const distanciaInput = document.getElementById('distanciaKm');
+            const distanciaKm = parseFloat(distanciaInput.value) || 1;
+            
+            console.log('📏 Distancia ingresada:', distanciaKm, 'km');
             
             // Cálculo: $1000 por el primer km + $100 por cada 100m adicionales
             let costo = 1000; // Primer kilómetro
@@ -2860,22 +2883,33 @@
                 costo += incrementos * 100;
             }
             
+            console.log('💰 Costo calculado:', costo);
+            
             const costoRepartidor = Math.round(costo * 0.85);
             
             // Mostrar resultado
-            document.getElementById('costoResult').style.display = 'flex';
-            document.getElementById('costoTotal').textContent = `$${costo.toLocaleString()}`;
+            const resultDiv = document.getElementById('costoResult');
+            const totalDiv = document.getElementById('costoTotal');
+            const formulaSpan = document.getElementById('costoFormula');
             
-            // Mostrar fórmula
-            if (distanciaKm <= 1) {
-                document.getElementById('costoFormula').textContent = `1 km = $1,000`;
+            if (resultDiv && totalDiv && formulaSpan) {
+                resultDiv.style.display = 'flex';
+                totalDiv.textContent = `$${costo.toLocaleString()}`;
+                
+                // Mostrar fórmula
+                if (distanciaKm <= 1) {
+                    formulaSpan.textContent = `1 km = $1,000`;
+                } else {
+                    const adicional = costo - 1000;
+                    formulaSpan.textContent = `$1,000 (base) + $${adicional.toLocaleString()} adicionales`;
+                }
+                
+                showToast('info', '💰 Costo Estimado', `Distancia: ${distanciaKm} km → Costo de envío: $${costo.toLocaleString()}`);
+                console.log('✅ Resultado mostrado correctamente');
             } else {
-                const adicional = costo - 1000;
-                document.getElementById('costoFormula').textContent = `$1,000 (base) + $${adicional.toLocaleString()} adicionales`;
+                console.error('❌ No se encontraron elementos del resultado');
             }
-            
-            showToast('info', '💰 Costo Estimado', `Distancia: ${distanciaKm} km → Costo de envío: $${costo.toLocaleString()}`);
-        }
+        };
 
         // Recalcular total de productos
         function calcularTotal() {
