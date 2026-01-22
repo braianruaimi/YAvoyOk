@@ -485,17 +485,212 @@ class ChatbotHolografico {
 
     loadWelcomeMessages() {
         setTimeout(() => {
-            this.addBotMessage('¡Hola! 👋 Soy tu asistente holográfico de YaVoy.');
+            this.addBotMessage('¡Hola! 👋 Soy tu asistente holográfico de YAvoy.');
         }, 500);
 
         setTimeout(() => {
             this.addBotMessage('¿En qué puedo ayudarte hoy?', [
-                'Ver estado de pedido',
-                'Hablar con soporte',
-                'Preguntas frecuentes',
-                'Seguimiento en tiempo real'
+                '🚀 ¿Qué es YAvoy?',
+                '🛍️ Hacer un pedido',
+                '🏪 Registrar comercio',
+                '🚴 Ser repartidor',
+                '❓ Preguntas frecuentes'
             ]);
         }, 1500);
+    }
+
+    // Base de conocimiento con todas las preguntas frecuentes
+    knowledgeBase = {
+        beneficios: {
+            clientes: [
+                '✅ Entregas rápidas en 20-40 minutos',
+                '✅ Amplia variedad de comercios locales',
+                '✅ Rastreo de pedido en tiempo real',
+                '✅ Métodos de pago flexibles',
+                '✅ Soporte al cliente 24/7',
+                '✅ Sin costo de registro'
+            ],
+            comercios: [
+                '✅ Registro 100% GRATUITO - Sin mensualidades',
+                '✅ Aumenta tus ventas con red de repartidores',
+                '✅ Gestión simple de pedidos',
+                '✅ Visibilidad en la plataforma',
+                '✅ Sin costos ocultos',
+                '✅ Soporte técnico dedicado'
+            ],
+            repartidores: [
+                '✅ Gana el 80% del costo de envío',
+                '✅ Elige tus propios horarios',
+                '✅ Sé tu propio jefe',
+                '✅ Bonos por entregas rápidas',
+                '✅ Sistema de logros y recompensas',
+                '✅ Pago inmediato por entrega'
+            ]
+        },
+        
+        faq: {
+            clientes: {
+                '¿Cómo hago un pedido?': 'Es muy simple:\n\n1. Haz clic en "Hacer Pedido" en la página principal\n2. Completa el formulario con los detalles\n3. Un repartidor cercano tomará tu pedido\n4. Recibirás actualizaciones sobre el estado',
+                
+                '¿Cuánto cuesta el envío?': 'El costo del envío depende de la distancia y es acordado entre tú y el comercio. Generalmente oscila entre $200 y $500 para entregas locales.',
+                
+                '¿Cuánto tarda la entrega?': 'Tiempos promedio:\n\n• Entregas locales: 20-40 minutos\n• Zonas cercanas: 30-60 minutos\n\nEl tiempo exacto depende de la disponibilidad del repartidor y la distancia.',
+                
+                '¿Puedo rastrear mi pedido?': 'Sí, cuando tu pedido es aceptado recibirás actualizaciones sobre su estado: Pendiente → Aceptado → En Camino → Entregado.',
+                
+                '¿Qué métodos de pago aceptan?': 'Los métodos de pago son acordados directamente con el comercio. Generalmente aceptan: efectivo, transferencia, MercadoPago o tarjetas.'
+            },
+            
+            comercios: {
+                '¿Cómo me registro como comercio?': 'El registro es rápido y gratuito:\n\n1. Haz clic en "Soy Comercio" → "Registrarme"\n2. Completa el formulario con tus datos\n3. Envía el formulario y listo',
+                
+                '¿Cuánto cuesta registrarse?': '¡Es completamente GRATIS! 🎉\n\nNo hay costos de registro ni mensualidades. Solo pagas el costo del envío cuando solicitas una entrega.',
+                
+                '¿Cómo recibo los pedidos?': 'Los clientes te contactan directamente por WhatsApp o teléfono. Luego coordinas la entrega con el repartidor disponible.',
+                
+                '¿Puedo modificar mis datos?': 'Sí, contáctanos a yavoyen5@gmail.com con tus datos actualizados y lo modificamos inmediatamente.'
+            },
+            
+            repartidores: {
+                '¿Qué necesito para ser repartidor?': 'Requisitos básicos:\n\n✅ Ser mayor de 18 años\n✅ Tener DNI argentino\n✅ Poseer vehículo propio (moto, bici o auto)\n✅ Documentación del vehículo vigente\n✅ Celular con internet',
+                
+                '¿Cuánto puedo ganar?': 'Recibes el 80% del costo de envío. Por ejemplo:\n\n• Envío de $300 → Ganas $240\n• Envío de $500 → Ganas $400\n\nCuantas más entregas hagas, más ganas. Además, hay beneficios por entregas rápidas.',
+                
+                '¿Cómo recibo los pagos?': 'Los pagos se coordinan directamente con el comercio o cliente al momento de la entrega. Puedes recibir efectivo, transferencia o MercadoPago.',
+                
+                '¿Puedo elegir qué entregas hacer?': '¡Sí! Eres completamente independiente. Ves los pedidos disponibles y decides cuáles tomar según tu ubicación, horario y preferencia.',
+                
+                '¿Qué pasa si tengo un problema?': 'Contáctanos inmediatamente por WhatsApp al +54 221 504 7962. Te ayudamos a resolver cualquier inconveniente.'
+            },
+            
+            general: {
+                '¿En qué zonas operan?': 'Actualmente operamos en Ensenada y zonas aledañas. Estamos expandiéndonos constantemente a nuevas áreas.',
+                
+                '¿YAvoy es una app móvil?': 'YAvoy es una Progressive Web App (PWA). Funciona desde tu navegador y puedes agregarla a tu pantalla de inicio para usarla como una app nativa.',
+                
+                '¿Es seguro usar YAvoy?': 'Sí, tomamos muy en serio la seguridad. Tus datos están cifrados y nunca los compartimos sin tu consentimiento.',
+                
+                '¿Cómo contactarlos?': 'Estamos disponibles:\n\n📧 Email: yavoyen5@gmail.com\n📱 WhatsApp: +54 221 504 7962\n☎️ Teléfono: 2215047962'
+            }
+        }
+    };
+
+    // Detectar intención del mensaje
+    detectIntent(message) {
+        const msg = message.toLowerCase();
+        
+        // Beneficios
+        if (msg.includes('beneficio') || msg.includes('ventaja') || msg.includes('por qué')) {
+            if (msg.includes('comercio') || msg.includes('negocio')) return 'beneficios_comercios';
+            if (msg.includes('repartidor') || msg.includes('delivery')) return 'beneficios_repartidores';
+            return 'beneficios_clientes';
+        }
+        
+        // Preguntas frecuentes - Clientes
+        if (msg.includes('pedido') || msg.includes('ordenar') || msg.includes('pedir')) return 'como_hacer_pedido';
+        if (msg.includes('envío') || msg.includes('envio') || msg.includes('costo') || msg.includes('precio')) return 'costo_envio';
+        if (msg.includes('tarda') || msg.includes('demora') || msg.includes('tiempo')) return 'tiempo_entrega';
+        if (msg.includes('rastrear') || msg.includes('seguir') || msg.includes('track')) return 'rastrear_pedido';
+        if (msg.includes('pago') || msg.includes('pagar')) return 'metodos_pago';
+        
+        // Preguntas frecuentes - Comercios
+        if (msg.includes('registr') && (msg.includes('comercio') || msg.includes('negocio'))) return 'registro_comercio';
+        if (msg.includes('gratis') || msg.includes('gratuito') || msg.includes('cuesta registr')) return 'costo_registro';
+        if (msg.includes('recibo pedido') || msg.includes('cómo funciona comercio')) return 'como_recibo_pedidos';
+        if (msg.includes('modificar') || msg.includes('cambiar') || msg.includes('actualizar')) return 'modificar_datos';
+        
+        // Preguntas frecuentes - Repartidores
+        if (msg.includes('requisito') || msg.includes('necesito') && msg.includes('repartidor')) return 'requisitos_repartidor';
+        if (msg.includes('gan') || msg.includes('cuánto') || msg.includes('salario')) return 'cuanto_gano';
+        if (msg.includes('cobr') || msg.includes('pago repartidor')) return 'como_cobro';
+        if (msg.includes('eleg') || msg.includes('independiente') || msg.includes('horario')) return 'elegir_entregas';
+        if (msg.includes('problema') || msg.includes('ayuda') || msg.includes('soporte')) return 'problema_entrega';
+        
+        // General
+        if (msg.includes('zona') || msg.includes('dónde') || msg.includes('ubicación')) return 'zonas_operacion';
+        if (msg.includes('app') || msg.includes('aplicación') || msg.includes('descarg')) return 'es_app_movil';
+        if (msg.includes('segur') || msg.includes('privacidad') || msg.includes('dato')) return 'seguridad';
+        if (msg.includes('contact') || msg.includes('comunic') || msg.includes('teléfono')) return 'contacto';
+        
+        // Acciones
+        if (msg.includes('que es yavoy') || msg.includes('qué es yavoy') || msg.includes('🚀')) return 'que_es_yavoy';
+        if (msg.includes('hacer pedido') || msg.includes('hacer un pedido') || msg.includes('🛍️')) return 'accion_hacer_pedido';
+        if (msg.includes('registrar comercio') || msg.includes('soy comercio') || msg.includes('🏪')) return 'accion_registro_comercio';
+        if (msg.includes('ser repartidor') || msg.includes('trabajar') || msg.includes('🚴')) return 'accion_ser_repartidor';
+        if (msg.includes('pregunta') || msg.includes('faq') || msg.includes('❓')) return 'mostrar_categorias';
+        
+        return 'desconocido';
+    }
+
+    // Obtener respuesta según intención
+    getResponse(intent) {
+        const responses = {
+            // Beneficios
+            beneficios_clientes: '🛍️ *Beneficios para Clientes:*\n\n' + this.knowledgeBase.beneficios.clientes.join('\n'),
+            beneficios_comercios: '🏪 *Beneficios para Comercios:*\n\n' + this.knowledgeBase.beneficios.comercios.join('\n'),
+            beneficios_repartidores: '🚴 *Beneficios para Repartidores:*\n\n' + this.knowledgeBase.beneficios.repartidores.join('\n'),
+            
+            // Clientes
+            como_hacer_pedido: this.knowledgeBase.faq.clientes['¿Cómo hago un pedido?'],
+            costo_envio: this.knowledgeBase.faq.clientes['¿Cuánto cuesta el envío?'],
+            tiempo_entrega: this.knowledgeBase.faq.clientes['¿Cuánto tarda la entrega?'],
+            rastrear_pedido: this.knowledgeBase.faq.clientes['¿Puedo rastrear mi pedido?'],
+            metodos_pago: this.knowledgeBase.faq.clientes['¿Qué métodos de pago aceptan?'],
+            
+            // Comercios
+            registro_comercio: this.knowledgeBase.faq.comercios['¿Cómo me registro como comercio?'],
+            costo_registro: this.knowledgeBase.faq.comercios['¿Cuánto cuesta registrarse?'],
+            como_recibo_pedidos: this.knowledgeBase.faq.comercios['¿Cómo recibo los pedidos?'],
+            modificar_datos: this.knowledgeBase.faq.comercios['¿Puedo modificar mis datos?'],
+            
+            // Repartidores
+            requisitos_repartidor: this.knowledgeBase.faq.repartidores['¿Qué necesito para ser repartidor?'],
+            cuanto_gano: this.knowledgeBase.faq.repartidores['¿Cuánto puedo ganar?'],
+            como_cobro: this.knowledgeBase.faq.repartidores['¿Cómo recibo los pagos?'],
+            elegir_entregas: this.knowledgeBase.faq.repartidores['¿Puedo elegir qué entregas hacer?'],
+            problema_entrega: this.knowledgeBase.faq.repartidores['¿Qué pasa si tengo un problema?'],
+            
+            // General
+            zonas_operacion: this.knowledgeBase.faq.general['¿En qué zonas operan?'],
+            es_app_movil: this.knowledgeBase.faq.general['¿YAvoy es una app móvil?'],
+            seguridad: this.knowledgeBase.faq.general['¿Es seguro usar YAvoy?'],
+            contacto: this.knowledgeBase.faq.general['¿Cómo contactarlos?'],
+            
+            // Acciones
+            que_es_yavoy: '🚀 *YAvoy* es la plataforma de delivery inteligente que conecta clientes, comercios locales y repartidores independientes.\n\n¿Qué te gustaría saber?',
+            accion_hacer_pedido: 'Para hacer un pedido, haz clic en el botón "Pedir Ahora" en la página principal. Te llevará al formulario de pedidos. ¿Necesitas ayuda con algo más?',
+            accion_registro_comercio: 'Para registrar tu comercio, haz clic en "Unirse como Socio" en la página principal. Es 100% GRATIS. ¿Quieres saber los beneficios?',
+            accion_ser_repartidor: 'Para ser repartidor, haz clic en "Ganar con YAvoy" en la página principal. Ganas el 80% por entrega. ¿Te interesa saber los requisitos?',
+            
+            mostrar_categorias: '¿Sobre qué tema necesitas ayuda?',
+            
+            desconocido: 'Disculpa, no entendí tu pregunta. ¿Podrías reformularla? También puedes seleccionar una opción de las sugerencias.'
+        };
+        
+        return responses[intent] || responses.desconocido;
+    }
+
+    // Obtener acciones rápidas según contexto
+    getQuickActions(intent) {
+        const actions = {
+            que_es_yavoy: ['🛍️ Beneficios clientes', '🏪 Beneficios comercios', '🚴 Beneficios repartidores', '❓ Más preguntas'],
+            
+            beneficios_clientes: ['¿Cómo hago un pedido?', '¿Cuánto cuesta el envío?', '¿Cuánto tarda?', '¿Puedo rastrear?'],
+            beneficios_comercios: ['¿Cómo me registro?', '¿Cuánto cuesta?', '¿Cómo recibo pedidos?', 'Modificar datos'],
+            beneficios_repartidores: ['¿Qué necesito?', '¿Cuánto gano?', '¿Cómo cobro?', '¿Elijo entregas?'],
+            
+            mostrar_categorias: ['🛍️ Clientes', '🏪 Comercios', '🚴 Repartidores', '⚙️ General'],
+            
+            como_hacer_pedido: ['¿Cuánto cuesta envío?', '¿Cuánto tarda?', '¿Puedo rastrear?', 'Métodos de pago'],
+            accion_hacer_pedido: ['¿Cuánto cuesta envío?', '¿Cuánto tarda?', '¿Puedo rastrear?'],
+            
+            accion_registro_comercio: ['Ver beneficios', '¿Cuánto cuesta?', 'Contactar'],
+            accion_ser_repartidor: ['Ver requisitos', '¿Cuánto gano?', 'Contactar'],
+            
+            desconocido: ['🚀 ¿Qué es YAvoy?', '🛍️ Hacer pedido', '🏪 Registrar comercio', '🚴 Ser repartidor']
+        };
+        
+        return actions[intent] || actions.desconocido;
     }
 
     addBotMessage(text, quickActions = null) {
@@ -548,49 +743,32 @@ class ChatbotHolografico {
         this.addUserMessage(text);
         input.value = '';
 
-        // Simular respuesta del bot
+        // Generar respuesta inteligente del bot
         setTimeout(() => {
             this.generateBotResponse(text);
         }, 800);
     }
 
     generateBotResponse(userMessage) {
-        const lowerMsg = userMessage.toLowerCase();
-
-        if (lowerMsg.includes('estado') || lowerMsg.includes('pedido')) {
-            this.addBotMessage('Para ver el estado de tu pedido, ingresa el número de seguimiento o revisa la sección "Mis Pedidos".');
-        } else if (lowerMsg.includes('soporte') || lowerMsg.includes('ayuda')) {
-            this.addBotMessage('Puedes contactar con nuestro equipo de soporte 24/7 al: +54 11 1234-5678 o por email: soporte@yavoy.com');
-        } else if (lowerMsg.includes('horario') || lowerMsg.includes('hora')) {
-            this.addBotMessage('¡Estamos disponibles 24/7! Puedes hacer pedidos en cualquier momento.');
-        } else if (lowerMsg.includes('pago') || lowerMsg.includes('cobro')) {
-            this.addBotMessage('Aceptamos efectivo, tarjetas de crédito/débito, MercadoPago y AstroPay. ¡Elige el que prefieras!');
-        } else {
-            this.addBotMessage('Entiendo. ¿Puedes darme más detalles para poder ayudarte mejor?');
-        }
+        // Detectar la intención del mensaje
+        const intent = this.detectIntent(userMessage);
+        
+        // Obtener la respuesta apropiada
+        const response = this.getResponse(intent);
+        
+        // Obtener acciones rápidas contextuales
+        const actions = this.getQuickActions(intent);
+        
+        // Enviar respuesta con acciones
+        this.addBotMessage(response, actions);
     }
 
     handleQuickAction(action) {
         this.addUserMessage(action);
 
         setTimeout(() => {
-            switch(action) {
-                case 'Ver estado de pedido':
-                    this.addBotMessage('Por favor, proporciona tu número de pedido para consultar el estado.');
-                    break;
-                case 'Hablar con soporte':
-                    this.addBotMessage('Te conectaré con un agente humano. Un momento por favor...');
-                    break;
-                case 'Preguntas frecuentes':
-                    window.open('faq.html', '_blank');
-                    this.addBotMessage('He abierto nuestra sección de Preguntas Frecuentes en una nueva pestaña.');
-                    break;
-                case 'Seguimiento en tiempo real':
-                    this.addBotMessage('Puedes ver el seguimiento en tiempo real en tu panel de pedidos activos.');
-                    break;
-                default:
-                    this.addBotMessage('¿En qué más puedo ayudarte?');
-            }
+            // Procesar la acción como si fuera un mensaje del usuario
+            this.generateBotResponse(action);
         }, 800);
     }
 

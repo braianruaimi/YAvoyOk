@@ -430,32 +430,44 @@
             }
         }
 
-        /* ==================== CHATBOT WIDGET ==================== */
-        .chatbot-widget {
+        /* ==================== BOTÓN INSTALAR APP ==================== */
+        .install-app-button {
             position: fixed;
             bottom: 25px;
-            right: 25px;
-            z-index: 9999;
-        }
-
-        .chatbot-toggle {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--cyan), #0891b2);
+            left: 25px;
+            z-index: 9998;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
             border: none;
+            border-radius: 50px;
+            padding: 16px 28px;
+            font-size: 0.95rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 8px 30px var(--cyan-glow);
-            display: flex;
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.4);
+            display: none;
             align-items: center;
-            justify-content: center;
-            font-size: 2rem;
+            gap: 10px;
             transition: all 0.3s ease;
+            letter-spacing: 0.5px;
         }
 
-        .chatbot-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 40px var(--cyan-glow);
+        .install-app-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(6, 182, 212, 0.6);
+        }
+
+        .install-app-button:active {
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .install-app-button {
+                bottom: 20px;
+                left: 20px;
+                padding: 14px 24px;
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
@@ -576,16 +588,46 @@
         </footer>
     </div>
 
-    <!-- Chatbot Widget -->
-    <div class="chatbot-widget" id="chatbotWidget">
-        <button class="chatbot-toggle" id="btnChatbot" title="Asistente YAvoy">
-            💬
-        </button>
-    </div>
+    <!-- Botón Instalar App -->
+    <button id="installButton" class="install-app-button">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/>
+        </svg>
+        <span>Instalar App</span>
+    </button>
 
     <!-- Scripts -->
     <script src="js/chatbot-holografico.js"></script>
     <script>
+        // PWA - Botón Instalar App
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'flex';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('App instalada correctamente');
+            }
+            
+            deferredPrompt = null;
+            installButton.style.display = 'none';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('YAvoy instalado exitosamente');
+            installButton.style.display = 'none';
+        });
+
         // Cargar estadísticas reales desde la API
         async function cargarEstadisticas() {
             try {
@@ -605,15 +647,6 @@
                 console.log('Usando estadísticas de demostración');
             }
         }
-
-        // Inicializar chatbot
-        document.getElementById('btnChatbot').addEventListener('click', () => {
-            if (typeof toggleChatbot === 'function') {
-                toggleChatbot();
-            } else {
-                alert('Asistente en mantenimiento. ¿En qué podemos ayudarte?');
-            }
-        });
 
         // Cargar al iniciar
         document.addEventListener('DOMContentLoaded', cargarEstadisticas);
