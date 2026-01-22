@@ -1331,6 +1331,408 @@
       color: var(--white);
       font-size: 16px;
     }
+
+    /* ========================================
+       GESTIÓN DE PRODUCTOS / CATÁLOGO
+       ======================================== */
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .producto-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .producto-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--gold));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .producto-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 48px var(--cyan-glow);
+      border-color: var(--cyan);
+    }
+
+    .producto-card:hover::before {
+      opacity: 1;
+    }
+
+    .producto-card.add-new {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 250px;
+      cursor: pointer;
+      border: 2px dashed rgba(6, 182, 212, 0.5);
+    }
+
+    .producto-card.add-new:hover {
+      border-color: var(--cyan);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    .producto-card.locked {
+      cursor: pointer;
+      border: 2px solid rgba(251, 191, 36, 0.5);
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(245, 158, 11, 0.05));
+    }
+
+    .producto-card.locked:hover {
+      border-color: var(--gold);
+      box-shadow: 0 12px 48px var(--gold-glow);
+    }
+
+    .producto-nombre {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .producto-descripcion {
+      font-size: 14px;
+      color: var(--gray);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .producto-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .producto-precio {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--cyan), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .producto-stock {
+      font-size: 13px;
+      color: var(--gray);
+      padding: 6px 12px;
+      background: rgba(26, 35, 50, 0.6);
+      border-radius: 20px;
+    }
+
+    .producto-stock.bajo {
+      color: var(--warning);
+      background: rgba(251, 191, 36, 0.1);
+    }
+
+    .producto-stock.agotado {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .producto-acciones {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-producto {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .btn-producto.editar {
+      background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+      color: var(--white);
+    }
+
+    .btn-producto.eliminar {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .add-icon {
+      font-size: 48px;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+
+    .lock-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .locked-text {
+      text-align: center;
+      color: var(--white);
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .locked-subtitle {
+      text-align: center;
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    /* Modal Premium Tienda */
+    .modal-premium {
+      background: linear-gradient(135deg, rgba(11, 18, 32, 0.98), rgba(26, 35, 50, 0.95));
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 2px solid rgba(251, 191, 36, 0.3);
+      box-shadow: 0 16px 64px rgba(251, 191, 36, 0.2);
+    }
+
+    .modal-premium-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .modal-premium-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .modal-premium-title {
+      font-size: 28px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .modal-premium-subtitle {
+      color: var(--gray);
+      font-size: 16px;
+    }
+
+    .beneficios-list {
+      margin: 30px 0;
+    }
+
+    .beneficio-item {
+      display: flex;
+      align-items: start;
+      gap: 15px;
+      padding: 20px;
+      background: rgba(26, 35, 50, 0.5);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border-left: 3px solid var(--gold);
+    }
+
+    .beneficio-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .beneficio-content h4 {
+      color: var(--white);
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .beneficio-content p {
+      color: var(--gray);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .btn-premium {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #1a1a1a;
+      padding: 16px 32px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px var(--gold-glow);
+    }
+
+    .btn-premium:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px var(--gold-glow);
+    }
+
+    /* Búsqueda de pedidos */
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 48px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      background: rgba(26, 35, 50, 0.5);
+      backdrop-filter: blur(10px);
+      color: var(--white);
+      font-size: 15px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 4px var(--cyan-glow);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+    }
+
+    /* Horario de atención */
+    .horario-config {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .horario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .horario-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 10px 18px;
+      background: rgba(26, 35, 50, 0.6);
+      border-radius: 25px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .horario-toggle.activo {
+      background: linear-gradient(135deg, var(--success), #059669);
+      border-color: var(--success);
+    }
+
+    .horario-toggle:hover {
+      border-color: var(--cyan);
+      transform: scale(1.05);
+    }
+
+    .switch {
+      width: 50px;
+      height: 26px;
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 13px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .switch.activo {
+      background: var(--success);
+    }
+
+    .switch::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--white);
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: all 0.3s ease;
+    }
+
+    .switch.activo::before {
+      left: 27px;
+    }
+
+    .horarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .horario-dia {
+      background: rgba(26, 35, 50, 0.5);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .horario-dia-nombre {
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+
+    .horario-inputs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .horario-inputs input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      background: rgba(11, 18, 32, 0.5);
+      color: var(--white);
+      font-size: 13px;
+    }
+
+    .horario-inputs input:focus {
+      outline: none;
+      border-color: var(--cyan);
+    }
   </style>
   <script>
     // Función de login debe estar disponible antes del formulario
@@ -1454,6 +1856,9 @@
       <button class="tab-btn" onclick="cambiarTab('estadisticas')">
         📊 Estadísticas
       </button>
+      <button class="tab-btn" onclick="cambiarTab('catalogo')">
+        📋 Catálogo de Productos
+      </button>
       <button class="tab-btn" onclick="cambiarTab('tienda')">
         🛍️ Mi Tienda Digital
       </button>
@@ -1512,6 +1917,17 @@
       <div class="pedidos-section">
         <div class="pedidos-header">
           <h2>📥 Pedidos Recibidos</h2>
+        </div>
+
+        <!-- Búsqueda de Pedidos -->
+        <div class="search-box">
+          <input 
+            type="text" 
+            class="search-input" 
+            id="searchPedidos" 
+            placeholder="Buscar por nombre del cliente, ID de pedido o dirección..." 
+            onkeyup="buscarPedidos()"
+          />
         </div>
 
         <!-- Filtros -->
@@ -1612,6 +2028,20 @@
               <canvas id="horariosPicoChart"></canvas>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Catálogo de Productos -->
+    <div id="tabCatalogo" class="tab-content">
+      <div class="pedidos-section">
+        <h2 class="comercio-stats-title">📋 Catálogo de Productos</h2>
+        <p style="color: var(--gray); margin-bottom: 24px;">
+          Crea hasta 5 productos en tu catálogo. Los clientes podrán verlos cuando busquen tu comercio.
+        </p>
+
+        <div class="productos-grid" id="productosGrid">
+          <!-- Los productos se renderizan aquí dinámicamente -->
         </div>
       </div>
     </div>
@@ -1742,6 +2172,97 @@
             💾 Guardar Cambios
           </button>
         </form>
+
+        <!-- Horario de Atención Automático -->
+        <div class="horario-config">
+          <div class="horario-header">
+            <div>
+              <h3 style="color: var(--white); margin-bottom: 6px;">⏰ Horario de Atención Automático</h3>
+              <p style="color: var(--gray); font-size: 14px;">Configura horarios y el sistema abrirá/cerrará automáticamente</p>
+            </div>
+            <div class="horario-toggle" id="horarioAutoToggle" onclick="toggleHorarioAutomatico()">
+              <div class="switch" id="horarioSwitch"></div>
+              <span style="color: var(--white); font-weight: 600;">Desactivado</span>
+            </div>
+          </div>
+
+          <div class="horarios-grid" id="horariosGrid" style="display: none;">
+            <div class="horario-dia">
+              <div class="horario-dia-nombre">Lunes</div>
+              <div class="horario-inputs">
+                <input type="time" id="lun-inicio" value="09:00">
+                <span style="color: var(--gray);">-</span>
+                <input type="time" id="lun-fin" value="18:00">
+              </div>
+            </div>
+            <div class="horario-dia">
+              <div class="horario-dia-nombre">Martes</div>
+              <div class="horario-inputs">
+                <input type="time" id="mar-inicio" value="09:00">
+                <span style="color: var(--gray);">-</span>
+                <input type="time" id="mar-fin" value="18:00">
+              </div>
+            </div>
+            <div class="horario-dia">
+              <div class="horario-dia-nombre">Miércoles</div>
+              <div class="horario-inputs">
+                <input type="time" id="mie-inicio" value="09:00">
+                <span style="color: var(--gray);">-</span>
+                <input type="time" id="mie-fin" value="18:00">
+              </div>
+            </div>
+            <div class="horario-dia">
+              <div class="horario-dia-nombre">Jueves</div>
+              <div class="horario-inputs">
+                <input type="time" id="jue-inicio" value="09:00">
+                <span style="color: var(--gray);">-</span>
+                <input type="time" id="jue-fin" value="18:00">
+              </div>
+            </div>
+            <div class="horario-dia">
+              <div class="horario-dia-nombre">Viernes</div>
+              <div class="horario-inputs">
+                <input type="time" id="vie-inicio" value="09:00">
+                <span style="color: var(--gray);">-</span>
+                <input type="time" id="vie-fin" value="18:00">
+              </div>
+            </div>
+            <div class="horario-dia">
+              <div class="horario-dia-nombre">Sábado</div>
+              <div class="horario-inputs">
+                <input type="time" id="sab-inicio" value="09:00">
+                <span style="color: var(--gray);">-</span>
+                <input type="time" id="sab-fin" value="14:00">
+              </div>
+            </div>
+            <div class="horario-dia">
+              <div class="horario-dia-nombre">Domingo</div>
+              <div class="horario-inputs">
+                <input type="time" id="dom-inicio" value="00:00">
+                <span style="color: var(--gray);">-</span>
+                <input type="time" id="dom-fin" value="00:00">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notificaciones y Pruebas -->
+        <div class="config-section">
+          <h3 style="color: var(--cyan); margin-bottom: 16px;">🔔 Notificaciones Push</h3>
+          <p style="color: var(--gray); margin-bottom: 24px; line-height: 1.6;">
+            Recibe alertas en tiempo real cuando lleguen nuevos pedidos. El navegador te pedirá permiso para mostrar notificaciones.
+          </p>
+          <button 
+            id="btnSimulador" 
+            class="btn-submit" 
+            onclick="toggleSimuladorPedidos()"
+            style="background: linear-gradient(135deg, var(--cyan), var(--cyan-dark)); width: 100%;">
+            ▶️ Iniciar Simulador Pedidos
+          </button>
+          <p style="color: var(--gray); font-size: 13px; margin-top: 12px; text-align: center;">
+            Genera pedidos de prueba cada 30 segundos para probar las notificaciones
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -1813,6 +2334,112 @@
           ✅ Crear Pedido
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal: Producto (Crear/Editar) -->
+  <div id="modalProducto" class="modal">
+    <div class="modal-contenido">
+      <div class="modal-header">
+        <h2 id="modalProductoTitle">➕ Nuevo Producto</h2>
+        <button class="btn-cerrar-modal" onclick="cerrarModal('modalProducto')">&times;</button>
+      </div>
+
+      <form id="formProducto" onsubmit="guardarProducto(event)">
+        <div class="form-group">
+          <label>Nombre del Producto *</label>
+          <input type="text" id="productoNombre" required placeholder="Ej: Pizza Napolitana">
+        </div>
+
+        <div class="form-group">
+          <label>Descripción *</label>
+          <textarea id="productoDescripcion" required placeholder="Describe el producto brevemente..." maxlength="150"></textarea>
+          <small style="color: var(--gray);">Máximo 150 caracteres</small>
+        </div>
+
+        <div class="form-group">
+          <label>Precio *</label>
+          <input type="number" id="productoPrecio" required min="0" step="0.01" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+          <label>Stock Disponible *</label>
+          <input type="number" id="productoStock" required min="0" step="1" placeholder="0">
+        </div>
+
+        <button type="submit" class="btn-submit">
+          💾 Guardar Producto
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tienda Premium -->
+  <div id="modalPremium" class="modal">
+    <div class="modal-contenido modal-premium">
+      <div class="modal-header">
+        <button class="btn-cerrar-modal" onclick="cerrarModal('modalPremium')">&times;</button>
+      </div>
+
+      <div class="modal-premium-header">
+        <div class="modal-premium-icon">🏪✨</div>
+        <h2 class="modal-premium-title">Desbloquea Tu Tienda Completa</h2>
+        <p class="modal-premium-subtitle">Alcanzá todo tu potencial y llevá tu negocio al siguiente nivel</p>
+      </div>
+
+      <div class="beneficios-list">
+        <div class="beneficio-item">
+          <div class="beneficio-icon">📦</div>
+          <div class="beneficio-content">
+            <h4>Catálogo Ilimitado</h4>
+            <p>Agregá todos los productos que necesites sin límites. Mostrá todo tu inventario.</p>
+          </div>
+        </div>
+
+        <div class="beneficio-item">
+          <div class="beneficio-icon">🎨</div>
+          <div class="beneficio-content">
+            <h4>Diseño Personalizado</h4>
+            <p>Tu tienda con tu marca, colores y estilo. Destacá entre la competencia.</p>
+          </div>
+        </div>
+
+        <div class="beneficio-item">
+          <div class="beneficio-icon">📱</div>
+          <div class="beneficio-content">
+            <h4>Consultoría de Redes Sociales</h4>
+            <p>Reunión personalizada para mejorar tu presencia digital y atraer más clientes.</p>
+          </div>
+        </div>
+
+        <div class="beneficio-item">
+          <div class="beneficio-icon">💬</div>
+          <div class="beneficio-content">
+            <h4>Soporte Directo 24/7</h4>
+            <p>Atención prioritaria vía WhatsApp para resolver cualquier duda al instante.</p>
+          </div>
+        </div>
+
+        <div class="beneficio-item">
+          <div class="beneficio-icon">📈</div>
+          <div class="beneficio-content">
+            <h4>Estadísticas Avanzadas</h4>
+            <p>Análisis detallado de ventas, productos top y comportamiento de clientes.</p>
+          </div>
+        </div>
+
+        <div class="beneficio-item">
+          <div class="beneficio-icon">🚀</div>
+          <div class="beneficio-content">
+            <h4>Promociones Destacadas</h4>
+            <p>Aparecer en la portada de la app y llegar a miles de clientes potenciales.</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-premium" onclick="contactarParaPremium()">
+        💬 Quiero Mi Tienda Completa
+      </button>
     </div>
   </div>
 
@@ -1966,6 +2593,336 @@
       }
     }
 
+    // ==========================================
+    // GESTIÓN DE PRODUCTOS / CATÁLOGO
+    // ==========================================
+    let productos = [];
+    let productoEditando = null;
+    const MAX_PRODUCTOS_GRATIS = 5;
+
+    function renderizarProductos() {
+      const grid = document.getElementById('productosGrid');
+      if (!grid) return;
+
+      grid.innerHTML = '';
+
+      // Renderizar productos existentes
+      productos.forEach((producto, index) => {
+        const card = document.createElement('div');
+        card.className = 'producto-card';
+        
+        const stockClass = producto.stock === 0 ? 'agotado' : producto.stock < 10 ? 'bajo' : '';
+        const stockTexto = producto.stock === 0 ? 'Agotado' : producto.stock < 10 ? `Stock bajo: ${producto.stock}` : `Stock: ${producto.stock}`;
+
+        card.innerHTML = `
+          <div class="producto-nombre">${producto.nombre}</div>
+          <div class="producto-descripcion">${producto.descripcion}</div>
+          <div class="producto-info">
+            <div class="producto-precio">$${producto.precio.toFixed(2)}</div>
+            <div class="producto-stock ${stockClass}">${stockTexto}</div>
+          </div>
+          <div class="producto-acciones">
+            <button class="btn-producto editar" onclick="editarProducto(${index})">✏️ Editar</button>
+            <button class="btn-producto eliminar" onclick="eliminarProducto(${index})">🗑️ Eliminar</button>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      // Botón para agregar nuevo producto o candado
+      if (productos.length < MAX_PRODUCTOS_GRATIS) {
+        const addCard = document.createElement('div');
+        addCard.className = 'producto-card add-new';
+        addCard.onclick = () => abrirModalProducto();
+        addCard.innerHTML = `
+          <div class="add-icon">➕</div>
+          <div style="color: var(--cyan); font-weight: 600;">Agregar Producto</div>
+          <div style="color: var(--gray); font-size: 13px; text-align: center;">
+            ${productos.length} de ${MAX_PRODUCTOS_GRATIS} productos
+          </div>
+        `;
+        grid.appendChild(addCard);
+      } else {
+        const lockedCard = document.createElement('div');
+        lockedCard.className = 'producto-card locked';
+        lockedCard.onclick = () => abrirModalPremium();
+        lockedCard.innerHTML = `
+          <div class="lock-icon">🔒</div>
+          <div class="locked-text">Catálogo Completo</div>
+          <div class="locked-subtitle">
+            Desbloquea productos ilimitados con tu Tienda Premium
+          </div>
+        `;
+        grid.appendChild(lockedCard);
+      }
+    }
+
+    function abrirModalProducto(index = null) {
+      productoEditando = index;
+      const modal = document.getElementById('modalProducto');
+      const title = document.getElementById('modalProductoTitle');
+      const form = document.getElementById('formProducto');
+
+      if (index !== null) {
+        // Modo edición
+        title.textContent = '✏️ Editar Producto';
+        const producto = productos[index];
+        document.getElementById('productoNombre').value = producto.nombre;
+        document.getElementById('productoDescripcion').value = producto.descripcion;
+        document.getElementById('productoPrecio').value = producto.precio;
+        document.getElementById('productoStock').value = producto.stock;
+      } else {
+        // Modo creación
+        title.textContent = '➕ Nuevo Producto';
+        form.reset();
+      }
+
+      modal.classList.add('active');
+    }
+
+    window.guardarProducto = function(event) {
+      event.preventDefault();
+
+      const nombre = document.getElementById('productoNombre').value;
+      const descripcion = document.getElementById('productoDescripcion').value;
+      const precio = parseFloat(document.getElementById('productoPrecio').value);
+      const stock = parseInt(document.getElementById('productoStock').value);
+
+      const producto = { nombre, descripcion, precio, stock };
+
+      if (productoEditando !== null) {
+        // Actualizar producto existente
+        productos[productoEditando] = producto;
+        showToast('success', 'Producto Actualizado', `${nombre} ha sido actualizado correctamente`);
+      } else {
+        // Crear nuevo producto
+        if (productos.length >= MAX_PRODUCTOS_GRATIS) {
+          showToast('warning', 'Límite Alcanzado', 'Has alcanzado el límite de 5 productos. Actualiza a Premium.');
+          return;
+        }
+        productos.push(producto);
+        showToast('success', 'Producto Creado', `${nombre} agregado al catálogo`);
+      }
+
+      // Guardar en localStorage
+      localStorage.setItem(`productos_${comercioActual?.id || 'demo'}`, JSON.stringify(productos));
+
+      cerrarModal('modalProducto');
+      renderizarProductos();
+    };
+
+    window.editarProducto = function(index) {
+      abrirModalProducto(index);
+    };
+
+    window.eliminarProducto = function(index) {
+      const producto = productos[index];
+      if (confirm(`¿Eliminar "${producto.nombre}" del catálogo?`)) {
+        productos.splice(index, 1);
+        localStorage.setItem(`productos_${comercioActual?.id || 'demo'}`, JSON.stringify(productos));
+        showToast('info', 'Producto Eliminado', `${producto.nombre} eliminado del catálogo`);
+        renderizarProductos();
+      }
+    };
+
+    function abrirModalPremium() {
+      document.getElementById('modalPremium').classList.add('active');
+    }
+
+    window.contactarParaPremium = function() {
+      const telefono = '2215690902';
+      const mensaje = encodeURIComponent(`¡Hola! Soy ${comercioActual?.nombre || 'un comercio'} y quiero actualizar a Tienda Premium. Me interesa tener catálogo ilimitado, consultoría de redes sociales y todas las funciones avanzadas. ¿Pueden contactarme?`);
+      const urlWhatsApp = `https://wa.me/${telefono}?text=${mensaje}`;
+      window.open(urlWhatsApp, '_blank');
+      cerrarModal('modalPremium');
+      showToast('success', 'WhatsApp Abierto', 'Te contactaremos para brindarte toda la información');
+    };
+
+    // Cargar productos desde localStorage
+    function cargarProductos() {
+      const stored = localStorage.getItem(`productos_${comercioActual?.id || 'demo'}`);
+      if (stored) {
+        productos = JSON.parse(stored);
+      } else {
+        // Productos demo
+        productos = [
+          { nombre: 'Pizza Napolitana', descripcion: 'Pizza clásica con salsa, mozzarella y albahaca', precio: 1200, stock: 15 },
+          { nombre: 'Hamburguesa Completa', descripcion: 'Carne, lechuga, tomate, queso y papas fritas', precio: 950, stock: 8 }
+        ];
+      }
+      renderizarProductos();
+    }
+
+    // ==========================================
+    // BÚSQUEDA DE PEDIDOS
+    // ==========================================
+    window.buscarPedidos = function() {
+      const searchTerm = document.getElementById('searchPedidos').value.toLowerCase();
+      
+      if (!searchTerm) {
+        renderizarPedidos();
+        return;
+      }
+
+      const pedidosFiltrados = pedidosRecibidos.filter(pedido => {
+        return (
+          pedido.id.toLowerCase().includes(searchTerm) ||
+          (pedido.cliente && pedido.cliente.toLowerCase().includes(searchTerm)) ||
+          (pedido.destinatario && pedido.destinatario.toLowerCase().includes(searchTerm)) ||
+          (pedido.direccionEntrega && pedido.direccionEntrega.toLowerCase().includes(searchTerm))
+        );
+      });
+
+      renderizarPedidosFiltrados(pedidosFiltrados);
+    };
+
+    function renderizarPedidosFiltrados(pedidosFiltrados) {
+      const lista = document.getElementById('listaPedidos');
+      if (!lista) return;
+
+      if (pedidosFiltrados.length === 0) {
+        lista.innerHTML = `
+          <div class="no-pedidos">
+            <div class="icon">🔍</div>
+            <h3>No se encontraron pedidos</h3>
+            <p>Intenta con otro término de búsqueda</p>
+          </div>
+        `;
+        return;
+      }
+
+      lista.innerHTML = '';
+
+      pedidosFiltrados.forEach(pedido => {
+        const pedidoDiv = document.createElement('div');
+        pedidoDiv.className = 'pedido-card';
+        pedidoDiv.innerHTML = `
+          <div class="pedido-card-header">
+            <span class="pedido-id">${pedido.id}</span>
+            <span class="pedido-estado estado-${pedido.estado}">${obtenerTextoEstado(pedido.estado)}</span>
+          </div>
+
+          <div class="pedido-detalles">
+            <div class="detalle-item">
+              <span class="detalle-label">Destinatario</span>
+              <span class="detalle-value">${pedido.destinatario || 'No especificado'}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Dirección</span>
+              <span class="detalle-value">${pedido.direccionEntrega}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Repartidor</span>
+              <span class="detalle-value">${pedido.repartidor?.nombre || 'Sin asignar'}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Monto</span>
+              <span class="detalle-value">$${pedido.monto?.toFixed(2) || '0.00'}</span>
+            </div>
+          </div>
+
+          <div class="pedido-acciones">
+            ${pedido.estado === 'pendiente' ? `<button class="btn-accion btn-asignar" onclick="abrirModalAsignarRepartidor('${pedido.id}')">🚴 Asignar Repartidor</button>` : ''}
+            <button class="btn-accion btn-ver-detalle" onclick="verDetallePedido('${pedido.id}')">👁️ Ver Detalle</button>
+            ${pedido.estado === 'pendiente' ? `<button class="btn-accion btn-cancelar" onclick="cancelarPedido('${pedido.id}')">❌ Cancelar</button>` : ''}
+          </div>
+        `;
+        lista.appendChild(pedidoDiv);
+      });
+    }
+
+    // ==========================================
+    // HORARIO AUTOMÁTICO
+    // ==========================================
+    let horarioAutomaticoActivo = false;
+    let intervaloHorario = null;
+
+    window.toggleHorarioAutomatico = function() {
+      horarioAutomaticoActivo = !horarioAutomaticoActivo;
+      const toggle = document.getElementById('horarioAutoToggle');
+      const switchEl = document.getElementById('horarioSwitch');
+      const grid = document.getElementById('horariosGrid');
+      const text = toggle.querySelector('span');
+
+      if (horarioAutomaticoActivo) {
+        toggle.classList.add('activo');
+        switchEl.classList.add('activo');
+        text.textContent = 'Activado';
+        grid.style.display = 'grid';
+        iniciarVerificacionHorario();
+        showToast('success', 'Horario Automático Activado', 'El comercio se abrirá/cerrará según los horarios configurados');
+      } else {
+        toggle.classList.remove('activo');
+        switchEl.classList.remove('activo');
+        text.textContent = 'Desactivado';
+        grid.style.display = 'none';
+        detenerVerificacionHorario();
+        showToast('info', 'Horario Automático Desactivado', 'Deberás abrir/cerrar manualmente el comercio');
+      }
+    };
+
+    function iniciarVerificacionHorario() {
+      verificarYActualizarEstado(); // Verificar inmediatamente
+      intervaloHorario = setInterval(verificarYActualizarEstado, 60000); // Verificar cada minuto
+    }
+
+    function detenerVerificacionHorario() {
+      if (intervaloHorario) {
+        clearInterval(intervaloHorario);
+        intervaloHorario = null;
+      }
+    }
+
+    function verificarYActualizarEstado() {
+      const ahora = new Date();
+      const diaActual = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'][ahora.getDay()];
+      const horaActual = ahora.getHours() * 60 + ahora.getMinutes(); // minutos desde medianoche
+
+      const inicioInput = document.getElementById(`${diaActual}-inicio`);
+      const finInput = document.getElementById(`${diaActual}-fin`);
+
+      if (!inicioInput || !finInput) return;
+
+      const [horaInicio, minInicio] = inicioInput.value.split(':').map(Number);
+      const [horaFin, minFin] = finInput.value.split(':').map(Number);
+
+      const minutosInicio = horaInicio * 60 + minInicio;
+      const minutosFin = horaFin * 60 + minFin;
+
+      const toggle = document.getElementById('statusToggle');
+      const icon = toggle.querySelector('.status-icon');
+      const text = toggle.querySelector('.status-text');
+
+      // Si horario inicio y fin son 00:00, está cerrado todo el día
+      if (minutosInicio === 0 && minutosFin === 0) {
+        if (toggle.classList.contains('abierto')) {
+          toggle.classList.remove('abierto');
+          toggle.classList.add('cerrado');
+          icon.textContent = '🔴';
+          text.textContent = 'Cerrado';
+          showToast('info', 'Comercio Cerrado Automáticamente', 'Hoy no tienes horario de atención configurado');
+        }
+        return;
+      }
+
+      const debeEstarAbierto = horaActual >= minutosInicio && horaActual < minutosFin;
+
+      if (debeEstarAbierto && toggle.classList.contains('cerrado')) {
+        toggle.classList.remove('cerrado');
+        toggle.classList.add('abierto');
+        icon.textContent = '🟢';
+        text.textContent = 'Abierto';
+        showToast('success', 'Comercio Abierto Automáticamente', 'Es hora de recibir pedidos');
+      } else if (!debeEstarAbierto && toggle.classList.contains('abierto')) {
+        toggle.classList.remove('abierto');
+        toggle.classList.add('cerrado');
+        icon.textContent = '🔴';
+        text.textContent = 'Cerrado';
+        showToast('info', 'Comercio Cerrado Automáticamente', 'Fuera del horario de atención');
+      }
+    }
+
     // Inicializar panel
     async function inicializarPanel() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -2039,6 +2996,119 @@
       document.getElementById('configEmail').value = comercioActual.email || '';
       document.getElementById('configHorario').value = comercioActual.horario || '';
       document.getElementById('configDescripcion').value = comercioActual.descripcion || '';
+
+      // Cargar productos del comercio
+      cargarProductos();
+
+      // Solicitar permisos de notificación
+      solicitarPermisosNotificacion();
+    }
+
+    // ==========================================
+    // NOTIFICACIONES PUSH
+    // ==========================================
+    let notificationPermission = false;
+
+    function solicitarPermisosNotificacion() {
+      if (!('Notification' in window)) {
+        console.log('Este navegador no soporta notificaciones');
+        return;
+      }
+
+      if (Notification.permission === 'granted') {
+        notificationPermission = true;
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          notificationPermission = (permission === 'granted');
+          if (notificationPermission) {
+            showToast('success', 'Notificaciones Activadas', 'Recibirás alertas de nuevos pedidos');
+          }
+        });
+      }
+    }
+
+    function notificarNuevoPedido(pedido) {
+      // Notificación push del navegador
+      if (notificationPermission && Notification.permission === 'granted') {
+        const notification = new Notification('🛒 Nuevo Pedido - YAvoy', {
+          body: `Pedido #${pedido.id}\nDestino: ${pedido.direccionEntrega}\nMonto: $${pedido.monto?.toFixed(2) || '0.00'}`,
+          icon: 'icons/icon-192x192.png',
+          badge: 'icons/icon-96x96.png',
+          tag: pedido.id,
+          requireInteraction: true,
+          vibrate: [200, 100, 200]
+        });
+
+        notification.onclick = function() {
+          window.focus();
+          verDetallePedido(pedido.id);
+          notification.close();
+        };
+
+        // Auto-cerrar después de 10 segundos
+        setTimeout(() => notification.close(), 10000);
+      }
+
+      // Toast notification siempre
+      showToast('success', '🛒 Nuevo Pedido', `Pedido #${pedido.id} - $${pedido.monto?.toFixed(2) || '0.00'}`);
+
+      // Sonido de notificación (opcional)
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEA==');
+        audio.volume = 0.5;
+        audio.play().catch(() => {}); // Ignorar errores de audio
+      } catch (e) {}
+    }
+
+    // Simulador de pedidos nuevos (solo para demostración)
+    let simuladorActivo = false;
+    let contadorPedidosDemo = 1;
+
+    window.toggleSimuladorPedidos = function() {
+      simuladorActivo = !simuladorActivo;
+      const btn = document.getElementById('btnSimulador');
+      
+      if (simuladorActivo) {
+        btn.textContent = '⏸️ Pausar Simulador';
+        btn.style.background = 'linear-gradient(135deg, #dc2626, #991b1b)';
+        showToast('info', 'Simulador Activado', 'Se generarán pedidos aleatorios cada 30 segundos');
+        simularPedidoNuevo();
+      } else {
+        btn.textContent = '▶️ Iniciar Simulador Pedidos';
+        btn.style.background = 'linear-gradient(135deg, var(--cyan), var(--cyan-dark))';
+        showToast('info', 'Simulador Pausado', 'No se generarán más pedidos automáticos');
+      }
+    };
+
+    function simularPedidoNuevo() {
+      if (!simuladorActivo) return;
+
+      const pedidoDemo = {
+        id: `PED-${Date.now()}-${contadorPedidosDemo++}`,
+        cliente: {
+          id: `CLI-${Math.floor(Math.random() * 1000)}`,
+          nombre: ['Juan Pérez', 'María García', 'Carlos López', 'Ana Martínez', 'Luis Rodríguez'][Math.floor(Math.random() * 5)]
+        },
+        destinatario: ['Juan Pérez', 'María García', 'Carlos López', 'Ana Martínez', 'Luis Rodríguez'][Math.floor(Math.random() * 5)],
+        direccionEntrega: ['Calle 50 #123', 'Av. Principal 456', 'Diagonal 7 #89', 'Carrera 12 #34', 'Calle 25 #67'][Math.floor(Math.random() * 5)],
+        monto: Math.floor(Math.random() * 5000) + 1000,
+        estado: 'pendiente',
+        fecha: new Date().toISOString(),
+        origen: ['whatsapp', 'instagram', 'tienda'][Math.floor(Math.random() * 3)]
+      };
+
+      // Agregar al array de pedidos
+      pedidosRecibidos.unshift(pedidoDemo);
+
+      // Actualizar interfaz
+      renderizarPedidos();
+      actualizarEstadisticas();
+
+      // Mostrar notificación
+      notificarNuevoPedido(pedidoDemo);
+
+      // Programar siguiente pedido en 30 segundos
+      setTimeout(simularPedidoNuevo, 30000);
     }
 
     // Cargar pedidos recibidos
