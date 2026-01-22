@@ -1,0 +1,70 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║          🚀 CREAR REPOSITORIO YAvoyOk EN GITHUB 🚀          ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+📋 PASOS A SEGUIR:
+
+┌─────────────────────────────────────────────────────────────┐
+│ 1️⃣  ABRIR NAVEGADOR                                          │
+└─────────────────────────────────────────────────────────────┘
+
+   🌐 Ir a: https://github.com/new
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ 2️⃣  COMPLETAR FORMULARIO                                     │
+└─────────────────────────────────────────────────────────────┘
+
+   📝 Repository name:  YAvoyOk
+   
+   📝 Description:      YAvoy - Sistema completo de entregas 
+                        con paneles de comercio, repartidor 
+                        y gestión CEO
+
+   🔓 Public / 🔒 Private:  (Elige el que prefieras)
+
+   ❌ NO MARCAR estas opciones:
+      □ Add a README file
+      □ Add .gitignore
+      □ Choose a license
+
+   ✅ Click en: "Create repository"
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ 3️⃣  VOLVER A VS CODE                                         │
+└─────────────────────────────────────────────────────────────┘
+
+   Una vez creado el repositorio, YO me encargaré de:
+   ✓ Configurar el remoto
+   ✓ Hacer push de todo el código
+   ✓ Verificar que todo esté sincronizado
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ 📍 INFORMACIÓN DEL REPOSITORIO                               │
+└─────────────────────────────────────────────────────────────┘
+
+   Usuario:     braianruaimi
+   Repo:        YAvoyOk
+   URL:         https://github.com/braianruaimi/YAvoyOk
+   Rama:        main
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ ⚠️  MUY IMPORTANTE                                            │
+└─────────────────────────────────────────────────────────────┘
+
+   • El repositorio DEBE llamarse exactamente: YAvoyOk
+   • NO agregues README, .gitignore ni licencia
+   • Déjalo completamente vacío
+   • Después de crearlo, avísame y subiré todo el código
+
+
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║  🎯 DESPUÉS DE CREAR EL REPO, ESCRIBE: "listo, creado"      ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
