@@ -1441,14 +1441,13 @@
                         <span class="help-icon">
                             ?
                             <div class="help-tooltip">
-                                <strong>¿Cómo funciona?</strong>
-                                Ingresa la distancia en kilómetros desde tu ubicación hasta donde quieres que llegue el pedido.
+                                <strong>¿Para qué sirve esta calculadora?</strong>
+                                Te permite estimar el costo de envío según la distancia desde tu ubicación hasta donde quieres que llegue el pedido.
                                 <br><br>
-                                <span class="emoji">📍</span> <strong>Costo base:</strong> $1000 por 1km<br>
-                                <span class="emoji">➕</span> <strong>Adicional:</strong> $100 por cada 100m<br>
-                                <span class="emoji">💵</span> <strong>Repartidor gana:</strong> 85% del envío<br>
+                                <span class="emoji">📍</span> <strong>Costo base:</strong> $1000 por el primer kilómetro<br>
+                                <span class="emoji">➕</span> <strong>Adicional:</strong> $100 por cada 100 metros extras<br>
                                 <br>
-                                <em style="opacity: 0.8;">Esta es una estimación. El costo final se calculará en tiempo real con GPS.</em>
+                                <span class="emoji">💡</span> <strong>Importante:</strong> Esta es una estimación. El costo final se calculará automáticamente en tiempo real usando GPS cuando el repartidor acepte tu pedido.
                             </div>
                         </span>
                     </h4>
@@ -1461,12 +1460,9 @@
                     </div>
                     <div class="costo-result" id="costoResult" style="display: none;">
                         <div class="costo-breakdown">
-                            <div style="margin-bottom: 8px;">
-                                <strong>Cálculo:</strong><br>
+                            <div>
+                                <strong>Costo estimado:</strong><br>
                                 <span id="costoFormula" style="color: var(--color-primario);"></span>
-                            </div>
-                            <div style="font-size: 11px; opacity: 0.8;">
-                                Repartidor gana (85%): <span id="costoRepartidor" style="color: var(--color-gold);"></span>
                             </div>
                         </div>
                         <div class="costo-total" id="costoTotal">$0</div>
@@ -2657,17 +2653,16 @@
             // Mostrar resultado
             document.getElementById('costoResult').style.display = 'flex';
             document.getElementById('costoTotal').textContent = `$${costo.toLocaleString()}`;
-            document.getElementById('costoRepartidor').textContent = `$${costoRepartidor.toLocaleString()}`;
             
             // Mostrar fórmula
             if (distanciaKm <= 1) {
-                document.getElementById('costoFormula').textContent = `1 km = $1000`;
+                document.getElementById('costoFormula').textContent = `1 km = $1,000`;
             } else {
                 const adicional = costo - 1000;
-                document.getElementById('costoFormula').textContent = `$1000 (1km) + $${adicional.toLocaleString()} (${(distanciaKm-1).toFixed(1)} km)`;
+                document.getElementById('costoFormula').textContent = `$1,000 (base) + $${adicional.toLocaleString()} adicionales`;
             }
             
-            showToast('info', '💰 Costo Estimado', `Distancia: ${distanciaKm} km • Total: $${costo.toLocaleString()} • Repartidor recibe: $${costoRepartidor.toLocaleString()} (85%)`);
+            showToast('info', '💰 Costo Estimado', `Distancia: ${distanciaKm} km → Costo de envío: $${costo.toLocaleString()}`);
         }
 
         // Recalcular total de productos
