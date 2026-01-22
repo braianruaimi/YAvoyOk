@@ -219,6 +219,10 @@ const antiDDoS = (req, res, next) => {
 // ========================================
 module.exports = {
     helmetConfig,
+    generalLimiter,
+    authLimiter,
+    pedidosLimiter,
+    webhookLimiter,
     rateLimiters: {
         general: generalLimiter,
         auth: authLimiter,

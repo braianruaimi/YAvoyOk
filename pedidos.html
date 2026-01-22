@@ -1436,7 +1436,22 @@
 
                 <!-- Calculadora de Costo de Envío -->
                 <div class="costo-calculator">
-                    <h4>💰 Calculadora de Costo de Envío</h4>
+                    <h4>
+                        💰 Calculadora de Costo de Envío
+                        <span class="help-icon">
+                            ?
+                            <div class="help-tooltip">
+                                <strong>¿Cómo funciona?</strong>
+                                Ingresa la distancia en kilómetros desde tu ubicación hasta donde quieres que llegue el pedido.
+                                <br><br>
+                                <span class="emoji">📍</span> <strong>Costo base:</strong> $1000 por 1km<br>
+                                <span class="emoji">➕</span> <strong>Adicional:</strong> $100 por cada 100m<br>
+                                <span class="emoji">💵</span> <strong>Repartidor gana:</strong> 85% del envío<br>
+                                <br>
+                                <em style="opacity: 0.8;">Esta es una estimación. El costo final se calculará en tiempo real con GPS.</em>
+                            </div>
+                        </span>
+                    </h4>
                     <div class="costo-input-group">
                         <div style="flex: 1;">
                             <label style="font-size: 12px; color: var(--text-primary); margin-bottom: 5px; display: block;">Distancia (km)</label>
@@ -1696,6 +1711,9 @@
                     
                     showToast('success', '✓ Pedido Creado', 
                         `Pedido #${data.pedido.id} creado exitosamente. Costo de envío: $${costoEnvio.toLocaleString()}`);
+                    
+                    // Limpiar borrador guardado
+                    limpiarBorradorLocal();
                     
                     document.getElementById('formCrearPedido').reset();
                     document.getElementById('productosList').innerHTML = `
@@ -2453,9 +2471,127 @@
             cargarRankingRepartidores();
         }
 
+        // ========================================
+        // 💾 SISTEMA DE AUTO-GUARDADO DEL FORMULARIO
+        // ========================================
+        
+        // Campos que se van a guardar automáticamente
+        const camposFormulario = [
+            'clienteNombre',
+            'clienteTelefono',
+            'direccion',
+            'comercioId',
+            'distanciaKm'
+        ];
+
+        // Guardar formulario en localStorage cada vez que cambia
+        function guardarFormularioLocal() {
+            const datos = {};
+            camposFormulario.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento) {
+                    datos[campo] = elemento.value;
+                }
+            });
+            
+            // Guardar productos
+            const productos = [];
+            document.querySelectorAll('.producto-item').forEach(item => {
+                const nombre = item.querySelector('.producto-nombre')?.value;
+                const cantidad = item.querySelector('.producto-cantidad')?.value;
+                const precio = item.querySelector('.producto-precio')?.value;
+                if (nombre || cantidad || precio) {
+                    productos.push({ nombre, cantidad, precio });
+                }
+            });
+            datos.productos = productos;
+            
+            localStorage.setItem('yavoy_pedido_borrador', JSON.stringify(datos));
+        }
+
+        // Restaurar formulario desde localStorage
+        function restaurarFormularioLocal() {
+            const datosGuardados = localStorage.getItem('yavoy_pedido_borrador');
+            if (!datosGuardados) return;
+            
+            try {
+                const datos = JSON.parse(datosGuardados);
+                
+                // Restaurar campos básicos
+                camposFormulario.forEach(campo => {
+                    const elemento = document.getElementById(campo);
+                    if (elemento && datos[campo]) {
+                        elemento.value = datos[campo];
+                    }
+                });
+                
+                // Restaurar productos
+                if (datos.productos && datos.productos.length > 0) {
+                    const container = document.getElementById('productosList');
+                    container.innerHTML = datos.productos.map(prod => `
+                        <div class="producto-item">
+                            <input type="text" placeholder="Nombre del producto" class="producto-nombre" value="${prod.nombre || ''}">
+                            <input type="number" placeholder="Cantidad" class="producto-cantidad" min="1" value="${prod.cantidad || 1}">
+                            <input type="number" placeholder="Precio" class="producto-precio" step="0.01" min="0" value="${prod.precio || ''}">
+                            <button type="button" class="btn btn-danger" onclick="eliminarProducto(this)">-</button>
+                        </div>
+                    `).join('');
+                    
+                    // Recalcular total
+                    calcularTotal();
+                }
+                
+                // Mostrar notificación
+                showToast('info', '📝 Borrador Restaurado', 'Hemos recuperado los datos de tu pedido anterior');
+                
+            } catch (error) {
+                console.error('Error al restaurar formulario:', error);
+            }
+        }
+
+        // Limpiar borrador después de envío exitoso
+        function limpiarBorradorLocal() {
+            localStorage.removeItem('yavoy_pedido_borrador');
+        }
+
+        // Agregar event listeners para auto-guardado
+        function inicializarAutoGuardado() {
+            // Restaurar datos al cargar la página
+            const hayBorrador = localStorage.getItem('yavoy_pedido_borrador');
+            if (hayBorrador) {
+                // Preguntar si desea restaurar (después de 1 segundo)
+                setTimeout(() => {
+                    if (confirm('🔄 Encontramos un pedido sin terminar. ¿Deseas recuperar los datos?')) {
+                        restaurarFormularioLocal();
+                    } else {
+                        limpiarBorradorLocal();
+                    }
+                }, 1000);
+            }
+            
+            // Auto-guardar en cada cambio
+            camposFormulario.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento) {
+                    elemento.addEventListener('input', () => {
+                        guardarFormularioLocal();
+                    });
+                    elemento.addEventListener('change', () => {
+                        guardarFormularioLocal();
+                    });
+                }
+            });
+            
+            // Auto-guardar productos con delegation
+            document.getElementById('productosList')?.addEventListener('input', () => {
+                guardarFormularioLocal();
+            });
+        }
+
         // Cargar datos iniciales
         cargarComercios();
         cargarSelectorRepartidores();
+        inicializarAutoGuardado();
     </script>
 
     <!-- Contenedor de Notificaciones Toast -->
@@ -2531,7 +2667,21 @@
                 document.getElementById('costoFormula').textContent = `$1000 (1km) + $${adicional.toLocaleString()} (${(distanciaKm-1).toFixed(1)} km)`;
             }
             
-            showToast('success', 'Costo Calculado', `El envío de ${distanciaKm} km cuesta $${costo.toLocaleString()}`);
+            showToast('info', '💰 Costo Estimado', `Distancia: ${distanciaKm} km • Total: $${costo.toLocaleString()} • Repartidor recibe: $${costoRepartidor.toLocaleString()} (85%)`);
+        }
+
+        // Recalcular total de productos
+        function calcularTotal() {
+            let total = 0;
+            document.querySelectorAll('.producto-item').forEach(item => {
+                const cantidad = parseFloat(item.querySelector('.producto-cantidad')?.value) || 0;
+                const precio = parseFloat(item.querySelector('.producto-precio')?.value) || 0;
+                total += cantidad * precio;
+            });
+            const totalInput = document.getElementById('total');
+            if (totalInput) {
+                totalInput.value = total.toFixed(2);
+            }
         }
 
         // Renderizar Timeline de Progreso
