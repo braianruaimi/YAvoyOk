@@ -519,7 +519,7 @@ class ChatbotHolografico {
                 '✅ Soporte técnico dedicado'
             ],
             repartidores: [
-                '✅ Gana el 80% del costo de envío',
+                '✅ Gana el 85% del costo de envío',
                 '✅ Elige tus propios horarios',
                 '✅ Sé tu propio jefe',
                 '✅ Bonos por entregas rápidas',
@@ -532,7 +532,7 @@ class ChatbotHolografico {
             clientes: {
                 '¿Cómo hago un pedido?': 'Es muy simple:\n\n1. Haz clic en "Hacer Pedido" en la página principal\n2. Completa el formulario con los detalles\n3. Un repartidor cercano tomará tu pedido\n4. Recibirás actualizaciones sobre el estado',
                 
-                '¿Cuánto cuesta el envío?': 'El costo del envío depende de la distancia y es acordado entre tú y el comercio. Generalmente oscila entre $200 y $500 para entregas locales.',
+                '¿Cuánto cuesta el envío?': 'El costo del envío se calcula automáticamente por distancia:\n\n• Primer kilómetro: $1000\n• Por cada 100m adicionales: +$100\n\nEjemplos:\n• 1 km → $1000\n• 1.5 km → $1500\n• 2 km → $2000\n• 3 km → $3000',
                 
                 '¿Cuánto tarda la entrega?': 'Tiempos promedio:\n\n• Entregas locales: 20-40 minutos\n• Zonas cercanas: 30-60 minutos\n\nEl tiempo exacto depende de la disponibilidad del repartidor y la distancia.',
                 
@@ -554,7 +554,7 @@ class ChatbotHolografico {
             repartidores: {
                 '¿Qué necesito para ser repartidor?': 'Requisitos básicos:\n\n✅ Ser mayor de 18 años\n✅ Tener DNI argentino\n✅ Poseer vehículo propio (moto, bici o auto)\n✅ Documentación del vehículo vigente\n✅ Celular con internet',
                 
-                '¿Cuánto puedo ganar?': 'Recibes el 80% del costo de envío. Por ejemplo:\n\n• Envío de $300 → Ganas $240\n• Envío de $500 → Ganas $400\n\nCuantas más entregas hagas, más ganas. Además, hay beneficios por entregas rápidas.',
+                '¿Cuánto puedo ganar?': 'Recibes el 85% del costo de envío. Por ejemplo:\n\n• Envío de $1000 (1 km) → Ganas $850\n• Envío de $1500 (1.5 km) → Ganas $1275\n• Envío de $2000 (2 km) → Ganas $1700\n• Envío de $3000 (3 km) → Ganas $2550\n\nCuantas más entregas hagas, más ganas. Además, hay beneficios por entregas rápidas.',
                 
                 '¿Cómo recibo los pagos?': 'Los pagos se coordinan directamente con el comercio o cliente al momento de la entrega. Puedes recibir efectivo, transferencia o MercadoPago.',
                 
@@ -660,7 +660,7 @@ class ChatbotHolografico {
             que_es_yavoy: '🚀 *YAvoy* es la plataforma de delivery inteligente que conecta clientes, comercios locales y repartidores independientes.\n\n¿Qué te gustaría saber?',
             accion_hacer_pedido: 'Para hacer un pedido, haz clic en el botón "Pedir Ahora" en la página principal. Te llevará al formulario de pedidos. ¿Necesitas ayuda con algo más?',
             accion_registro_comercio: 'Para registrar tu comercio, haz clic en "Unirse como Socio" en la página principal. Es 100% GRATIS. ¿Quieres saber los beneficios?',
-            accion_ser_repartidor: 'Para ser repartidor, haz clic en "Ganar con YAvoy" en la página principal. Ganas el 80% por entrega. ¿Te interesa saber los requisitos?',
+            accion_ser_repartidor: 'Para ser repartidor, haz clic en "Ganar con YAvoy" en la página principal. Ganas el 85% por entrega. ¿Te interesa saber los requisitos?',
             
             mostrar_categorias: '¿Sobre qué tema necesitas ayuda?',
             

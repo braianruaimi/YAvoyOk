@@ -5,7 +5,7 @@
 ### Características:
 
 - **Ver pedidos disponibles**: Tab "Disponibles" muestra todos los pedidos sin repartidor asignado
-- **Información detallada**: Comercio, dirección, monto total y ganancia (80%)
+- **Información detallada**: Comercio, dirección, monto total y ganancia (85%)
 - **Aceptar con un click**: Botón "✅ Aceptar Pedido" asigna el pedido al repartidor
 - **Notificaciones en tiempo real**: Via Socket.IO a clientes y comercios
 - **Persistencia dual**: localStorage + API MySQL
@@ -56,7 +56,10 @@ socket.emit("actualizar-ubicacion-repartidor", {
 
 ### Características:
 
-- **80% por entrega**: Comisión automática calculada
+- **85% por entrega**: Comisión automática calculada
+- **Costo de envío por distancia**:
+  - Primer kilómetro: $1000
+  - Por cada 100m adicionales: +$100
 - **Resumen temporal**:
   - Hoy: Ganancias desde las 00:00
   - Semana: Últimos 7 días
@@ -67,18 +70,24 @@ socket.emit("actualizar-ubicacion-repartidor", {
 ### Cálculo:
 
 ```javascript
-ganancia = precioTotal * 0.80;
+// Costo de envío por distancia
+costoEnvio = 1000 + (distanciaEnMetros - 1000) / 100 * 100;
 
-// Ejemplo:
-Pedido de $500 → Repartidor gana $400
-Pedido de $1200 → Repartidor gana $960
+// Ganancia del repartidor
+ganancia = costoEnvio * 0.85;
+
+// Ejemplos:
+Envío de $1000 (1 km) → Repartidor gana $850
+Envío de $1500 (1.5 km) → Repartidor gana $1275
+Envío de $2000 (2 km) → Repartidor gana $1700
+Envío de $3000 (3 km) → Repartidor gana $2550
 ```
 
 ### Visualización:
 
 - Header: Ganancia de hoy, pedidos activos, pedidos completados
 - Pedidos disponibles: Muestra "Ganarás: $XXX" en verde
-- Pedidos activos: Muestra "Tu Ganancia (80%): $XXX"
+- Pedidos activos: Muestra "Tu Ganancia (85%): $XXX"
 
 ---
 
