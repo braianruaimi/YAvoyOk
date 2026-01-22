@@ -1424,8 +1424,9 @@
     </div>
 
     <script>
-        // Sistema de tabs
-        document.querySelectorAll('.tab').forEach(tab => {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sistema de tabs
+            document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabId = tab.dataset.tab;
                 
@@ -2260,6 +2261,7 @@
         // Cargar datos iniciales
         cargarComercios();
         cargarSelectorRepartidores();
+        });
     </script>
 
     <!-- Chatbot Widget -->
@@ -2272,24 +2274,26 @@
     <!-- Scripts -->
     <script src="js/chatbot-holografico.js"></script>
     <script>
-        // Inicializar chatbot
-        document.getElementById('btnChatbot').addEventListener('click', () => {
-            if (typeof toggleChatbot === 'function') {
-                toggleChatbot();
-            } else {
-                alert('Asistente cliente en línea. ¿En qué puedo ayudarte?');
-            }
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar chatbot
+            document.getElementById('btnChatbot').addEventListener('click', () => {
+                if (typeof toggleChatbot === 'function') {
+                    toggleChatbot();
+                } else {
+                    alert('Asistente cliente en línea. ¿En qué puedo ayudarte?');
+                }
+            });
 
-        // Hover effect para el botón de chatbot
-        document.getElementById('btnChatbot').addEventListener('mouseenter', (e) => {
-            e.target.style.transform = 'scale(1.1)';
-            e.target.style.boxShadow = '0 12px 40px rgba(6, 182, 212, 0.4)';
-        });
+            // Hover effect para el botón de chatbot
+            document.getElementById('btnChatbot').addEventListener('mouseenter', (e) => {
+                e.target.style.transform = 'scale(1.1)';
+                e.target.style.boxShadow = '0 12px 40px rgba(6, 182, 212, 0.4)';
+            });
 
-        document.getElementById('btnChatbot').addEventListener('mouseleave', (e) => {
-            e.target.style.transform = 'scale(1)';
-            e.target.style.boxShadow = '0 8px 30px rgba(6, 182, 212, 0.3)';
+            document.getElementById('btnChatbot').addEventListener('mouseleave', (e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 8px 30px rgba(6, 182, 212, 0.3)';
+            });
         });
     </script>
 </body>

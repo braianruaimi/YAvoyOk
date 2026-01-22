@@ -78,13 +78,13 @@ YAvoy_DEFINITIVO/
 ### Panel de Comercio
 
 - **URL:** `http://localhost:5502/panel-comercio.html`
-- **Contraseña:** `2215690902`
+- **Contraseña:** `2215047962`
 
 ### Panel de Repartidor
 
 - **URL:** `http://localhost:5502/panel-repartidor.html`
 - **ID:** `braian_demo_2025`
-- **Contraseña:** `2215690902`
+- **Contraseña:** `2215047962`
 
 ### Panel CEO Master
 

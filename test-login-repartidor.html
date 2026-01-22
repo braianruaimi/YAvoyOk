@@ -123,7 +123,7 @@
         <div class="info">
             <strong>📝 Credenciales de prueba:</strong>
             ID: <code>braian_demo_2025</code><br>
-            Contraseña: <code>2215690902</code>
+            Contraseña: <code>2215047962</code>
         </div>
 
         <form id="loginForm">
@@ -143,7 +143,7 @@
                     type="password" 
                     id="password" 
                     placeholder="Ingresa tu contraseña"
-                    value="2215690902"
+                    value="2215047962"
                 >
             </div>
 
@@ -156,7 +156,7 @@
     </div>
 
     <script>
-        const REPARTIDOR_PASSWORD = '2215690902';
+        const REPARTIDOR_PASSWORD = '2215047962';
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -174,7 +174,7 @@
             // Verificar contraseña
             if (password !== REPARTIDOR_PASSWORD) {
                 resultDiv.className = 'result error';
-                resultDiv.innerHTML = '❌ Contraseña incorrecta<br>Esperada: 2215690902';
+                resultDiv.innerHTML = '❌ Contraseña incorrecta<br>Esperada: 2215047962';
                 resultDiv.style.display = 'block';
                 return;
             }
