@@ -9,11 +9,16 @@
         :root {
             --bg-primary: #0f1724;
             --bg-secondary: #1a2332;
-            --bg-card: #243241;
+            --bg-card: rgba(11, 18, 32, 0.85);
             --text-primary: #e6eef6;
             --text-secondary: #ffffff;
             --border-color: #3a4a5c;
             --color-primario: #06b6d4;
+            --color-gold: #fbbf24;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-info: #3b82f6;
         }
 
         body {
@@ -24,9 +29,11 @@
         }
 
         .navbar {
-            background: var(--bg-secondary);
+            background: linear-gradient(135deg, rgba(11, 18, 32, 0.95), rgba(6, 182, 212, 0.1));
+            backdrop-filter: blur(20px);
             padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.2);
+            border-bottom: 1px solid rgba(6, 182, 212, 0.3);
         }
 
         .nav-container {
@@ -57,23 +64,46 @@
         }
 
         .tab {
-            padding: 10px 20px;
-            background: none;
-            border: none;
+            padding: 12px 24px;
+            background: rgba(248, 250, 252, 0.05);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 8px 8px 0 0;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
             color: var(--text-primary);
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primario), var(--color-gold));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
 
         .tab:hover {
             color: var(--color-primario);
+            background: rgba(6, 182, 212, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
         }
 
         .tab.active {
             color: var(--color-primario);
-            border-bottom-color: var(--color-primario);
+            background: rgba(6, 182, 212, 0.15);
+            border-color: var(--color-primario);
+        }
+
+        .tab.active::before {
+            transform: scaleX(1);
         }
 
         .tab-content {
@@ -147,33 +177,54 @@
         .btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         .btn-primary {
-            background: #007bff;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
             color: white;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
         }
 
         .btn-primary:hover {
-            background: #0056b3;
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
         }
 
         .btn-success {
-            background: #28a745;
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
         .btn-danger {
-            background: #dc3545;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: linear-gradient(135deg, #64748b, #475569);
             color: white;
         }
 
@@ -185,20 +236,267 @@
         }
 
         .pedido-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            padding: 20px;
             background: var(--bg-card);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pedido-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primario), var(--color-gold));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pedido-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+            border-color: var(--color-primario);
+        }
+
+        .pedido-card:hover::before {
+            opacity: 1;
         }
 
         .pedido-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(6, 182, 212, 0.2);
+        }
+
+        /* Timeline de Progreso del Pedido */
+        .pedido-timeline {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(248, 250, 252, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .timeline-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 15px;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: rgba(6, 182, 212, 0.2);
+            z-index: 0;
+        }
+
+        .timeline-line-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primario), var(--color-gold));
+            transition: width 0.5s ease;
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .timeline-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(248, 250, 252, 0.05);
+            border: 3px solid rgba(6, 182, 212, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-step.active .timeline-icon {
+            background: linear-gradient(135deg, var(--color-primario), var(--color-gold));
+            border-color: var(--color-gold);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-step.completed .timeline-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #10b981;
+        }
+
+        .timeline-label {
+            font-size: 11px;
+            color: var(--text-primary);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Calculadora de Costo de Envío */
+        .costo-calculator {
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(251, 191, 36, 0.1));
+            border-radius: 12px;
+            border: 2px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .costo-calculator h4 {
+            margin: 0 0 15px 0;
+            color: var(--color-primario);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .costo-input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .costo-input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .costo-result {
+            padding: 15px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            border: 2px solid var(--color-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .costo-breakdown {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .costo-total {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-gold);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 300px;
+            padding: 15px 20px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--color-success);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--color-primario);
+        }
+
+        .toast-warning {
+            border-left: 4px solid var(--color-warning);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--color-danger);
+        }
+
+        .toast-icon {
+            font-size: 24px;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .toast-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-primary);
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
         }
 
         .pedido-id {
@@ -207,15 +505,46 @@
         }
 
         .badge {
-            padding: 5px 10px;
-            border-radius: 15px;
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge::before {
+            content: '●';
+            font-size: 10px;
         }
 
         .badge-pendiente {
-            background: #ffc107;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
             color: #000;
+        }
+
+        .badge-aceptado {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .badge-en-camino {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+        }
+
+        .badge-entregado {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .badge-cancelado {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
         }
 
         .badge-asignado {
@@ -1105,6 +1434,30 @@
                     <textarea id="direccion" rows="3" placeholder="Calle, número, colonia, ciudad..." required></textarea>
                 </div>
 
+                <!-- Calculadora de Costo de Envío -->
+                <div class="costo-calculator">
+                    <h4>💰 Calculadora de Costo de Envío</h4>
+                    <div class="costo-input-group">
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; color: var(--text-primary); margin-bottom: 5px; display: block;">Distancia (km)</label>
+                            <input type="number" id="distanciaKm" placeholder="Ej: 2.5" step="0.1" min="0" value="1">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="calcularCostoEnvio()">Calcular</button>
+                    </div>
+                    <div class="costo-result" id="costoResult" style="display: none;">
+                        <div class="costo-breakdown">
+                            <div style="margin-bottom: 8px;">
+                                <strong>Cálculo:</strong><br>
+                                <span id="costoFormula" style="color: var(--color-primario);"></span>
+                            </div>
+                            <div style="font-size: 11px; opacity: 0.8;">
+                                Repartidor gana (85%): <span id="costoRepartidor" style="color: var(--color-gold);"></span>
+                            </div>
+                        </div>
+                        <div class="costo-total" id="costoTotal">$0</div>
+                    </div>
+                </div>
+
                 <!-- Carrusel de Comercios Disponibles -->
                 <div class="form-group">
                     <label class="section-label">
@@ -1337,7 +1690,13 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('✓ Pedido creado exitosamente: ' + data.pedido.id);
+                    // Calcular costo de envío y ganancia del repartidor
+                    const costoEnvio = data.pedido.costo_envio || 1000;
+                    const gananciasRepartidor = Math.round(costoEnvio * 0.85);
+                    
+                    showToast('success', '✓ Pedido Creado', 
+                        `Pedido #${data.pedido.id} creado exitosamente. Costo de envío: $${costoEnvio.toLocaleString()}`);
+                    
                     document.getElementById('formCrearPedido').reset();
                     document.getElementById('productosList').innerHTML = `
                         <div class="producto-item">
@@ -1353,10 +1712,10 @@
                     document.getElementById('repartidorSeleccionadoNombre').textContent = 'Cualquiera disponible';
                     cargarSelectorRepartidores();
                 } else {
-                    alert('Error: ' + data.error);
+                    showToast('danger', '✗ Error', data.error || 'No se pudo crear el pedido');
                 }
             } catch (error) {
-                alert('Error al crear pedido: ' + error.message);
+                showToast('danger', '✗ Error de Conexión', error.message);
             }
         });
 
@@ -1511,6 +1870,9 @@
                         <span class="pedido-id">${pedido.id}</span>
                         <span class="badge badge-${pedido.estado}">${pedido.estado.toUpperCase()}</span>
                     </div>
+                    
+                    ${renderizarTimeline(pedido.estado)}
+                    
                     <div class="pedido-info">
                         <p><strong>Cliente:</strong> ${pedido.clienteNombre}</p>
                         <p><strong>Teléfono:</strong> ${pedido.clienteTelefono || 'No especificado'}</p>
@@ -1521,7 +1883,7 @@
                                 ${pedido.productos.map(p => `<li>${p.nombre} x${p.cantidad} - $${p.precio}</li>`).join('')}
                             </ul>
                         </div>
-                        <p><strong>Total:</strong> $${pedido.total}</p>
+                        <p><strong>Total:</strong> <span style="color: var(--color-gold); font-weight: 700; font-size: 18px;">$${pedido.total.toLocaleString()}</span></p>
                         <p><strong>Repartidor:</strong> ${pedido.repartidorId}</p>
                     </div>
                     <div class="pedido-actions">
@@ -1532,7 +1894,7 @@
                             <button class="btn btn-success" onclick="cambiarEstado('${pedido.id}', 'entregado')">✓ Marcar Entregado</button>
                         ` : ''}
                         ${pedido.estado === 'entregado' ? `
-                            <span style="color: #28a745; font-weight: bold;">✓ Pedido Completado</span>
+                            <span style="color: var(--color-success); font-weight: bold; display: flex; align-items: center; gap: 8px;"><span style="font-size: 24px;">✓</span> Pedido Completado</span>
                         ` : ''}
                         <button class="btn btn-secondary" onclick="toggleChat('${pedido.id}')">💬 Chat</button>
                     </div>
@@ -1689,14 +2051,21 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    alert('✓ Estado actualizado');
+                    // Mostrar toast de éxito con el estado correspondiente
+                    const estadosNombres = {
+                        'pendiente': 'Pendiente',
+                        'aceptado': 'Aceptado',
+                        'en-camino': 'En Camino',
+                        'entregado': 'Entregado'
+                    };
+                    showToast('success', '✓ Estado Actualizado', `El pedido ahora está en estado: ${estadosNombres[nuevoEstado]}`);
                     // Recargar la lista de pendientes
                     cargarPedidosPendientes();
                 } else {
-                    alert('Error: ' + data.error);
+                    showToast('danger', '✗ Error', data.error || 'No se pudo actualizar el estado');
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
+                showToast('danger', '✗ Error de Conexión', error.message);
             }
         }
 
@@ -2089,6 +2458,9 @@
         cargarSelectorRepartidores();
     </script>
 
+    <!-- Contenedor de Notificaciones Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Chatbot Widget -->
     <div class="pedidos-chatbot-widget">
         <button id="btnChatbot" class="pedidos-chatbot-btn" title="Asistente YAvoy" onclick="abrirChatbot()">
@@ -2098,6 +2470,119 @@
 
     <!-- Scripts -->
     <script src="js/chatbot-holografico.js"></script>
+    <script>
+        // Sistema de Notificaciones Toast
+        function showToast(type, title, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icons = {
+                success: '✅',
+                info: 'ℹ️',
+                warning: '⚠️',
+                error: '❌'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-close" onclick="this.parentElement.remove()">×</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Calculadora de Costo de Envío
+        function calcularCostoEnvio() {
+            const distanciaKm = parseFloat(document.getElementById('distanciaKm').value) || 1;
+            
+            // Cálculo: $1000 por el primer km + $100 por cada 100m adicionales
+            let costo = 1000; // Primer kilómetro
+            
+            if (distanciaKm > 1) {
+                const kmAdicionales = distanciaKm - 1;
+                const metros = kmAdicionales * 1000;
+                const incrementos = Math.ceil(metros / 100);
+                costo += incrementos * 100;
+            }
+            
+            const costoRepartidor = Math.round(costo * 0.85);
+            
+            // Mostrar resultado
+            document.getElementById('costoResult').style.display = 'flex';
+            document.getElementById('costoTotal').textContent = `$${costo.toLocaleString()}`;
+            document.getElementById('costoRepartidor').textContent = `$${costoRepartidor.toLocaleString()}`;
+            
+            // Mostrar fórmula
+            if (distanciaKm <= 1) {
+                document.getElementById('costoFormula').textContent = `1 km = $1000`;
+            } else {
+                const adicional = costo - 1000;
+                document.getElementById('costoFormula').textContent = `$1000 (1km) + $${adicional.toLocaleString()} (${(distanciaKm-1).toFixed(1)} km)`;
+            }
+            
+            showToast('success', 'Costo Calculado', `El envío de ${distanciaKm} km cuesta $${costo.toLocaleString()}`);
+        }
+
+        // Renderizar Timeline de Progreso
+        function renderizarTimeline(estado) {
+            const estados = ['pendiente', 'aceptado', 'en-camino', 'entregado'];
+            const iconos = {
+                'pendiente': '📋',
+                'aceptado': '✅',
+                'en-camino': '🚴',
+                'entregado': '🎉'
+            };
+            const labels = {
+                'pendiente': 'Pendiente',
+                'aceptado': 'Aceptado',
+                'en-camino': 'En Camino',
+                'entregado': 'Entregado'
+            };
+            
+            const estadoIndex = estados.indexOf(estado);
+            const progreso = estadoIndex >= 0 ? ((estadoIndex + 1) / estados.length) * 100 : 0;
+            
+            let html = `
+                <div class="pedido-timeline">
+                    <h4 style="margin: 0 0 10px 0; color: var(--color-primario); font-size: 14px;">📍 Estado del Pedido</h4>
+                    <div class="timeline-steps">
+                        <div class="timeline-line">
+                            <div class="timeline-line-progress" style="width: ${progreso}%"></div>
+                        </div>
+            `;
+            
+            estados.forEach((est, index) => {
+                const isActive = est === estado;
+                const isCompleted = index < estadoIndex;
+                const className = `timeline-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+                
+                html += `
+                    <div class="${className}">
+                        <div class="timeline-icon">${iconos[est]}</div>
+                        <div class="timeline-label">${labels[est]}</div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+    </script>
     <script>
         // Inicializar chatbot
         document.getElementById('btnChatbot').addEventListener('click', () => {
