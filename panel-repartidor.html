@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#fbbf24">
   <title>Panel Repartidor - YaVoy</title>
   <link rel="stylesheet" href="styles.css?v=13">
@@ -11,6 +11,11 @@
   <link rel="stylesheet" href="styles/animations-improved.css?v=1">
   <link rel="stylesheet" href="styles/responsive-improved.css?v=1">
   <style>
+    /* Clases para estilos inline */
+    .color-gold { color: #fbbf24; }
+    .mb-15 { margin-bottom: 1.5rem; }
+    .font-size-875 { font-size: 0.875rem; }
+
     /* ESTILOS GLOBALES */
     body {
       margin: 0;
@@ -240,6 +245,11 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
     }
+
+    /* Clases utilitarias */
+    .position-relative { position: relative; }
+    .width-100 { width: 100%; }
+    .width-0 { width: 0%; }
 
     .pedido-header {
       display: flex;
@@ -718,6 +728,7 @@
       border-radius: 50px;
       cursor: pointer;
       transition: all 0.3s ease;
+      -webkit-user-select: none;
       user-select: none;
       border: 1px solid rgba(251, 191, 36, 0.3);
     }
@@ -765,6 +776,8 @@
 
     .repartidor-saldo-container {
       background: rgba(248, 250, 252, 0.05);
+      -webkit-backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(251, 191, 36, 0.2);
       border-radius: 16px;
@@ -873,6 +886,7 @@
       margin-top: 2rem;
       padding: 1.5rem;
       background: rgba(248, 250, 252, 0.05);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border-radius: 16px;
       border: 1px solid rgba(251, 191, 36, 0.2);
@@ -920,7 +934,7 @@
     .carousel-container {
       overflow-x: auto;
       scroll-behavior: smooth;
-      scrollbar-width: none;
+      scrollbar-width: none; /* Fallback: se aplicará en Chrome 121+ */
       -ms-overflow-style: none;
     }
 
@@ -1015,6 +1029,8 @@
 
     .stat-card {
       background: rgba(248, 250, 252, 0.05);
+      -webkit-backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(251, 191, 36, 0.2);
       border-radius: 16px;
@@ -1109,7 +1125,7 @@
       background: rgba(248, 250, 252, 0.05);
       border-bottom: 2px solid rgba(251, 191, 36, 0.2);
       overflow-x: auto;
-      scrollbar-width: thin;
+      scrollbar-width: thin; /* Fallback: se aplicará en Chrome 121+ */
     }
 
     .nav-tabs::-webkit-scrollbar {
@@ -1694,13 +1710,13 @@
 
         <!-- CONTENIDO TAB: MAPA -->
         <div class="tab-content" id="mapa">
-          <h2 style="color: #fbbf24; margin-bottom: 1.5rem;">🗺️ Mapa de Comercios y Demanda</h2>
+          <h2 class="color-gold mb-15">🗺️ Mapa de Comercios y Demanda</h2>
           
           <div class="map-container">
             <div class="map-placeholder">
               <div class="map-placeholder-icon">🗺️</div>
               <p>Mapa en tiempo real</p>
-              <p style="font-size: 0.875rem;">Activa el rastreo para ver tu ubicación</p>
+              <p class="font-size-875">Activa el rastreo para ver tu ubicación</p>
             </div>
           </div>
 
@@ -1743,11 +1759,11 @@
 
         <!-- CONTENIDO TAB: LOGROS -->
         <div class="tab-content" id="logros">
-          <h2 style="color: #fbbf24; margin-bottom: 1.5rem;">🏆 Tus Logros y Metas</h2>
+          <h2 class="color-gold mb-15">🏆 Tus Logros y Metas</h2>
           
           <div class="logros-container">
             <!-- Logro 1: Primer Pedido -->
-            <div class="logro-card completado" style="position: relative;">
+            <div class="logro-card completado position-relative">
               <div class="logro-badge">✓ COMPLETADO</div>
               <div class="logro-header">
                 <div class="logro-icono">🎉</div>
@@ -1762,7 +1778,7 @@
                   <span>1/1</span>
                 </div>
                 <div class="logro-progreso-barra">
-                  <div class="logro-progreso-fill" style="width: 100%;"></div>
+                  <div class="logro-progreso-fill width-100"></div>
                 </div>
               </div>
               <div class="logro-recompensa">
@@ -1785,7 +1801,7 @@
                   <span id="progreso10">0/10</span>
                 </div>
                 <div class="logro-progreso-barra">
-                  <div class="logro-progreso-fill" id="barra10" style="width: 0%;"></div>
+                  <div class="logro-progreso-fill width-0" id="barra10"></div>
                 </div>
               </div>
               <div class="logro-recompensa">
@@ -1808,7 +1824,7 @@
                   <span id="progreso30">0/30</span>
                 </div>
                 <div class="logro-progreso-barra">
-                  <div class="logro-progreso-fill" id="barra30" style="width: 0%;"></div>
+                  <div class="logro-progreso-fill width-0" id="barra30"></div>
                 </div>
               </div>
               <div class="logro-recompensa">
@@ -1831,7 +1847,7 @@
                   <span id="progreso50">0/50</span>
                 </div>
                 <div class="logro-progreso-barra">
-                  <div class="logro-progreso-fill" id="barra50" style="width: 0%;"></div>
+                  <div class="logro-progreso-fill width-0" id="barra50"></div>
                 </div>
               </div>
               <div class="logro-recompensa">
@@ -1854,7 +1870,7 @@
                   <span id="progresoVelocista">0/5</span>
                 </div>
                 <div class="logro-progreso-barra">
-                  <div class="logro-progreso-fill" id="barraVelocista" style="width: 0%;"></div>
+                  <div class="logro-progreso-fill width-0" id="barraVelocista"></div>
                 </div>
               </div>
               <div class="logro-recompensa">
@@ -1877,7 +1893,7 @@
                   <span id="progresoPerfeccionista">0/20</span>
                 </div>
                 <div class="logro-progreso-barra">
-                  <div class="logro-progreso-fill" id="barraPerfeccionista" style="width: 0%;"></div>
+                  <div class="logro-progreso-fill width-0" id="barraPerfeccionista"></div>
                 </div>
               </div>
               <div class="logro-recompensa">
@@ -2934,5 +2950,8 @@
   <script src="js/webauthn-biometric.js"></script>
 </body>
 </html>
+
+
+
 
 

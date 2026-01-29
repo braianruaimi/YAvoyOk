@@ -3,11 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="YAvoy - La plataforma de delivery más rápida. Pide, vende o reparte con nosotros.">
     
-    <!-- PWA y Accesibilidad -->
+    <!-- PWA Configuration -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -16,15 +16,13 @@
     <meta name="theme-color" content="#06b6d4" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0c1b33" media="(prefers-color-scheme: dark)">
     <meta name="msapplication-TileColor" content="#06b6d4">
-    <!-- Fallback para browsers no compatibles -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-yavoy.png">
     <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
-    <!-- YAvoy Universal Theme Color Polyfill -->
+    
+    <!-- Essential CSS -->
     <link rel="stylesheet" href="css/theme-enhancement.css">
+    
+    <!-- Essential Scripts -->
     <script src="js/cache-manager.js"></script>
     <script src="js/theme-color-polyfill.js" defer></script>
     <title>YAvoy — Delivery Inteligente</title>
@@ -70,7 +68,7 @@
             color: var(--white);
         }
 
-        /* ==================== FONDO ANIMADO ==================== */
+        /* ==================== FONDO SIMPLE ==================== */
         .background-animation {
             position: fixed;
             top: 0;
@@ -78,63 +76,8 @@
             width: 100%;
             height: 100%;
             z-index: 0;
-            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, rgba(6, 182, 212, 0.1) 100%);
             pointer-events: none;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .orb-1 {
-            width: 600px;
-            height: 600px;
-            background: var(--cyan-glow);
-            top: -200px;
-            right: -200px;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: var(--gold-glow);
-            bottom: -100px;
-            left: -100px;
-            animation-delay: -7s;
-        }
-
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: rgba(16, 185, 129, 0.2);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: -14s;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            25% {
-                transform: translate(50px, -50px) scale(1.1);
-            }
-
-            50% {
-                transform: translate(-30px, 30px) scale(0.95);
-            }
-
-            75% {
-                transform: translate(40px, 20px) scale(1.05);
-            }
         }
 
         /* ==================== CONTENEDOR PRINCIPAL ==================== */
@@ -386,6 +329,120 @@
             color: var(--cyan);
         }
 
+        /* ==================== PANEL DE ACCESIBILIDAD ==================== */
+        .footer-admin-section {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .footer-admin-section .footer-link {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .admin-portal {
+            background: var(--cyan);
+            color: var(--white);
+        }
+
+        .admin-portal:hover {
+            background: #0891b2;
+            transform: translateY(-2px);
+        }
+
+        .accessibility-btn {
+            background: var(--gold);
+            color: #1a1a1a;
+        }
+
+        .accessibility-btn:hover {
+            background: #f59e0b;
+            transform: translateY(-2px);
+        }
+
+        .accessibility-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 1px solid var(--cyan);
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 10000;
+            width: 400px;
+            max-width: 90vw;
+            display: none;
+        }
+
+        .accessibility-panel h3 {
+            color: var(--cyan);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .accessibility-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .accessibility-option label {
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+
+        .accessibility-toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .accessibility-toggle-switch.active {
+            background: var(--cyan);
+        }
+
+        .accessibility-toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .accessibility-toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+
+        .close-panel {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--cyan);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
         /* ==================== ESTADÍSTICAS RÁPIDAS ==================== */
         .stats-bar {
             display: flex;
@@ -496,7 +553,47 @@
             }
         }
         
-        /* SISTEMA DE ACCESIBILIDAD INCLUSIVA */
+        /* ==================== ANIMACIONES PARA ACCESIBILIDAD ==================== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+        
+        /* ==================== ESTILOS ADICIONALES WCAG ==================== */
+        .accessibility-keyboard-nav {
+            scroll-behavior: smooth;
+        }
+        
+        .accessibility-large-text input,
+        .accessibility-large-text button,
+        .accessibility-large-text select {
+            min-height: 48px !important;
+            font-size: inherit !important;
+        }
+        
+        /* Skip links para navegación por teclado */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--cyan);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 10001;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+        
+        
         .accessibility-toggle {
             background: var(--bg-card) !important;
             border: 2px solid var(--cyan) !important;
@@ -542,67 +639,7 @@
             100% { transform: rotate(45deg) translateX(100%) translateY(100%); }
         }
         
-        /* BARRA DE HERRAMIENTAS DE ACCESIBILIDAD */
-        .accessibility-toolbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(15, 23, 36, 0.98);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 10px 20px;
-            z-index: 9999;
-            display: none;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 2px solid var(--cyan);
-            animation: slideDown 0.5s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-        
-        .accessibility-toolbar.mobile {
-            position: fixed;
-            bottom: 0;
-            top: auto;
-            border-top: 2px solid var(--cyan);
-            border-bottom: none;
-        }
-        
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .accessibility-btn {
-            background: var(--cyan);
-            color: var(--bg-dark);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            min-width: var(--touch-target-min);
-            min-height: var(--touch-target-min);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-        
-        .accessibility-btn:hover,
-        .accessibility-btn:focus {
-            background: var(--gold);
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.5);
-            outline: 2px solid var(--focus-ring);
-            outline-offset: 2px;
-        }
+        /* RESPONSIVE DESIGN */
         
         .accessibility-btn.active {
             background: var(--success);
@@ -653,74 +690,13 @@
                 padding-bottom: 100px;
                 font-size: var(--font-size-large);
             }
-            
-            .accessibility-toolbar.mobile .accessibility-btn {
-                margin: 3px;
-                flex: 1;
-                max-width: 80px;
-            }
         }
     </style>
 </head>
 
 <body id="body">
-    <!-- BARRA DE HERRAMIENTAS DE ACCESIBILIDAD -->
-    <div class="accessibility-toolbar" id="accessibilityToolbar" role="toolbar" aria-label="Herramientas de accesibilidad">
-        <button class="accessibility-btn" onclick="toggleContrast()" 
-                aria-label="Alternar modo alto contraste"
-                title="Cambiar a colores de alto contraste para mejor visibilidad">
-            🔳 Contraste
-        </button>
-
-        <button class="accessibility-btn" onclick="changeFontSize('increase')" 
-                aria-label="Aumentar tamaño de texto"
-                title="Hacer el texto más grande">
-            A+ Texto
-        </button>
-
-        <button class="accessibility-btn" onclick="changeFontSize('decrease')" 
-                aria-label="Disminuir tamaño de texto"
-                title="Hacer el texto más pequeño">
-            A- Texto
-        </button>
-
-        <button class="accessibility-btn" onclick="toggleVoiceReader()" 
-                aria-label="Activar lector de voz"
-                title="Escuchar el contenido de la página">
-            🔊 Voz
-        </button>
-
-        <button class="accessibility-btn" onclick="toggleKeyboardNav()" 
-                aria-label="Activar navegación por teclado"
-                title="Navegar usando solo el teclado">
-            ⌨️ Teclado
-        </button>
-
-        <button class="accessibility-btn" onclick="pauseAnimations()" 
-                aria-label="Pausar animaciones"
-                title="Detener movimientos que puedan causar molestias">
-            ⏸️ Animaciones
-        </button>
-        
-        <button class="accessibility-btn" onclick="openChatbot()" 
-                aria-label="Abrir asistente de ayuda inteligente"
-                title="Chatbot con IA para ayuda personalizada">
-            🤖 Asistente
-        </button>
-        
-        <button class="accessibility-btn" onclick="toggleAccessibilityMode()" 
-                aria-label="Cerrar herramientas de accesibilidad"
-                title="Ocultar barra de herramientas">
-            ✖️ Cerrar
-        </button>
-    </div>
-
-    <!-- Fondo Animado -->
-    <div class="background-animation">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
+    <!-- Fondo Simple -->
+    <div class="background-animation"></div>
 
     <!-- Contenedor Principal -->
     <div class="landing-container">
@@ -791,49 +767,28 @@
             <!-- Redes Sociales -->
             <div class="footer-social">
                 <span class="footer-social-label">SÍGUENOS</span>
-                <a href="https://www.facebook.com/profile.php?id=61584920256289" target="_blank" rel="noopener noreferrer" 
-                   class="footer-social-link footer-social-facebook">
-                    <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    <span>Facebook</span>
+                <a href="https://www.facebook.com/profile.php?id=61584920256289" target="_blank" rel="noopener noreferrer">
+                    Facebook
                 </a>
-                <a href="https://www.instagram.com/yavoyen5/" target="_blank" rel="noopener noreferrer"
-                   class="footer-social-link footer-social-instagram">
-                    <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                    <span>Instagram</span>
+                <a href="https://www.instagram.com/yavoyen5/" target="_blank" rel="noopener noreferrer">
+                    Instagram
                 </a>
-                <a href="https://wa.me/2215047962" target="_blank" rel="noopener noreferrer"
-                   class="footer-social-link footer-social-whatsapp">
-                    <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                    </svg>
-                    <span>WhatsApp</span>
+                <a href="https://wa.me/2215047962" target="_blank" rel="noopener noreferrer">
+                    WhatsApp
                 </a>
             </div>
 
-            <!-- Portal Admin -->
+            <!-- Portal Admin y Accesibilidad -->
             <div class="footer-admin-section">
-                <a href="dashboard-ceo.html" class="footer-admin-link">
-                    <svg class="w-18 h-18" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-                    </svg>
-                    <span>Portal Admin</span>
+                <a href="dashboard-ceo.html" class="footer-link admin-portal">
+                    ⚙️ Portal Admin
                 </a>
-                
-                <!-- Botón Modo Inclusivo -->
-                <button id="toggleAccessibilityMode" class="footer-admin-link accessibility-toggle" 
-                        title="Activar modo de inclusión digital" 
-                        aria-label="Activar herramientas de accesibilidad para mejor inclusión digital"
-                        onclick="toggleAccessibilityMode()">
-                    <svg class="w-18 h-18" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        <circle cx="12" cy="8" r="2"/>
-                        <path d="M15 12H9v2h2v3h2v-3h2z"/>
-                    </svg>
-                    <span id="accessibility-status">Modo Inclusivo</span>
+                <br>
+                <button id="toggleAccessibilityMode" class="footer-link accessibility-btn" 
+                        title="Configurar accesibilidad" 
+                        aria-label="Abrir panel de configuración de accesibilidad"
+                        onclick="openAccessibilityPanel()">
+                    ♿ Accesibilidad
                 </button>
             </div>
 
@@ -842,6 +797,47 @@
             </p>
         </footer>
     </div>
+
+    <!-- PANEL DE ACCESIBILIDAD -->
+    <!-- Panel de accesibilidad manejado por yavoy-accessibility-global.js -->
+
+    <!-- Scripts principales -->
+    <script src="js/yavoy-accessibility-global.js"></script>
+    <script src="js/chatbot-holografico.js"></script>
+    <script>
+        // ==================== SISTEMA DE ACCESIBILIDAD ====================
+
+        function openAccessibilityPanel() {
+            if (window.yavoyAccessibilitySystem) {
+                const panel = document.getElementById('yavoy-accessibility-panel');
+                if (panel && panel.style.display === 'none' && window.yavoyAccessibilitySystem.panelVisible) {
+                    window.yavoyAccessibilitySystem.panelVisible = false;
+                }
+                window.yavoyAccessibilitySystem.toggleConfigPanel();
+            } else {
+                alert('Sistema de accesibilidad no disponible. Recarga la página.');
+            }
+        }
+
+        function activateAccessibilityForClients() {
+            if (window.yavoyAccessibilitySystem) {
+                return window.yavoyAccessibilitySystem.activateAccessibilityForClients();
+            } else {
+                console.error('Sistema de accesibilidad no disponible');
+                return false;
+            }
+        }
+
+        // Sistema de accesibilidad disponible a través del panel principal
+
+        // Función para desactivar temporalmente el sistema si es necesario
+        function temporaryDisableAccessibility() {
+            if (window.yavoyAccessibilitySystem) {
+                window.yavoyAccessibilitySystem.deactivateSystem();
+                console.log('Sistema de accesibilidad desactivado temporalmente');
+            }
+        }
+    </script>
 
     <!-- Botón Instalar App -->
     <button id="installButton" class="install-app-button">
@@ -852,6 +848,7 @@
     </button>
 
     <!-- Scripts -->
+    <script src="js/yavoy-accessibility-global.js"></script>
     <script src="js/chatbot-holografico.js"></script>
     <script>
         // PWA - Botón Instalar App
@@ -903,567 +900,31 @@
             }
         }
 
-        // Cargar al iniciar
-        document.addEventListener('DOMContentLoaded', cargarEstadisticas);
-    </script>
-    
-    <!-- SISTEMA IA CHATBOT AVANZADO -->
-    <script src="js/yavoy-ai-advanced.js"></script>
-    <script src="js/yavoy-ai-integration.js"></script>
-    
-    <script>
-        // ===============================================
-        // SISTEMA DE ACCESIBILIDAD E INCLUSIÓN DIGITAL
-        // ===============================================
-        
-        // Estado global de accesibilidad
-        let accessibilityState = {
-            isActive: false,
-            contrast: false,
-            fontSize: 'normal',
-            voice: false,
-            keyboard: false,
-            animations: true,
-            chatbotAI: null
-        };
-        
-        // Detección de dispositivo mejorada
-        const DeviceDetector = {
-            isMobile: false,
-            isTablet: false,
-            isDesktop: false,
-            hasTouch: false,
-            supportsVibration: false,
+        // Inicializar chatbot y cargar estadísticas
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar estadísticas
+            cargarEstadisticas();
             
-            init() {
-                const userAgent = navigator.userAgent.toLowerCase();
-                const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-                const isTabletUA = /ipad|android(?=.*tablet)|tablet/i.test(userAgent);
-                const isMobileScreen = window.innerWidth <= 768;
-                
-                this.isMobile = (isMobileUA && !isTabletUA) || isMobileScreen;
-                this.isTablet = isTabletUA || (!isMobileUA && window.innerWidth > 768 && window.innerWidth <= 1024);
-                this.isDesktop = !this.isMobile && !this.isTablet;
-                
-                this.hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-                this.supportsVibration = 'vibrate' in navigator;
-                
-                console.log(`🔍 Dispositivo: ${this.getDeviceType()}, Touch: ${this.hasTouch}, Vibración: ${this.supportsVibration}`);
-                
-                // Configurar interfaz específica
-                if (this.isMobile) {
-                    document.body.classList.add('device-mobile');
-                    this.setupMobileFeatures();
-                }
-            },
-            
-            getDeviceType() {
-                if (this.isMobile) return 'móvil';
-                if (this.isTablet) return 'tablet'; 
-                return 'desktop';
-            },
-            
-            setupMobileFeatures() {
-                // Vibración para feedback
-                if (this.supportsVibration) {
-                    window.vibrateOnAction = function(pattern = [100]) {
-                        navigator.vibrate(pattern);
-                    };
-                }
-            }
-        };
-        
-        // FUNCIÓN PRINCIPAL: Activar/Desactivar modo inclusivo
-        function toggleAccessibilityMode() {
-            accessibilityState.isActive = !accessibilityState.isActive;
-            const toolbar = document.getElementById('accessibilityToolbar');
-            const toggleBtn = document.getElementById('toggleAccessibilityMode');
-            const statusSpan = document.getElementById('accessibility-status');
-            
-            if (accessibilityState.isActive) {
-                toolbar.style.display = 'flex';
-                toggleBtn.classList.add('active');
-                statusSpan.textContent = 'Modo Activo ✓';
-                document.body.classList.add('accessibility-mode');
-                
-                // Adaptar posición para móvil
-                if (DeviceDetector.isMobile) {
-                    toolbar.classList.add('mobile');
-                    document.body.style.paddingBottom = '100px';
-                }
-                
-                // Anuncio para lectores de pantalla
-                announceToSR('Modo de inclusión digital activado. Herramientas de accesibilidad disponibles.');
-                
-                // Vibración en móviles
-                if (DeviceDetector.isMobile && window.vibrateOnAction) {
-                    window.vibrateOnAction([200, 100, 200]);
-                }
-                
-                // Cargar configuraciones guardadas
-                loadAccessibilitySettings();
-                
-                // Inicializar chatbot IA para soporte
-                initializeAccessibilityAI();
-                
-            } else {
-                toolbar.style.display = 'none';
-                toggleBtn.classList.remove('active');
-                statusSpan.textContent = 'Modo Inclusivo';
-                document.body.classList.remove('accessibility-mode');
-                document.body.style.paddingBottom = '';
-                toolbar.classList.remove('mobile');
-                
-                announceToSR('Modo de inclusión digital desactivado.');
-                
-                if (DeviceDetector.isMobile && window.vibrateOnAction) {
-                    window.vibrateOnAction([100]);
-                }
-            }
-            
-            // Guardar estado
-            localStorage.setItem('yavoy_accessibility_mode', accessibilityState.isActive);
-        }
-        
-        // FUNCIONES DE ACCESIBILIDAD
-        function toggleContrast() {
-            accessibilityState.contrast = !accessibilityState.contrast;
-            const body = document.getElementById('body');
-            
-            if (accessibilityState.contrast) {
-                body.classList.add('high-contrast');
-                announceToSR('Modo alto contraste activado. Los colores ahora tienen mejor visibilidad.');
-                showAccessibilityNotification('Alto contraste activado', 'success');
-                
-                if (DeviceDetector.isMobile && window.vibrateOnAction) {
-                    window.vibrateOnAction([100, 50, 100]);
-                }
-            } else {
-                body.classList.remove('high-contrast');
-                announceToSR('Modo alto contraste desactivado. Colores normales restaurados.');
-                showAccessibilityNotification('Alto contraste desactivado', 'info');
-                
-                if (DeviceDetector.isMobile && window.vibrateOnAction) {
-                    window.vibrateOnAction([50]);
-                }
-            }
-            
-            updateButtonState('Contraste', accessibilityState.contrast);
-            localStorage.setItem('yavoy_contrast', accessibilityState.contrast);
-        }
-        
-        function changeFontSize(action) {
-            const body = document.getElementById('body');
-            const sizes = ['normal', 'large', 'xl', 'xxl'];
-            const mobileSizes = ['normal', 'large', 'xl', 'xxl', 'mobile-max'];
-            const actualSizes = DeviceDetector.isMobile ? mobileSizes : sizes;
-            
-            let currentIndex = actualSizes.indexOf(accessibilityState.fontSize);
-            
-            if (action === 'increase' && currentIndex < actualSizes.length - 1) {
-                currentIndex++;
-            } else if (action === 'decrease' && currentIndex > 0) {
-                currentIndex--;
-            } else {
-                return; // No hay cambio
-            }
-            
-            // Remover clases anteriores
-            actualSizes.forEach(size => {
-                body.classList.remove(`font-${size}`);
-            });
-            
-            accessibilityState.fontSize = actualSizes[currentIndex];
-            body.classList.add(`font-${accessibilityState.fontSize}`);
-            
-            const sizeNames = {
-                normal: 'normal',
-                large: 'grande',
-                xl: 'muy grande', 
-                xxl: 'extra grande',
-                'mobile-max': 'máximo móvil'
-            };
-            
-            const message = `Tamaño de texto ${action === 'increase' ? 'aumentado' : 'disminuido'} a ${sizeNames[accessibilityState.fontSize]}`;
-            announceToSR(message);
-            showAccessibilityNotification(`Texto: ${sizeNames[accessibilityState.fontSize]}`, 'info');
-            
-            if (DeviceDetector.isMobile && window.vibrateOnAction) {
-                window.vibrateOnAction([50, 30, 50]);
-            }
-            
-            localStorage.setItem('yavoy_fontsize', accessibilityState.fontSize);
-        }
-        
-        function toggleVoiceReader() {
-            accessibilityState.voice = !accessibilityState.voice;
-            
-            if (accessibilityState.voice) {
-                announceToSR('Lector de voz activado. Los elementos se leerán cuando los selecciones o pases el cursor sobre ellos.');
-                showAccessibilityNotification('Lector de voz activado', 'success');
-                
-                // Configurar eventos de voz
-                setupVoiceEvents();
-                
-                if (DeviceDetector.isMobile && window.vibrateOnAction) {
-                    window.vibrateOnAction([200, 100, 200]);
-                }
-            } else {
-                announceToSR('Lector de voz desactivado');
-                showAccessibilityNotification('Lector de voz desactivado', 'info');
-                window.speechSynthesis.cancel();
-                
-                if (DeviceDetector.isMobile && window.vibrateOnAction) {
-                    window.vibrateOnAction([100]);
-                }
-            }
-            
-            updateButtonState('Voz', accessibilityState.voice);
-            localStorage.setItem('yavoy_voice', accessibilityState.voice);
-        }
-        
-        function toggleKeyboardNav() {
-            accessibilityState.keyboard = !accessibilityState.keyboard;
-            
-            if (accessibilityState.keyboard) {
-                announceToSR('Navegación por teclado activada. Usa Tab para moverte entre elementos, Enter para activar.');
-                showAccessibilityNotification('Navegación por teclado activa', 'success');
-                document.body.classList.add('keyboard-navigation');
-                setupKeyboardNavigation();
-            } else {
-                announceToSR('Navegación por teclado desactivada');
-                showAccessibilityNotification('Navegación por teclado desactivada', 'info');
-                document.body.classList.remove('keyboard-navigation');
-            }
-            
-            updateButtonState('Teclado', accessibilityState.keyboard);
-            localStorage.setItem('yavoy_keyboard', accessibilityState.keyboard);
-        }
-        
-        function pauseAnimations() {
-            accessibilityState.animations = !accessibilityState.animations;
-            
-            if (!accessibilityState.animations) {
-                announceToSR('Animaciones pausadas para reducir distracciones');
-                showAccessibilityNotification('Animaciones pausadas', 'success');
-                document.body.classList.add('reduce-motion');
-                
-                // Pausar animaciones CSS
-                const style = document.createElement('style');
-                style.textContent = `
-                    *, *::before, *::after {
-                        animation-duration: 0.01ms !important;
-                        animation-iteration-count: 1 !important;
-                        transition-duration: 0.01ms !important;
-                    }
-                `;
-                document.head.appendChild(style);
-            } else {
-                announceToSR('Animaciones reactivadas');
-                showAccessibilityNotification('Animaciones reactivadas', 'info');
-                document.body.classList.remove('reduce-motion');
-            }
-            
-            updateButtonState('Animaciones', !accessibilityState.animations);
-            localStorage.setItem('yavoy_animations', accessibilityState.animations);
-        }
-        
-        function openChatbot() {
-            if (window.yavoyAdvancedAI || window.yavoyAIIntegration) {
-                // Activar chatbot IA existente
-                if (window.yavoyAIIntegration && window.yavoyAIIntegration.toggleChat) {
-                    window.yavoyAIIntegration.toggleChat();
+            // Configurar chatbot
+            document.getElementById('btnChatbot').addEventListener('click', () => {
+                if (typeof toggleChatbot === 'function') {
+                    toggleChatbot();
                 } else {
-                    // Crear instancia de chatbot IA para soporte
-                    initializeAccessibilityAI();
-                }
-                announceToSR('Asistente inteligente activado. Te ayudará con todas tus necesidades en YAvoy.');
-                showAccessibilityNotification('Asistente IA iniciado', 'success');
-            } else {
-                // Fallback al chatbot holográfico
-                if (window.initChatbot) {
-                    window.initChatbot();
-                    announceToSR('Asistente de ayuda disponible');
-                    showAccessibilityNotification('Asistente activado', 'info');
-                } else {
-                    showAccessibilityNotification('Asistente no disponible - recarga la página', 'error');
-                }
-            }
-        }
-        
-        // FUNCIONES DE SOPORTE
-        function announceToSR(message) {
-            // Para lectores de pantalla
-            const announcement = document.createElement('div');
-            announcement.setAttribute('aria-live', 'polite');
-            announcement.setAttribute('aria-atomic', 'true');
-            announcement.style.position = 'absolute';
-            announcement.style.left = '-10000px';
-            announcement.style.width = '1px';
-            announcement.style.height = '1px';
-            announcement.style.overflow = 'hidden';
-            announcement.textContent = message;
-            document.body.appendChild(announcement);
-            
-            setTimeout(() => {
-                document.body.removeChild(announcement);
-            }, 1000);
-            
-            // Para síntesis de voz
-            if (accessibilityState.voice && window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(message);
-                utterance.rate = DeviceDetector.isMobile ? 0.8 : 0.9;
-                utterance.pitch = 1.0;
-                utterance.volume = 0.8;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-        
-        function showAccessibilityNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `accessibility-notification ${type}`;
-            notification.style.cssText = `
-                position: fixed;
-                top: ${accessibilityState.isActive && !DeviceDetector.isMobile ? '70px' : '20px'};
-                right: 20px;
-                background: ${type === 'success' ? 'var(--success)' : type === 'error' ? '#ef4444' : 'var(--cyan)'};
-                color: var(--bg-dark);
-                padding: 12px 20px;
-                border-radius: 8px;
-                font-weight: 600;
-                z-index: 10000;
-                animation: slideInRight 0.3s ease;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            `;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        document.body.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
-        }
-        
-        function updateButtonState(buttonText, isActive) {
-            const buttons = document.querySelectorAll('.accessibility-btn');
-            buttons.forEach(btn => {
-                if (btn.textContent.includes(buttonText)) {
-                    if (isActive) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
+                    alert('Asistente cliente en línea. ¿En qué puedo ayudarte?');
                 }
             });
-        }
-        
-        function setupVoiceEvents() {
-            // Eventos para leer elementos al pasar el mouse o enfocar
-            const readableElements = 'button, a, input, h1, h2, h3, .cta-card, .brand-name';
-            document.querySelectorAll(readableElements).forEach(element => {
-                element.addEventListener('mouseenter', function() {
-                    if (accessibilityState.voice) {
-                        const text = this.getAttribute('aria-label') || 
-                                   this.textContent || 
-                                   this.getAttribute('title') || 
-                                   'Elemento interactivo';
-                        announceToSR(text);
-                    }
-                });
-                
-                element.addEventListener('focus', function() {
-                    if (accessibilityState.voice) {
-                        const text = this.getAttribute('aria-label') || 
-                                   this.textContent || 
-                                   this.getAttribute('title') || 
-                                   'Elemento enfocado';
-                        announceToSR(text);
-                    }
-                });
+
+            // Hover effects
+            document.getElementById('btnChatbot').addEventListener('mouseenter', (e) => {
+                e.target.style.transform = 'scale(1.1)';
+                e.target.style.boxShadow = '0 12px 40px rgba(6, 182, 212, 0.4)';
             });
-        }
-        
-        function setupKeyboardNavigation() {
-            document.addEventListener('keydown', function(e) {
-                if (!accessibilityState.keyboard) return;
-                
-                // Atajos de teclado para accesibilidad
-                if (e.altKey) {
-                    switch(e.code) {
-                        case 'KeyC':
-                            e.preventDefault();
-                            toggleContrast();
-                            break;
-                        case 'KeyV':
-                            e.preventDefault();
-                            toggleVoiceReader();
-                            break;
-                        case 'Equal':
-                            e.preventDefault();
-                            changeFontSize('increase');
-                            break;
-                        case 'Minus':
-                            e.preventDefault();
-                            changeFontSize('decrease');
-                            break;
-                        case 'KeyH':
-                            e.preventDefault();
-                            openChatbot();
-                            break;
-                    }
-                }
+
+            document.getElementById('btnChatbot').addEventListener('mouseleave', (e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 8px 30px rgba(6, 182, 212, 0.3)';
             });
-        }
-        
-        function loadAccessibilitySettings() {
-            // Cargar configuraciones guardadas
-            const savedContrast = localStorage.getItem('yavoy_contrast') === 'true';
-            const savedVoice = localStorage.getItem('yavoy_voice') === 'true';
-            const savedFontSize = localStorage.getItem('yavoy_fontsize') || 'normal';
-            const savedKeyboard = localStorage.getItem('yavoy_keyboard') === 'true';
-            const savedAnimations = localStorage.getItem('yavoy_animations') !== 'false';
-            
-            if (savedContrast && !accessibilityState.contrast) {
-                toggleContrast();
-            }
-            
-            if (savedVoice && !accessibilityState.voice) {
-                toggleVoiceReader();
-            }
-            
-            if (savedKeyboard && !accessibilityState.keyboard) {
-                toggleKeyboardNav();
-            }
-            
-            if (!savedAnimations && accessibilityState.animations) {
-                pauseAnimations();
-            }
-            
-            if (savedFontSize !== 'normal') {
-                accessibilityState.fontSize = savedFontSize;
-                document.getElementById('body').classList.add(`font-${savedFontSize}`);
-            }
-        }
-        
-        function initializeAccessibilityAI() {
-            // Inicializar chatbot IA específico para accesibilidad y soporte al cliente
-            if (window.YAvoyAIAssistant) {
-                try {
-                    accessibilityState.chatbotAI = new window.YAvoyAIAssistant({
-                        empathy_level: 10, // Máxima empatía para usuarios con dificultades
-                        promotional_intensity: 1, // Mínima promoción, máximo soporte
-                        response_style: 'friendly',
-                        user_type: 'cliente',
-                        page_context: 'landing',
-                        accessibility_mode: true,
-                        device_type: DeviceDetector.getDeviceType()
-                    });
-                    
-                    // Configurar respuestas específicas para accesibilidad
-                    accessibilityState.chatbotAI.addAccessibilityResponses = function() {
-                        this.responses = {
-                            ...this.responses,
-                            'ayuda accesibilidad': '🫱🏻‍🫲🏽 Estoy aquí para ayudarte con cualquier dificultad. ¿Necesitas ayuda con el tamaño del texto, los colores, o cómo hacer un pedido?',
-                            'no puedo ver': '👁️ Te ayudo a usar la página sin problemas visuales. Activa el alto contraste con el botón "Contraste" y aumenta el texto con "A+". ¿Te guío paso a paso?',
-                            'no puedo oir': '🔇 Perfecto, toda la información está disponible visualmente. Si necesitas ayuda para hacer un pedido, puedo guiarte paso a paso por escrito.',
-                            'dificultad motora': '🤝 Entiendo perfectamente. Puedes navegar con el teclado usando Tab y Enter. También puedo ayudarte a hacer tu pedido solo diciéndome qué quieres.',
-                            'hacer pedido': '🍽️ ¡Excelente! Te voy a ayudar a hacer tu pedido de la forma más fácil. ¿Qué tipo de comida te gustaría? Te guío paso a paso.',
-                            'no entiendo': '😊 No te preocupes, vamos despacio. ¿Qué específicamente quieres hacer? ¿Ver restaurantes, hacer un pedido, o algo más?'
-                        };
-                    };
-                    
-                    accessibilityState.chatbotAI.addAccessibilityResponses();
-                    
-                    console.log('🤖 Chatbot IA de accesibilidad inicializado');
-                    
-                    // Activar integración automática
-                    if (window.yavoyAIIntegration) {
-                        window.yavoyAIIntegration.setupAccessibilityMode();
-                    }
-                    
-                } catch (error) {
-                    console.error('Error inicializando IA accesibilidad:', error);
-                }
-            }
-        }
-        
-        // INICIALIZACIÓN GLOBAL
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Sistema de Inclusión Digital YAvoy inicializado');
-            
-            // Detectar dispositivo
-            DeviceDetector.init();
-            
-            // Cargar estado guardado del modo accesibilidad
-            const savedAccessibilityMode = localStorage.getItem('yavoy_accessibility_mode') === 'true';
-            if (savedAccessibilityMode) {
-                // Activar automáticamente si estaba activado
-                setTimeout(() => {
-                    toggleAccessibilityMode();
-                }, 1000);
-            }
-            
-            // Detectar preferencias del sistema
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                setTimeout(() => {
-                    if (!accessibilityState.isActive) toggleAccessibilityMode();
-                    pauseAnimations();
-                }, 1500);
-            }
-            
-            if (window.matchMedia('(prefers-contrast: high)').matches) {
-                setTimeout(() => {
-                    if (!accessibilityState.isActive) toggleAccessibilityMode();
-                    toggleContrast();
-                }, 1500);
-            }
-            
-            // Agregar estilos dinámicos para notificaciones
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideInRight {
-                    from { transform: translateX(300px); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOutRight {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(300px); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            console.log('✅ Sistema de Inclusión Digital listo');
         });
-        
-        // Gestión de eventos globales
-        window.addEventListener('resize', function() {
-            // Redetectar dispositivo en cambio de tamaño
-            const wasMobile = DeviceDetector.isMobile;
-            DeviceDetector.init();
-            
-            if (wasMobile !== DeviceDetector.isMobile && accessibilityState.isActive) {
-                // Reconfigurar interfaz
-                const toolbar = document.getElementById('accessibilityToolbar');
-                if (DeviceDetector.isMobile) {
-                    toolbar.classList.add('mobile');
-                    document.body.style.paddingBottom = '100px';
-                } else {
-                    toolbar.classList.remove('mobile');
-                    document.body.style.paddingBottom = '';
-                }
-            }
-        });
-        
-        // Exportar funciones para uso global
-        window.toggleAccessibilityMode = toggleAccessibilityMode;
-        window.announceToSR = announceToSR;
     </script>
 </body>
-
 </html>
