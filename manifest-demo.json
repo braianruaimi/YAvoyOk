@@ -1,0 +1,70 @@
+{
+  "name": "YAvoyOk - Accesibilidad Digital",
+  "short_name": "YAvoy Accesible",
+  "description": "Plataforma de delivery con inclusión digital completa y accesibilidad adaptativa",
+  "start_url": "/demo-accesibilidad.html",
+  "display": "standalone",
+  "background_color": "#0f1724",
+  "theme_color": "#06b6d4",
+  "orientation": "any",
+  "categories": ["accessibility", "delivery", "food"],
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2306b6d4' width='192' height='192' rx='20'/><text x='96' y='120' text-anchor='middle' fill='white' font-size='80' font-family='Arial'>♿</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%2306b6d4' width='512' height='512' rx='50'/><text x='256' y='320' text-anchor='middle' fill='white' font-size='200' font-family='Arial'>♿</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Accesibilidad Rápida",
+      "short_name": "Accesible",
+      "description": "Activar herramientas de accesibilidad",
+      "url": "/demo-accesibilidad.html?quick=accessibility",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%2310b981' width='96' height='96' rx='10'/><text x='48' y='60' text-anchor='middle' fill='white' font-size='40'>♿</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Chatbot IA",
+      "short_name": "Chat",
+      "description": "Asistente con inteligencia artificial",
+      "url": "/demo-accesibilidad.html?quick=chat",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%23fbbf24' width='96' height='96' rx='10'/><text x='48' y='60' text-anchor='middle' fill='white' font-size='40'>🤖</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/demo-accesibilidad.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+yavoy",
+      "url": "/demo-accesibilidad.html?action=%s"
+    }
+  ]
+}

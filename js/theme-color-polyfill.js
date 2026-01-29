@@ -1,25 +1,43 @@
 /**
- * YAvoy "Vaselina" Theme Color Polyfill 
- * Elimina warnings de Firefox/Opera - Solución completa
- * Versión: 2.0.0 - Optimizado para YAvoy v3.1
+ * YAvoy Enhanced Theme Color Polyfill 
+ * Elimina warnings de Firefox/Opera y mejora compatibilidad universal
+ * Versión: 2.1.0 - Optimizado para YAvoy v3.1 Enterprise
  */
 
 (function () {
     'use strict';
 
-    // Configuración del polyfill "vaselina"
+    // Configuración del polyfill mejorado
     const ThemeColorPolyfill = {
         // Detectar browsers que necesitan polyfill
         needsPolyfill: function () {
             const userAgent = navigator.userAgent.toLowerCase();
             return userAgent.includes('firefox') ||
                 userAgent.includes('opera') ||
-                userAgent.includes('opr/');
+                userAgent.includes('opr/') ||
+                userAgent.includes('edge') && !userAgent.includes('edg/');
         },
 
-        // Detectar soporte nativo (mejorado)
+        // Detectar soporte nativo mejorado
         hasNativeSupport: function () {
-            return !this.needsPolyfill();
+            // Test más robusto para detectar soporte real
+            if (this.needsPolyfill()) return false;
+            
+            try {
+                const testMeta = document.createElement('meta');
+                testMeta.name = 'theme-color';
+                testMeta.content = '#test';
+                document.head.appendChild(testMeta);
+                
+                // Si el navegador soporta, lo detectamos por CSS o API
+                const supported = 'CSS' in window && 'supports' in CSS ? 
+                    CSS.supports('color', '#06b6d4') : true;
+                
+                document.head.removeChild(testMeta);
+                return supported;
+            } catch (e) {
+                return false;
+            }
         },
 
         // Obtener color del theme-color meta tag
@@ -30,7 +48,13 @@
 
         // Aplicar color a elementos del navegador que se pueden controlar
         applyThemeColor: function (color) {
-            // 1. Aplicar al estatus bar en móviles
+            // Solo aplicar si es necesario
+            if (this.hasNativeSupport()) {
+                console.log('✅ Theme color nativo detectado, usando soporte del navegador');
+                return;
+            }
+
+            // 1. Aplicar al status bar en móviles
             this.setStatusBarColor(color);
 
             // 2. Aplicar al header del navegador (cuando sea posible)
@@ -42,7 +66,7 @@
             // 4. Aplicar a elementos específicos de la interfaz
             this.setUIAccents(color);
 
-            console.log('🎨 YAvoy Theme Color aplicado:', color);
+            console.log('🎨 YAvoy Theme Color polyfill aplicado:', color);
         },
 
         // Color del status bar en móviles

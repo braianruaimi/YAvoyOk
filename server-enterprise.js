@@ -57,7 +57,7 @@ const corsOptions = {
 // 📊 INICIALIZAR SISTEMAS DE LOGGING, DB Y CACHE
 // ========================================
 let dbManager;
-let dbPool;
+let dbPool; // Variable global para el pool de base de datos
 const advancedLogger = new AdvancedLogger();
 const expressLogging = new ExpressLoggingMiddleware(advancedLogger);
 
@@ -69,14 +69,13 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Configuración del servidor
-const PORT = process.env.PORT || 5502;
-const HOST = process.env.HOST || '0.0.0.0';
+// Configuración del servidor - Variables movidas a sección específica
+// const PORT y HOST declarados más abajo
 
 // ========================================
 // 📊 MYSQL HOSTINGER POOL
 // ========================================
-const dbPool = mysql.createPool({
+dbPool = mysql.createPool({
     host: process.env.DB_HOST || 'srv1722.hstgr.io',
     port: process.env.DB_PORT || 3306,
     user: process.env.DB_USER || 'u695828542_yavoyspace',

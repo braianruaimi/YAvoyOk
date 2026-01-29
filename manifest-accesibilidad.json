@@ -1,0 +1,81 @@
+{
+  "name": "YAvoy - Plataforma Inclusiva",
+  "short_name": "YAvoy Accesible",
+  "description": "Plataforma de delivery inclusiva y accesible para todos",
+  "start_url": "/accesibilidad.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["food", "accessibility", "lifestyle"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2306b6d4'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E♿%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Modo Alto Contraste",
+      "short_name": "Contraste",
+      "description": "Activar alto contraste para mejor visibilidad",
+      "url": "/accesibilidad.html?mode=contrast",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎨%3C/text%3E%3C/svg%3E",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Texto Grande",
+      "short_name": "Texto",
+      "description": "Activar texto grande para mejor lectura",
+      "url": "/accesibilidad.html?mode=large-text",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Asistente IA",
+      "short_name": "Asistente",
+      "description": "Activar asistente IA para ayuda personalizada",
+      "url": "/accesibilidad.html?mode=ai-assistant",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E",
+          "sizes": "any"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/accesibilidad.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
