@@ -1128,14 +1128,20 @@
 
         // ==================== GOOGLE SIGN-IN ====================
         async function handleGoogleSignIn() {
+            // Mostrar selector de tipo de usuario primero
+            const tipoUsuario = await mostrarSelectorTipoUsuario();
+            
+            if (!tipoUsuario) {
+                return; // Usuario canceló
+            }
+
             try {
-                // Primero verificar si el usuario ya autorizó Google
-                // Esto abrirá el popup de Google OAuth
                 const response = await fetch('/api/auth/google/init', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({ tipo_usuario: tipoUsuario })
                 });
 
                 const result = await response.json();
@@ -1153,19 +1159,39 @@
                         `width=${width},height=${height},left=${left},top=${top}`
                     );
 
+                    if (!popup) {
+                        alert('⚠️ Por favor permite las ventanas emergentes para continuar.');
+                        return;
+                    }
+
                     // Escuchar mensaje del popup
-                    window.addEventListener('message', function(event) {
+                    const messageHandler = function(event) {
                         if (event.data.type === 'google-auth-success') {
                             popup.close();
-                            alert('✅ ¡Autenticación exitosa!\n\nBienvenido a YAvoy.');
+                            
+                            // Guardar token en localStorage
+                            if (event.data.token) {
+                                localStorage.setItem('yavoy_token', event.data.token);
+                                localStorage.setItem('yavoy_user', JSON.stringify(event.data.user));
+                            }
+                            
+                            alert('✅ ¡Bienvenido a YAvoy!\n\nCuenta de Google vinculada exitosamente.');
                             closeRegisterModal();
                             
                             // Redirigir según tipo de usuario
-                            if (event.data.user) {
+                            setTimeout(() => {
                                 window.location.href = event.data.redirectUrl || 'pedidos.html';
-                            }
+                            }, 1000);
+                            
+                            window.removeEventListener('message', messageHandler);
+                        } else if (event.data.type === 'google-auth-error') {
+                            popup.close();
+                            alert('❌ Error: ' + (event.data.message || 'No se pudo autenticar con Google'));
+                            window.removeEventListener('message', messageHandler);
                         }
-                    });
+                    };
+                    
+                    window.addEventListener('message', messageHandler);
                 } else {
                     // Fallback: Si no hay backend configurado, mostrar mensaje
                     alert('🔧 Google Sign-In\n\nEsta funcionalidad requiere configuración del servidor.\nPor ahora usa el registro con email.');
@@ -1174,6 +1200,62 @@
                 console.error('Error Google Sign-In:', error);
                 alert('⚠️ Google Sign-In no disponible temporalmente.\nUsa el registro con email.');
             }
+        }
+
+        // Mostrar selector de tipo de usuario antes de Google OAuth
+        function mostrarSelectorTipoUsuario() {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);';
+                
+                const modal = document.createElement('div');
+                modal.style.cssText = 'background:#0b1220;border-radius:20px;padding:40px;max-width:400px;width:90%;border:1px solid rgba(6,182,212,0.3);box-shadow:0 25px 60px rgba(0,0,0,0.5);';
+                
+                modal.innerHTML = `
+                    <h2 style="color:#06b6d4;margin-bottom:20px;text-align:center;font-size:1.5rem;">¿Cómo deseas registrarte?</h2>
+                    <p style="color:#94a3b8;margin-bottom:30px;text-align:center;font-size:0.95rem;">Selecciona tu rol en YAvoy</p>
+                    <div style="display:flex;flex-direction:column;gap:15px;">
+                        <button class="tipo-btn" data-tipo="cliente" style="padding:16px;background:linear-gradient(135deg,#06b6d4,#0891b2);border:none;border-radius:12px;color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;">
+                            🛍️ Cliente - Hacer pedidos
+                        </button>
+                        <button class="tipo-btn" data-tipo="comercio" style="padding:16px;background:linear-gradient(135deg,#fbbf24,#f59e0b);border:none;border-radius:12px;color:#0f1724;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;">
+                            🏪 Comercio - Vender productos
+                        </button>
+                        <button class="tipo-btn" data-tipo="repartidor" style="padding:16px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:12px;color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;">
+                            🚴 Repartidor - Ganar dinero
+                        </button>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:#94a3b8;font-size:0.9rem;cursor:pointer;margin-top:10px;">
+                            Cancelar
+                        </button>
+                    </div>
+                `;
+                
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                
+                const buttons = modal.querySelectorAll('.tipo-btn');
+                buttons.forEach(btn => {
+                    btn.addEventListener('mouseenter', () => {
+                        btn.style.transform = 'translateY(-2px)';
+                        btn.style.boxShadow = '0 8px 25px rgba(0,0,0,0.3)';
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        btn.style.transform = 'translateY(0)';
+                        btn.style.boxShadow = 'none';
+                    });
+                    btn.addEventListener('click', () => {
+                        overlay.remove();
+                        resolve(btn.dataset.tipo);
+                    });
+                });
+                
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.remove();
+                        resolve(null);
+                    }
+                });
+            });
         }
     </script>
 </body>

@@ -25,13 +25,22 @@ const JWT_SECRET = process.env.JWT_SECRET || 'yavoy-2026-secret-key-ultra-segura
  */
 exports.initGoogleAuth = async (req, res) => {
     try {
+        const { tipo_usuario } = req.body;
+        
+        // Guardar el tipo de usuario en la sesión/estado
+        const state = Buffer.from(JSON.stringify({
+            tipo_usuario: tipo_usuario || 'cliente',
+            timestamp: Date.now()
+        })).toString('base64');
+        
         const authUrl = oauth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: [
                 'https://www.googleapis.com/auth/userinfo.profile',
                 'https://www.googleapis.com/auth/userinfo.email'
             ],
-            prompt: 'select_account'
+            prompt: 'select_account',
+            state: state
         });
 
         res.json({
@@ -52,7 +61,7 @@ exports.initGoogleAuth = async (req, res) => {
  */
 exports.googleCallback = async (req, res) => {
     try {
-        const { code } = req.query;
+        const { code, state } = req.query;
 
         if (!code) {
             return res.status(400).send(`
@@ -66,6 +75,17 @@ exports.googleCallback = async (req, res) => {
             `);
         }
 
+        // Decodificar el estado para obtener tipo_usuario
+        let tipo_usuario = 'cliente';
+        if (state) {
+            try {
+                const decodedState = JSON.parse(Buffer.from(state, 'base64').toString());
+                tipo_usuario = decodedState.tipo_usuario || 'cliente';
+            } catch (e) {
+                console.log('Estado no válido, usando tipo por defecto');
+            }
+        }
+
         // Intercambiar código por tokens
         const { tokens } = await oauth2Client.getToken(code);
         oauth2Client.setCredentials(tokens);
@@ -74,16 +94,24 @@ exports.googleCallback = async (req, res) => {
         const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
         const { data } = await oauth2.userinfo.get();
 
+        // Determinar archivo según tipo de usuario
+        let archivoUsuarios = CLIENTES_FILE;
+        if (tipo_usuario === 'comercio') {
+            archivoUsuarios = path.join(__dirname, '../../registros/comercios.json');
+        } else if (tipo_usuario === 'repartidor') {
+            archivoUsuarios = path.join(__dirname, '../../registros/repartidores.json');
+        }
+
         // Buscar o crear usuario
-        let clientes = [];
+        let usuarios = [];
         try {
-            const clientesData = await fs.readFile(CLIENTES_FILE, 'utf8');
-            clientes = JSON.parse(clientesData);
+            const usuariosData = await fs.readFile(archivoUsuarios, 'utf8');
+            usuarios = JSON.parse(usuariosData);
         } catch (error) {
             // Si no existe el archivo, crear array vacío
         }
 
-        let usuario = clientes.find(c => c.email === data.email);
+        let usuario = usuarios.find(u => u.email === data.email);
 
         if (!usuario) {
             // Crear nuevo usuario
@@ -92,22 +120,24 @@ exports.googleCallback = async (req, res) => {
                 nombre: data.name,
                 email: data.email,
                 telefono: '',
-                tipo_usuario: 'cliente',
+                tipo_usuario: tipo_usuario,
                 googleId: data.id,
                 foto: data.picture,
                 verificado: true,
                 fecha_registro: new Date().toISOString(),
-                auth_provider: 'google'
+                auth_provider: 'google',
+                activo: true
             };
 
-            clientes.push(usuario);
-            await fs.writeFile(CLIENTES_FILE, JSON.stringify(clientes, null, 2));
+            usuarios.push(usuario);
+            await fs.writeFile(archivoUsuarios, JSON.stringify(usuarios, null, 2));
         } else {
             // Actualizar datos de Google si cambió
             usuario.googleId = data.id;
             usuario.foto = data.picture;
             usuario.verificado = true;
-            await fs.writeFile(CLIENTES_FILE, JSON.stringify(clientes, null, 2));
+            usuario.tipo_usuario = tipo_usuario; // Actualizar tipo si cambió
+            await fs.writeFile(archivoUsuarios, JSON.stringify(usuarios, null, 2));
         }
 
         // Generar JWT
@@ -123,9 +153,9 @@ exports.googleCallback = async (req, res) => {
 
         // Determinar redirección según tipo de usuario
         let redirectUrl = '/pedidos.html';
-        if (usuario.tipo_usuario === 'comercio') {
+        if (tipo_usuario === 'comercio') {
             redirectUrl = '/panel-comercio.html';
-        } else if (usuario.tipo_usuario === 'repartidor') {
+        } else if (tipo_usuario === 'repartidor') {
             redirectUrl = '/panel-repartidor.html';
         }
 
@@ -175,7 +205,8 @@ exports.googleCallback = async (req, res) => {
                             id: usuario.id,
                             nombre: usuario.nombre,
                             email: usuario.email,
-                            foto: usuario.foto
+                            foto: usuario.foto,
+                            tipo: usuario.tipo_usuario
                         })},
                         redirectUrl: '${redirectUrl}'
                     }, '*');
