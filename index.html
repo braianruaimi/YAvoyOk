@@ -1136,6 +1136,12 @@
             }
 
             try {
+                // Mostrar mensaje de carga
+                const loadingMsg = document.createElement('div');
+                loadingMsg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#06b6d4;color:white;padding:12px 24px;border-radius:25px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:10001;font-weight:600;';
+                loadingMsg.textContent = '⏳ Preparando Google Sign-In...';
+                document.body.appendChild(loadingMsg);
+
                 const response = await fetch('/api/auth/google/init', {
                     method: 'POST',
                     headers: {
@@ -1143,6 +1149,12 @@
                     },
                     body: JSON.stringify({ tipo_usuario: tipoUsuario })
                 });
+
+                loadingMsg.remove();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
 
                 const result = await response.json();
 
@@ -1194,11 +1206,28 @@
                     window.addEventListener('message', messageHandler);
                 } else {
                     // Fallback: Si no hay backend configurado, mostrar mensaje
-                    alert('🔧 Google Sign-In\n\nEsta funcionalidad requiere configuración del servidor.\nPor ahora usa el registro con email.');
+                    console.error('Google OAuth no configurado:', result);
+                    alert('🔧 Google Sign-In\n\nLas credenciales de Google OAuth no están configuradas en el servidor.\n\nContacta al administrador o usa el registro con email.');
                 }
             } catch (error) {
                 console.error('Error Google Sign-In:', error);
-                alert('⚠️ Google Sign-In no disponible temporalmente.\nUsa el registro con email.');
+                
+                // Mensaje más específico según el error
+                let mensaje = '⚠️ Google Sign-In no disponible en este momento.\n\n';
+                
+                if (error.message.includes('404')) {
+                    mensaje += 'Causa: Endpoint no encontrado en el servidor.\n';
+                } else if (error.message.includes('500')) {
+                    mensaje += 'Causa: Error en el servidor (revisa credenciales).\n';
+                } else if (error.message.includes('Failed to fetch')) {
+                    mensaje += 'Causa: Servidor no responde o CORS bloqueado.\n';
+                } else {
+                    mensaje += 'Causa: ' + error.message + '\n';
+                }
+                
+                mensaje += '\nPor ahora usa el registro con email. 📧';
+                
+                alert(mensaje);
             }
         }
 
