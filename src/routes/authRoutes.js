@@ -9,6 +9,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const googleAuthController = require('../controllers/googleAuthController');
 const { requireAuth } = require('../middleware/auth');
 const securityMiddleware = require('../middleware/security');
 const { schemas, validate, validateAll } = require('../validation/schemas');
@@ -615,5 +616,52 @@ router.put('/profile',
     },
     (req, res) => authController.updateUserProfile(req, res)
 );
+
+// ========================================
+// 🔐 GOOGLE OAUTH
+// ========================================
+
+/**
+ * @swagger
+ * /api/auth/google/init:
+ *   post:
+ *     summary: Iniciar autenticación con Google
+ *     description: Genera URL de autenticación de Google OAuth 2.0
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: URL de autenticación generada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 authUrl:
+ *                   type: string
+ *                   example: "https://accounts.google.com/o/oauth2/v2/auth?..."
+ */
+router.post('/google/init', googleAuthController.initGoogleAuth);
+
+/**
+ * @swagger
+ * /api/auth/google/callback:
+ *   get:
+ *     summary: Callback de Google OAuth
+ *     description: Procesa la respuesta de autenticación de Google
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Código de autorización de Google
+ *     responses:
+ *       200:
+ *         description: Autenticación exitosa (cierra popup automáticamente)
+ */
+router.get('/google/callback', googleAuthController.googleCallback);
 
 module.exports = router;
