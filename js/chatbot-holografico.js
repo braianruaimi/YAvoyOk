@@ -328,6 +328,36 @@ class ChatbotHolografico {
                     box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
                 }
 
+                .voice-button {
+                    width: 44px;
+                    height: 44px;
+                    background: linear-gradient(135deg, #06b6d4, #0891b2);
+                    border: none;
+                    border-radius: 12px;
+                    color: #ffffff;
+                    font-size: 18px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .voice-button:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+                }
+
+                .voice-button.listening {
+                    background: linear-gradient(135deg, #ef4444, #dc2626);
+                    animation: voice-pulse 1s ease-in-out infinite;
+                }
+
+                @keyframes voice-pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                }
+
                 /* Responsive */
                 @media (max-width: 480px) {
                     #holographic-chatbot {
@@ -439,9 +469,12 @@ class ChatbotHolografico {
                         <input 
                             type="text" 
                             id="chatInput" 
-                            placeholder="Escribe tu mensaje..."
+                            placeholder="Escribe tu mensaje o usa el asistente de voz..."
                             autocomplete="off"
                         >
+                        <button class="voice-button" id="voiceBtn" title="Activar Asistente de Voz">
+                            🎤
+                        </button>
                         <button class="send-button" id="sendBtn">
                             ➤
                         </button>
@@ -459,10 +492,13 @@ class ChatbotHolografico {
         const panel = document.getElementById('chatbotPanel');
         const input = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
+        const voiceBtn = document.getElementById('voiceBtn');
 
         btn.addEventListener('click', () => this.togglePanel());
         
         sendBtn.addEventListener('click', () => this.sendMessage());
+        
+        voiceBtn.addEventListener('click', () => this.activateVoiceAssistant());
         
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.sendMessage();
@@ -770,6 +806,36 @@ class ChatbotHolografico {
             // Procesar la acción como si fuera un mensaje del usuario
             this.generateBotResponse(action);
         }, 800);
+    }
+
+    activateVoiceAssistant() {
+        const voiceBtn = document.getElementById('voiceBtn');
+        
+        // Activar o crear el asistente de voz
+        if (!window.yavoyVoiceAssistant) {
+            // Crear instancia del asistente de voz
+            if (typeof YAvoyVirtualAssistant !== 'undefined') {
+                window.yavoyVoiceAssistant = new YAvoyVirtualAssistant();
+            } else {
+                // Si no está disponible, mostrar mensaje
+                this.addBotMessage('🎤 Para usar el asistente de voz, por favor activa la función de accesibilidad primero desde el botón de "Accesibilidad" en el footer.');
+                return;
+            }
+        }
+        
+        if (window.yavoyVoiceAssistant.isListening) {
+            // Detener reconocimiento de voz
+            window.yavoyVoiceAssistant.stopListening();
+            voiceBtn.classList.remove('listening');
+            voiceBtn.title = 'Activar Asistente de Voz';
+            this.addBotMessage('🎤 Asistente de voz desactivado. Puedes seguir escribiendo normalmente.');
+        } else {
+            // Iniciar reconocimiento de voz
+            window.yavoyVoiceAssistant.startListening();
+            voiceBtn.classList.add('listening');
+            voiceBtn.title = 'Detener Asistente de Voz';
+            this.addBotMessage('🎤 ¡Asistente de voz activado! Puedes hablar ahora. Dime qué quieres pedir o en qué puedo ayudarte.');
+        }
     }
 
     scrollToBottom() {

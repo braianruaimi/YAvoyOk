@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 YAvoyOk - Chatbot IA Configuración</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0f1724;
+            --bg-card: rgba(11, 18, 32, 0.85);
+            --cyan: #06b6d4;
+            --gold: #fbbf24;
+            --white: #ffffff;
+            --gray: #94a3b8;
+            --success: #10b981;
+            --warning: #ff6b35;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--white);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--cyan), var(--gold));
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .config-panel {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .config-panel h3 {
+            color: var(--cyan);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-item {
+            margin-bottom: 20px;
+        }
+
+        .config-item label {
+            display: block;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .config-item input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+            accent-color: var(--cyan);
+        }
+
+        .config-item select {
+            width: 100%;
+            background: var(--bg-dark);
+            color: var(--white);
+            border: 2px solid var(--gray);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .config-item select:focus {
+            border-color: var(--cyan);
+            outline: none;
+        }
+
+        .range-value {
+            color: var(--cyan);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--cyan);
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .preset-btn {
+            background: linear-gradient(135deg, var(--cyan), var(--gold));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .preset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .demo-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .demo-section h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .test-conversation {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .test-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .test-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .test-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .test-message.bot .test-avatar {
+            background: var(--cyan);
+        }
+
+        .test-message.user .test-avatar {
+            background: var(--gold);
+        }
+
+        .test-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+
+        .test-message.user .test-content {
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
+
+        .test-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .test-input input {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 2px solid var(--gray);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--white);
+            font-size: 14px;
+        }
+
+        .test-input input:focus {
+            border-color: var(--cyan);
+            outline: none;
+        }
+
+        .test-input button {
+            background: var(--cyan);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .test-input button:hover {
+            background: var(--gold);
+        }
+
+        .quick-tests {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .quick-test {
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-test:hover {
+            background: var(--cyan);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--cyan);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .preset-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🤖 YAvoy IA Assistant</h1>
+            <p>Centro de Configuración Avanzada | Personalización Completa | Empatía Inteligente</p>
+        </div>
+
+        <!-- Presets Rápidos -->
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="applyPreset('accessibility')">
+                ♿ Modo Accesibilidad
+            </button>
+            <button class="preset-btn" onclick="applyPreset('business')">
+                💼 Modo Comercial
+            </button>
+            <button class="preset-btn" onclick="applyPreset('support')">
+                🤝 Modo Soporte
+            </button>
+            <button class="preset-btn" onclick="applyPreset('premium')">
+                ⭐ Modo Premium
+            </button>
+        </div>
+
+        <!-- Grid de Configuración -->
+        <div class="config-grid">
+            <!-- Panel de Personalidad -->
+            <div class="config-panel">
+                <h3>🧠 Configuración de Personalidad</h3>
+                
+                <div class="config-item">
+                    <label>Nivel de Empatía:</label>
+                    <input type="range" id="empathy" min="1" max="10" value="8" 
+                           title="Nivel de Empatía del Chatbot" 
+                           aria-label="Configurar nivel de empatía" 
+                           onchange="updateConfig()">
+                    <span class="range-value" id="empathy-value">8/10</span>
+                </div>
+
+                <div class="config-item">
+                    <label>Intensidad Promocional:</label>
+                    <input type="range" id="promotional" min="1" max="10" value="6" 
+                           title="Intensidad Promocional del Chatbot" 
+                           aria-label="Configurar intensidad promocional" 
+                           onchange="updateConfig()">
+                    <span class="range-value" id="promotional-value">6/10</span>
+                </div>
+
+                <div class="config-item">
+                    <label>Velocidad de Respuesta:</label>
+                    <input type="range" id="speed" min="1" max="10" value="7" 
+                           title="Velocidad de Respuesta del Chatbot" 
+                           aria-label="Configurar velocidad de respuesta" 
+                           onchange="updateConfig()">
+                    <span class="range-value" id="speed-value">7/10</span>
+                </div>
+
+                <div class="config-item">
+                    <label>Estilo de Comunicación:</label>
+                    <select id="style" title="Estilo de Conversación" aria-label="Seleccionar estilo de conversación" onchange="updateConfig()">
+                        <option value="friendly">😊 Amigable</option>
+                        <option value="professional">💼 Profesional</option>
+                        <option value="casual">😎 Casual</option>
+                        <option value="empathetic">💙 Muy Empático</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Panel de Funcionalidades -->
+            <div class="config-panel">
+                <h3>⚙️ Funcionalidades Avanzadas</h3>
+                
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="proactive" checked onchange="updateConfig()">
+                        <label for="proactive">Sugerencias Proactivas</label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="upselling" checked onchange="updateConfig()">
+                        <label for="upselling">Upselling Inteligente</label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="emotion" checked onchange="updateConfig()">
+                        <label for="emotion">Detección de Emociones</label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="personalization" checked onchange="updateConfig()">
+                        <label for="personalization">Personalización Avanzada</label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="voice" checked onchange="updateConfig()">
+                        <label for="voice">Síntesis de Voz</label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="analytics" checked onchange="updateConfig()">
+                        <label for="analytics">Analytics en Tiempo Real</label>
+                    </div>
+                </div>
+
+                <div class="config-item language-selector">
+                    <label>Idioma Principal:</label>
+                    <select id="language" title="Idioma del Chatbot" aria-label="Seleccionar idioma" onchange="updateConfig()">
+                        <option value="es">🇦🇷 Español (Argentina)</option>
+                        <option value="en">🇺🇸 English</option>
+                        <option value="pt">🇧🇷 Português</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de Demostración -->
+        <div class="demo-section">
+            <h3>🚀 Área de Pruebas en Tiempo Real</h3>
+            
+            <div class="quick-tests">
+                <button class="quick-test" onclick="testMessage('Estoy frustrado con mi pedido')">😠 Mensaje Frustrado</button>
+                <button class="quick-test" onclick="testMessage('Quiero abrir un comercio')">🏪 Consulta Comercial</button>
+                <button class="quick-test" onclick="testMessage('No entiendo cómo funciona')">❓ Consulta Confusa</button>
+                <button class="quick-test" onclick="testMessage('¡Excelente servicio!')">😍 Mensaje Feliz</button>
+                <button class="quick-test" onclick="testMessage('¿Cuánto puedo ganar como repartidor?')">🚴 Consulta Repartidor</button>
+            </div>
+
+            <div class="test-conversation" id="conversation">
+                <div class="test-message bot">
+                    <div class="test-avatar">🤖</div>
+                    <div class="test-content">
+                        ¡Hola! Soy el asistente IA de YAvoy con configuración avanzada. Estoy listo para adaptarme a cualquier situación y brindar la mejor experiencia posible. Prueba enviarme cualquier mensaje para ver cómo respondo según mi configuración actual.
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-input">
+                <input type="text" 
+                       id="testInput" 
+                       placeholder="Escribe tu mensaje de prueba aquí..."
+                       onkeypress="handleTestKeyPress(event)">
+                <button onclick="sendTestMessage()">Enviar</button>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="response-time">1.2s</div>
+                <div class="stat-label">Tiempo de Respuesta</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="satisfaction">4.8</div>
+                <div class="stat-label">Satisfacción Promedio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="interactions">1,247</div>
+                <div class="stat-label">Interacciones Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="conversion">32%</div>
+                <div class="stat-label">Tasa de Conversión</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Importar el sistema IA -->
+    <script src="js/yavoy-ai-advanced.js"></script>
+    
+    <script>
+        let botAI = null;
+        let currentConfig = {
+            empathy_level: 8,
+            promotional_intensity: 6,
+            response_style: 'friendly',
+            proactive_suggestions: true,
+            upselling_enabled: true,
+            emotion_detection: true,
+            personalization: true,
+            voice_enabled: true,
+            analytics_enabled: true,
+            language: 'es',
+            response_speed: 7
+        };
+
+        // Inicializar cuando se carga el script IA
+        setTimeout(() => {
+            if (window.YAvoyAIAssistant) {
+                botAI = new window.YAvoyAIAssistant(currentConfig);
+                console.log('🤖 Bot IA inicializado para demostración');
+            }
+        }, 1000);
+
+        function updateConfig() {
+            // Leer valores de los controles
+            currentConfig.empathy_level = parseInt(document.getElementById('empathy').value);
+            currentConfig.promotional_intensity = parseInt(document.getElementById('promotional').value);
+            currentConfig.response_speed = parseInt(document.getElementById('speed').value);
+            currentConfig.response_style = document.getElementById('style').value;
+            currentConfig.language = document.getElementById('language').value;
+            
+            // Checkboxes
+            currentConfig.proactive_suggestions = document.getElementById('proactive').checked;
+            currentConfig.upselling_enabled = document.getElementById('upselling').checked;
+            currentConfig.emotion_detection = document.getElementById('emotion').checked;
+            currentConfig.personalization = document.getElementById('personalization').checked;
+            currentConfig.voice_enabled = document.getElementById('voice').checked;
+            currentConfig.analytics_enabled = document.getElementById('analytics').checked;
+
+            // Actualizar displays
+            document.getElementById('empathy-value').textContent = `${currentConfig.empathy_level}/10`;
+            document.getElementById('promotional-value').textContent = `${currentConfig.promotional_intensity}/10`;
+            document.getElementById('speed-value').textContent = `${currentConfig.response_speed}/10`;
+
+            // Aplicar configuración al bot si está disponible
+            if (botAI && botAI.updateConfig) {
+                botAI.updateConfig(currentConfig);
+            }
+
+            // Mostrar mensaje de confirmación
+            addTestMessage('🔄 Configuración actualizada. Mi personalidad se ha ajustado según los nuevos parámetros.', 'bot');
+
+            console.log('Configuración actualizada:', currentConfig);
+        }
+
+        function applyPreset(preset) {
+            const presets = {
+                accessibility: {
+                    empathy_level: 9,
+                    promotional_intensity: 2,
+                    response_style: 'empathetic',
+                    voice_enabled: true,
+                    response_speed: 5,
+                    message: '♿ Modo Accesibilidad activado: Máxima empatía, lenguaje simple, soporte de voz habilitado.'
+                },
+                business: {
+                    empathy_level: 6,
+                    promotional_intensity: 9,
+                    response_style: 'professional',
+                    upselling_enabled: true,
+                    response_speed: 8,
+                    message: '💼 Modo Comercial activado: Enfoque en ventas, promociones intensivas, comunicación profesional.'
+                },
+                support: {
+                    empathy_level: 10,
+                    promotional_intensity: 1,
+                    response_style: 'empathetic',
+                    proactive_suggestions: true,
+                    response_speed: 6,
+                    message: '🤝 Modo Soporte activado: Máxima empatía, enfoque en resolver problemas, mínimas promociones.'
+                },
+                premium: {
+                    empathy_level: 9,
+                    promotional_intensity: 8,
+                    response_style: 'friendly',
+                    personalization: true,
+                    analytics_enabled: true,
+                    response_speed: 9,
+                    message: '⭐ Modo Premium activado: Experiencia personalizada completa con máxima funcionalidad.'
+                }
+            };
+
+            const config = presets[preset];
+            if (!config) return;
+
+            // Aplicar configuración
+            Object.assign(currentConfig, config);
+            
+            // Actualizar controles UI
+            document.getElementById('empathy').value = currentConfig.empathy_level;
+            document.getElementById('promotional').value = currentConfig.promotional_intensity;
+            document.getElementById('speed').value = currentConfig.response_speed;
+            document.getElementById('style').value = currentConfig.response_style;
+            
+            // Actualizar checkboxes
+            document.getElementById('proactive').checked = currentConfig.proactive_suggestions !== false;
+            document.getElementById('upselling').checked = currentConfig.upselling_enabled !== false;
+            document.getElementById('emotion').checked = currentConfig.emotion_detection !== false;
+            document.getElementById('personalization').checked = currentConfig.personalization !== false;
+            document.getElementById('voice').checked = currentConfig.voice_enabled !== false;
+            document.getElementById('analytics').checked = currentConfig.analytics_enabled !== false;
+
+            // Llamar a updateConfig para sincronizar todo
+            updateConfig();
+
+            // Mensaje específico del preset
+            addTestMessage(config.message, 'bot');
+        }
+
+        function testMessage(message) {
+            document.getElementById('testInput').value = message;
+            sendTestMessage();
+        }
+
+        function sendTestMessage() {
+            const input = document.getElementById('testInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Agregar mensaje del usuario
+            addTestMessage(message, 'user');
+            input.value = '';
+
+            // Simular procesamiento
+            addTestMessage('🤔 Procesando...', 'typing');
+
+            setTimeout(async () => {
+                // Remover indicador de typing
+                removeTypingMessage();
+
+                // Generar respuesta
+                let response = '';
+                if (botAI && botAI.processMessage) {
+                    try {
+                        response = await botAI.processMessage(message);
+                    } catch (error) {
+                        console.error('Error:', error);
+                        response = generateDemoResponse(message);
+                    }
+                } else {
+                    response = generateDemoResponse(message);
+                }
+
+                addTestMessage(response, 'bot');
+                updateStats();
+            }, currentConfig.response_speed * 200); // Velocidad configurable
+        }
+
+        function generateDemoResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Respuestas basadas en configuración actual
+            const empathyLevel = currentConfig.empathy_level;
+            const promoIntensity = currentConfig.promotional_intensity;
+            const style = currentConfig.response_style;
+
+            let empathyPrefix = '';
+            if (empathyLevel >= 8) {
+                empathyPrefix = 'Entiendo perfectamente como te sientes. ';
+            } else if (empathyLevel >= 6) {
+                empathyPrefix = 'Comprendo tu situación. ';
+            }
+
+            let promoSuffix = '';
+            if (promoIntensity >= 8) {
+                promoSuffix = '\n\n🎁 OFERTA ESPECIAL: ¡Aprovecha ahora con 30% de descuento!';
+            } else if (promoIntensity >= 6) {
+                promoSuffix = '\n\n💡 Por cierto, tenemos ofertas especiales disponibles.';
+            }
+
+            // Detección de emociones si está habilitada
+            if (currentConfig.emotion_detection) {
+                if (lowerMessage.includes('frustrado') || lowerMessage.includes('molesto')) {
+                    return `${empathyPrefix}Lamento mucho que te sientas frustrado 😔 Es mi prioridad absoluta ayudarte a resolver esto. Vamos a solucionarlo juntos paso a paso.${style === 'professional' ? ' Le aseguro que encontraremos una solución.' : ' ¡No te voy a dejar así!'}`;
+                }
+                
+                if (lowerMessage.includes('feliz') || lowerMessage.includes('excelente') || lowerMessage.includes('genial')) {
+                    return `¡Qué alegría saber que estás contento/a! 🎉 ${style === 'casual' ? '¡Eso me re copa!' : 'Me da mucha satisfacción ayudarte bien.'} ¿Hay algo más en lo que pueda asistirte?${promoSuffix}`;
+                }
+            }
+
+            // Respuestas por tipo de consulta
+            if (lowerMessage.includes('comercio') || lowerMessage.includes('vender')) {
+                const businessResponse = style === 'professional' ? 
+                    'Excelente decisión empresarial. YAvoy le ofrece una plataforma integral para hacer crecer su negocio.' :
+                    '¡Genial que quieras sumarte como comercio! 🏪 Te voy a ayudar a arrancar.';
+                
+                return `${empathyPrefix}${businessResponse} Registro 100% gratuito, sin costos ocultos.${promoSuffix}`;
+            }
+
+            if (lowerMessage.includes('repartidor') || lowerMessage.includes('trabajar')) {
+                return `${empathyPrefix}¡Excelente! 🚴 Como repartidor puedes ganar entre $15,000 y $45,000 por mes. El proceso es súper simple y empezás a trabajar enseguida.${promoSuffix}`;
+            }
+
+            if (lowerMessage.includes('no entiendo') || lowerMessage.includes('confuso')) {
+                const helpResponse = style === 'empathetic' ? 
+                    'No te preocupes para nada, es completamente normal tener dudas. Estoy aquí para hacer todo súper claro.' :
+                    'Te explico paso a paso sin problemas.';
+                
+                return `${empathyPrefix}${helpResponse} YAvoy conecta clientes, comercios y repartidores para entregas rápidas. ¿Qué específicamente te gustaría saber?`;
+            }
+
+            // Respuesta general
+            const genericResponses = {
+                friendly: `${empathyPrefix}¡Hola! 😊 Recibí tu mensaje y estoy aquí para ayudarte con lo que necesites.`,
+                professional: `${empathyPrefix}Gracias por contactarnos. Estoy a su disposición para brindarle la asistencia necesaria.`,
+                casual: `${empathyPrefix}¡Ey! 👋 Vi tu mensaje, ¿en qué te puedo ayudar?`,
+                empathetic: `${empathyPrefix}Hola, muchas gracias por escribirme. Me importa mucho poder ayudarte de la mejor manera.`
+            };
+
+            return `${genericResponses[style] || genericResponses.friendly} ¿Podrías contarme un poco más sobre qué necesitas específicamente?${promoSuffix}`;
+        }
+
+        function addTestMessage(message, type) {
+            const conversation = document.getElementById('conversation');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `test-message ${type}`;
+            
+            if (type === 'typing') {
+                messageDiv.id = 'typing-message';
+                messageDiv.innerHTML = `
+                    <div class="test-avatar">🤖</div>
+                    <div class="test-content">${message}</div>
+                `;
+            } else {
+                const avatar = type === 'bot' ? '🤖' : '👤';
+                messageDiv.innerHTML = `
+                    <div class="test-avatar">${avatar}</div>
+                    <div class="test-content">${message}</div>
+                `;
+            }
+            
+            conversation.appendChild(messageDiv);
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+
+        function removeTypingMessage() {
+            const typingMessage = document.getElementById('typing-message');
+            if (typingMessage) {
+                typingMessage.remove();
+            }
+        }
+
+        function handleTestKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendTestMessage();
+            }
+        }
+
+        function updateStats() {
+            // Simular actualización de estadísticas
+            const interactions = document.getElementById('interactions');
+            const current = parseInt(interactions.textContent.replace(',', ''));
+            interactions.textContent = (current + 1).toLocaleString();
+            
+            // Tiempo de respuesta basado en configuración
+            const responseTime = (currentConfig.response_speed / 10) * 2;
+            document.getElementById('response-time').textContent = `${responseTime.toFixed(1)}s`;
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            updateConfig(); // Aplicar configuración inicial
+            console.log('🚀 Panel de configuración IA inicializado');
+        });
+    </script>
+</body>
+</html>
