@@ -404,6 +404,77 @@ El equipo de YAvoy
     }
 
     /**
+     * Envía email para resetear contraseña
+     * @param {object} data - { email, nombre, resetUrl }
+     */
+    async sendPasswordResetEmail(data) {
+        try {
+            if (!this.transporter) {
+                console.warn('⚠️  Servicio de email no configurado.');
+                return { success: false };
+            }
+
+            const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .header { color: #f59e0b; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .content { color: #333; line-height: 1.6; }
+        .reset-button { display: inline-block; background-color: #f59e0b; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+        .warning { color: #ef4444; font-size: 12px; font-style: italic; margin-top: 10px; }
+        .footer { color: #999; font-size: 12px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">🔐 Recupera tu Contraseña</div>
+        <div class="content">
+            <p>Hola ${data.nombre},</p>
+            <p>Hemos recibido una solicitud para resetear tu contraseña en YAvoy. Haz clic en el botón de abajo para crear una nueva contraseña.</p>
+            <a href="${data.resetUrl}" class="reset-button">Resetear Contraseña</a>
+            <p>O copia y pega este enlace en tu navegador:</p>
+            <p><code>${data.resetUrl}</code></p>
+            <p class="warning">⚠️ Este enlace expirará en 1 hora por seguridad.</p>
+            <p>Si no solicitaste el reset de contraseña, puedes ignorar este email.</p>
+            <hr>
+            <p>¿Preguntas? Contacta a nuestro soporte en support@yavoy.com.ar</p>
+        </div>
+        <div class="footer">
+            <p>© 2026 YAvoy - Sistema de entregas inteligente</p>
+        </div>
+    </div>
+</body>
+</html>
+            `.trim();
+
+            const mailOptions = {
+                from: process.env.SMTP_USER || 'yavoyen5@yavoy.space',
+                to: data.email,
+                subject: '[YAvoy] Recupera tu contraseña',
+                html: htmlContent
+            };
+
+            const info = await this.transporter.sendMail(mailOptions);
+            console.log(`✅ Email de reset enviado a: ${data.email}`);
+            return {
+                success: true,
+                message: 'Email de reset enviado',
+                messageId: info.messageId
+            };
+        } catch (error) {
+            console.error('❌ Error enviando email de reset:', error);
+            return {
+                success: false,
+                message: 'No se pudo enviar el email de reset',
+                error: error.message
+            };
+        }
+    }
+
+    /**
      * Respuesta simulada cuando no hay email configurado
      * Useful para desarrollo sin credenciales reales
      */

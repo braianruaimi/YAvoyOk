@@ -419,6 +419,27 @@ router.post('/change-password',
     (req, res) => authController.changePassword(req, res)
 );
 
+/**
+ * POST /api/auth/forgot-password
+ * Solicita recuperación de contraseña
+ * Body: { email }
+ * Envía un email con link de reset
+ */
+router.post('/forgot-password',
+    securityMiddleware.rateLimiters.auth,
+    (req, res) => authController.forgotPassword(req, res)
+);
+
+/**
+ * POST /api/auth/reset-password
+ * Resetea la contraseña con token válido
+ * Body: { token, newPassword }
+ */
+router.post('/reset-password',
+    securityMiddleware.rateLimiters.auth,
+    (req, res) => authController.resetPassword(req, res)
+);
+
 // ========================================
 // 📋 DOCUMENTACIÓN DE ENDPOINTS
 // ========================================

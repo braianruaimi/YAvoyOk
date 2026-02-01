@@ -1,3 +1,21 @@
+// =============================
+// SEQUELIZE: Sincronización de modelos
+// =============================
+
+const sequelize = require('./config/database');
+const Usuario = require('./models/Usuario');
+const Pedido = require('./models/Pedido');
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync({ alter: true });
+    console.log('✅ Modelos Sequelize sincronizados con la base de datos.');
+  } catch (error) {
+    console.error('❌ Error al sincronizar modelos Sequelize:', error);
+    process.exit(1);
+  }
+})();
 // ====================================
 // YAVOY v3.1 - SERVIDOR SEGURO CON CIBERSEGURIDAD AVANZADA
 // ====================================

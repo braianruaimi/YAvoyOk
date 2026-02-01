@@ -67,32 +67,43 @@ function verifyToken(token) {
  * Middleware: Requiere autenticación válida
  * Verifica que el request tenga un token JWT válido en headers
  */
-function requireAuth(req, res, next) {
-    // Obtener token del header Authorization
+const UsuarioModel = require('../models/Usuario');
+const sequelize = require('../../config/database');
+const Usuario = UsuarioModel(sequelize);
+
+async function requireAuth(req, res, next) {
     const authHeader = req.headers.authorization;
-    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
             error: 'No autorizado',
             message: 'Token de autenticación requerido'
         });
     }
-    
-    const token = authHeader.substring(7); // Remover "Bearer "
-    
-    // Verificar token
+    const token = authHeader.substring(7);
     const decoded = verifyToken(token);
-    
     if (!decoded) {
         return res.status(401).json({
             error: 'Token inválido',
             message: 'El token proporcionado es inválido o ha expirado'
         });
     }
-    
-    // Agregar usuario al request
-    req.user = decoded;
-    next();
+    try {
+        const usuario = await Usuario.findByPk(decoded.id);
+        if (!usuario) {
+            return res.status(401).json({
+                error: 'No autorizado',
+                message: 'Usuario no encontrado en la base de datos'
+            });
+        }
+        req.user = usuario.toJSON();
+        next();
+    } catch (error) {
+        console.error('[AUTH] Error buscando usuario en DB:', error);
+        return res.status(500).json({
+            error: 'Error del servidor',
+            message: 'No se pudo validar el usuario'
+        });
+    }
 }
 
 /**

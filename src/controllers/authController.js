@@ -8,17 +8,11 @@
  */
 
 const bcrypt = require('bcryptjs');
-const fs = require('fs').promises;
-const path = require('path');
+const crypto = require('crypto');
 const { generateToken, generateRefreshToken } = require('../middleware/auth');
 const { sanitizeString } = require('../middleware/security');
 const emailService = require('../utils/emailService');
-
-// Rutas a archivos de datos
-const REGISTROS_PATH = path.join(__dirname, '../../registros');
-const COMERCIOS_FILE = path.join(REGISTROS_PATH, 'comercios/comercios.json');
-const REPARTIDORES_FILE = path.join(REGISTROS_PATH, 'repartidores/repartidores.json');
-const CLIENTES_FILE = path.join(REGISTROS_PATH, 'clientes/clientes.json');
+const Usuario = require('../../models/Usuario');
 
 // ========================================
 // 🔐 HASH DE CONTRASEÑAS
@@ -48,382 +42,142 @@ async function verifyPassword(password, hash) {
 // 📁 HELPERS DE LECTURA/ESCRITURA
 // ========================================
 
-async function readJSON(filePath) {
-    try {
-        const data = await fs.readFile(filePath, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error(`Error leyendo ${filePath}:`, error);
-        return [];
-    }
-}
-
-async function writeJSON(filePath, data) {
-    try {
-        await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
-        return true;
-    } catch (error) {
-        console.error(`Error escribiendo ${filePath}:`, error);
-        return false;
-    }
-}
+// ...eliminar helpers de lectura/escritura JSON...
 
 // ========================================
 // 📝 REGISTRO DE USUARIOS
 // ========================================
 
 class AuthController {
-    
-    /**
-     * POST /api/auth/register/comercio
-     * Registra un nuevo comercio
-     */
+    // Registro de comercio
     async registerComercio(req, res) {
         try {
             const { nombre, email, telefono, direccion, password, rubro } = req.body;
-            
-            // Validaciones básicas
             if (!nombre || !email || !password) {
-                return res.status(400).json({
-                    error: 'Datos incompletos',
-                    message: 'Nombre, email y contraseña son obligatorios'
-                });
+                return res.status(400).json({ error: 'Datos incompletos', message: 'Nombre, email y contraseña son obligatorios' });
             }
-            
-            // Validar formato de email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                return res.status(400).json({
-                    error: 'Email inválido',
-                    message: 'Por favor proporciona un email válido'
-                });
+                return res.status(400).json({ error: 'Email inválido', message: 'Por favor proporciona un email válido' });
             }
-            
-            // Validar longitud de contraseña
             if (password.length < 8) {
-                return res.status(400).json({
-                    error: 'Contraseña débil',
-                    message: 'La contraseña debe tener al menos 8 caracteres'
-                });
+                return res.status(400).json({ error: 'Contraseña débil', message: 'La contraseña debe tener al menos 8 caracteres' });
             }
-            
-            // Leer comercios existentes
-            const comercios = await readJSON(COMERCIOS_FILE);
-            
-            // Verificar si el email ya existe
-            const emailExiste = comercios.some(c => c.email === email);
+            const emailExiste = await Usuario.findOne({ where: { email } });
             if (emailExiste) {
-                return res.status(409).json({
-                    error: 'Email duplicado',
-                    message: 'Ya existe un comercio con este email'
-                });
+                return res.status(409).json({ error: 'Email duplicado', message: 'Ya existe un comercio con este email' });
             }
-            
-            // Hash de la contraseña
-            const hashedPassword = await hashPassword(password);
-            
-            // Crear nuevo comercio
-            const nuevoComercio = {
+            const nuevoComercio = await Usuario.create({
                 id: `COM${Date.now()}`,
                 nombre: sanitizeString(nombre),
                 email: sanitizeString(email),
-                password: hashedPassword, // Almacenar hash
+                password,
                 telefono: sanitizeString(telefono) || '',
-                direccion: sanitizeString(direccion) || '',
-                rubro: sanitizeString(rubro) || 'general',
+                metadata: { direccion: sanitizeString(direccion) || '', rubro: sanitizeString(rubro) || 'general', fechaRegistro: new Date().toISOString(), rating: 0, pedidosCompletados: 0 },
+                tipo: 'COMERCIO',
                 estado: 'activo',
-                verificado: false,
-                fechaRegistro: new Date().toISOString(),
-                rating: 0,
-                pedidosCompletados: 0
-            };
-            
-            comercios.push(nuevoComercio);
-            await writeJSON(COMERCIOS_FILE, comercios);
-            
-            // Enviar email de confirmación
+                verificado: false
+            });
             let emailEnviado = false;
             try {
-                const emailResult = await emailService.sendRegistrationEmail(
-                    {
-                        email: nuevoComercio.email,
-                        nombre: nuevoComercio.nombre,
-                        id: nuevoComercio.id
-                    },
-                    'comercio'
-                );
-                
+                const emailResult = await emailService.sendRegistrationEmail({ email: nuevoComercio.email, nombre: nuevoComercio.nombre, id: nuevoComercio.id }, 'comercio');
                 if (emailResult.success) {
                     nuevoComercio.confirmacionCode = emailResult.confirmationCode;
                     nuevoComercio.confirmacionExpira = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-                    comercios[comercios.length - 1] = nuevoComercio;
-                    await writeJSON(COMERCIOS_FILE, comercios);
+                    await nuevoComercio.save();
                     emailEnviado = true;
-                    console.log(`[EMAIL] Confirmación enviada a ${nuevoComercio.email} (${nuevoComercio.id})`);
                 }
             } catch (emailError) {
                 console.warn(`[EMAIL] Error enviando confirmación: ${emailError.message}`);
             }
-            
-            // Generar token JWT
-            const token = generateToken({
-                id: nuevoComercio.id,
-                email: nuevoComercio.email,
-                rol: 'comercio'
-            });
-            
-            const refreshToken = generateRefreshToken({
-                id: nuevoComercio.id,
-                rol: 'comercio'
-            });
-            
-            // No enviar la contraseña en la respuesta
-            const { password: _, ...comercioSinPassword } = nuevoComercio;
-            
-            res.status(201).json({
-                success: true,
-                message: 'Comercio registrado exitosamente',
-                comercio: comercioSinPassword,
-                token,
-                refreshToken,
-                emailEnviado: emailEnviado,
-                instrucciones: 'Por favor verifica tu email para confirmar tu cuenta'
-            });
-            
+            const token = generateToken({ id: nuevoComercio.id, email: nuevoComercio.email, rol: 'comercio' });
+            const refreshToken = generateRefreshToken({ id: nuevoComercio.id, rol: 'comercio' });
+            const { password: _, ...comercioSinPassword } = nuevoComercio.toJSON();
+            res.status(201).json({ success: true, message: 'Comercio registrado exitosamente', comercio: comercioSinPassword, token, refreshToken, emailEnviado, instrucciones: 'Por favor verifica tu email para confirmar tu cuenta' });
         } catch (error) {
             console.error('[AUTH] Error en registerComercio:', error);
-            res.status(500).json({
-                error: 'Error del servidor',
-                message: 'No se pudo completar el registro'
-            });
+            res.status(500).json({ error: 'Error del servidor', message: 'No se pudo completar el registro' });
         }
     }
-    
-    /**
-     * POST /api/auth/register/repartidor
-     * Registra un nuevo repartidor
-     */
+
+    // Registro de repartidor
     async registerRepartidor(req, res) {
         try {
             const { nombre, email, telefono, password, vehiculo, zonaCobertura } = req.body;
-            
-            // Validaciones básicas
             if (!nombre || !email || !password) {
-                return res.status(400).json({
-                    error: 'Datos incompletos',
-                    message: 'Nombre, email y contraseña son obligatorios'
-                });
+                return res.status(400).json({ error: 'Datos incompletos', message: 'Nombre, email y contraseña son obligatorios' });
             }
-            
-            // Validar formato de email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                return res.status(400).json({
-                    error: 'Email inválido',
-                    message: 'Por favor proporciona un email válido'
-                });
+                return res.status(400).json({ error: 'Email inválido', message: 'Por favor proporciona un email válido' });
             }
-            
-            // Validar longitud de contraseña
             if (password.length < 8) {
-                return res.status(400).json({
-                    error: 'Contraseña débil',
-                    message: 'La contraseña debe tener al menos 8 caracteres'
-                });
+                return res.status(400).json({ error: 'Contraseña débil', message: 'La contraseña debe tener al menos 8 caracteres' });
             }
-            
-            // Leer repartidores existentes
-            const repartidores = await readJSON(REPARTIDORES_FILE);
-            
-            // Verificar si el email ya existe
-            const emailExiste = repartidores.some(r => r.email === email);
+            const emailExiste = await Usuario.findOne({ where: { email } });
             if (emailExiste) {
-                return res.status(409).json({
-                    error: 'Email duplicado',
-                    message: 'Ya existe un repartidor con este email'
-                });
+                return res.status(409).json({ error: 'Email duplicado', message: 'Ya existe un repartidor con este email' });
             }
-            
-            // Hash de la contraseña
-            const hashedPassword = await hashPassword(password);
-            
-            // Crear nuevo repartidor
-            const nuevoRepartidor = {
+            const nuevoRepartidor = await Usuario.create({
                 id: `REP${Date.now()}`,
                 nombre: sanitizeString(nombre),
                 email: sanitizeString(email),
-                password: hashedPassword,
+                password,
                 telefono: sanitizeString(telefono) || '',
-                vehiculo: sanitizeString(vehiculo) || 'bicicleta',
-                zonaCobertura: zonaCobertura || [],
+                metadata: { vehiculo: sanitizeString(vehiculo) || 'bicicleta', zonaCobertura: zonaCobertura || [], fechaRegistro: new Date().toISOString(), rating: 0, entregasCompletadas: 0, ubicacionActual: null },
+                tipo: 'REPARTIDOR',
                 estado: 'disponible',
-                verificado: false,
-                fechaRegistro: new Date().toISOString(),
-                rating: 0,
-                entregasCompletadas: 0,
-                ubicacionActual: null
-            };
-            
-            repartidores.push(nuevoRepartidor);
-            await writeJSON(REPARTIDORES_FILE, repartidores);
-            
-            // Enviar email de confirmación
+                verificado: false
+            });
             let emailEnviado = false;
             try {
-                const emailResult = await emailService.sendRegistrationEmail(
-                    {
-                        email: nuevoRepartidor.email,
-                        nombre: nuevoRepartidor.nombre,
-                        id: nuevoRepartidor.id
-                    },
-                    'repartidor'
-                );
-                
+                const emailResult = await emailService.sendRegistrationEmail({ email: nuevoRepartidor.email, nombre: nuevoRepartidor.nombre, id: nuevoRepartidor.id }, 'repartidor');
                 if (emailResult.success) {
                     nuevoRepartidor.confirmacionCode = emailResult.confirmationCode;
                     nuevoRepartidor.confirmacionExpira = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-                    repartidores[repartidores.length - 1] = nuevoRepartidor;
-                    await writeJSON(REPARTIDORES_FILE, repartidores);
+                    await nuevoRepartidor.save();
                     emailEnviado = true;
-                    console.log(`[EMAIL] Confirmación enviada a ${nuevoRepartidor.email} (${nuevoRepartidor.id})`);
                 }
             } catch (emailError) {
                 console.warn(`[EMAIL] Error enviando confirmación: ${emailError.message}`);
             }
-            
-            // Generar token JWT
-            const token = generateToken({
-                id: nuevoRepartidor.id,
-                email: nuevoRepartidor.email,
-                rol: 'repartidor'
-            });
-            
-            const refreshToken = generateRefreshToken({
-                id: nuevoRepartidor.id,
-                rol: 'repartidor'
-            });
-            
-            // No enviar la contraseña en la respuesta
-            const { password: _, ...repartidorSinPassword } = nuevoRepartidor;
-            
-            res.status(201).json({
-                success: true,
-                message: 'Repartidor registrado exitosamente',
-                repartidor: repartidorSinPassword,
-                token,
-                refreshToken,
-                emailEnviado: emailEnviado,
-                instrucciones: 'Por favor verifica tu email para confirmar tu cuenta'
-            });
-            
+            const token = generateToken({ id: nuevoRepartidor.id, email: nuevoRepartidor.email, rol: 'repartidor' });
+            const refreshToken = generateRefreshToken({ id: nuevoRepartidor.id, rol: 'repartidor' });
+            const { password: _, ...repartidorSinPassword } = nuevoRepartidor.toJSON();
+            res.status(201).json({ success: true, message: 'Repartidor registrado exitosamente', repartidor: repartidorSinPassword, token, refreshToken, emailEnviado, instrucciones: 'Por favor verifica tu email para confirmar tu cuenta' });
         } catch (error) {
             console.error('[AUTH] Error en registerRepartidor:', error);
-            res.status(500).json({
-                error: 'Error del servidor',
-                message: 'No se pudo completar el registro'
-            });
+            res.status(500).json({ error: 'Error del servidor', message: 'No se pudo completar el registro' });
         }
     }
-    
-    // ========================================
-    // 🔓 LOGIN DE USUARIOS
-    // ========================================
-    
-    /**
-     * POST /api/auth/login
-     * Login universal (detecta tipo de usuario automáticamente)
-     */
+
+    // Login universal
     async login(req, res) {
         try {
             const { email, password } = req.body;
-            
-            // Validaciones básicas
             if (!email || !password) {
-                return res.status(400).json({
-                    error: 'Datos incompletos',
-                    message: 'Email y contraseña son obligatorios'
-                });
+                return res.status(400).json({ error: 'Datos incompletos', message: 'Email y contraseña son obligatorios' });
             }
-            
-            // Buscar usuario en comercios
-            const comercios = await readJSON(COMERCIOS_FILE);
-            let usuario = comercios.find(c => c.email === email);
-            let tipoUsuario = 'comercio';
-            
-            // Si no es comercio, buscar en repartidores
+            const usuario = await Usuario.findOne({ where: { email } });
             if (!usuario) {
-                const repartidores = await readJSON(REPARTIDORES_FILE);
-                usuario = repartidores.find(r => r.email === email);
-                tipoUsuario = 'repartidor';
+                return res.status(401).json({ error: 'Credenciales inválidas', message: 'Email o contraseña incorrectos' });
             }
-            
-            // Usuario no encontrado
-            if (!usuario) {
-                return res.status(401).json({
-                    error: 'Credenciales inválidas',
-                    message: 'Email o contraseña incorrectos'
-                });
-            }
-            
-            // Verificar contraseña
-            const passwordValida = await verifyPassword(password, usuario.password);
-            
+            const passwordValida = await bcrypt.compare(password, usuario.password);
             if (!passwordValida) {
-                return res.status(401).json({
-                    error: 'Credenciales inválidas',
-                    message: 'Email o contraseña incorrectos'
-                });
+                return res.status(401).json({ error: 'Credenciales inválidas', message: 'Email o contraseña incorrectos' });
             }
-            
-            // Verificar si está activo
             if (usuario.estado === 'bloqueado' || usuario.estado === 'suspendido') {
-                return res.status(403).json({
-                    error: 'Cuenta bloqueada',
-                    message: 'Tu cuenta está bloqueada. Contacta al administrador'
-                });
+                return res.status(403).json({ error: 'Cuenta bloqueada', message: 'Tu cuenta está bloqueada. Contacta al administrador' });
             }
-            
-            // Generar tokens
-            const token = generateToken({
-                id: usuario.id,
-                email: usuario.email,
-                rol: tipoUsuario
-            });
-            
-            const refreshToken = generateRefreshToken({
-                id: usuario.id,
-                rol: tipoUsuario
-            });
-            
-            // Actualizar último login
+            const token = generateToken({ id: usuario.id, email: usuario.email, rol: usuario.tipo });
+            const refreshToken = generateRefreshToken({ id: usuario.id, rol: usuario.tipo });
             usuario.ultimoLogin = new Date().toISOString();
-            
-            // Guardar cambios
-            if (tipoUsuario === 'comercio') {
-                await writeJSON(COMERCIOS_FILE, comercios);
-            } else {
-                const repartidores = await readJSON(REPARTIDORES_FILE);
-                await writeJSON(REPARTIDORES_FILE, repartidores);
-            }
-            
-            // No enviar la contraseña en la respuesta
-            const { password: _, ...usuarioSinPassword } = usuario;
-            
-            res.json({
-                success: true,
-                message: 'Login exitoso',
-                usuario: usuarioSinPassword,
-                rol: tipoUsuario,
-                token,
-                refreshToken
-            });
-            
+            await usuario.save();
+            const { password: _, ...usuarioSinPassword } = usuario.toJSON();
+            res.json({ success: true, message: 'Login exitoso', usuario: usuarioSinPassword, rol: usuario.tipo, token, refreshToken });
         } catch (error) {
             console.error('[AUTH] Error en login:', error);
-            res.status(500).json({
-                error: 'Error del servidor',
-                message: 'No se pudo completar el login'
-            });
+            res.status(500).json({ error: 'Error del servidor', message: 'No se pudo completar el login' });
         }
     }
     
@@ -770,6 +524,159 @@ class AuthController {
             res.status(500).json({
                 error: 'Error del servidor',
                 message: 'No se pudo reenviar el código'
+            });
+        }
+    }
+    
+    /**
+     * POST /api/auth/forgot-password
+     * Solicita recuperación de contraseña
+     * @body { email }
+     */
+    async forgotPassword(req, res) {
+        try {
+            const { email } = req.body;
+            
+            if (!email) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Email requerido',
+                    message: 'Por favor proporciona tu email'
+                });
+            }
+            
+            const usuario = await Usuario.findOne({ where: { email } });
+            if (!usuario) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Usuario no encontrado',
+                    message: 'No existe una cuenta con este email'
+                });
+            }
+            
+            // Generar token aleatorio
+            const resetToken = crypto.randomBytes(20).toString('hex');
+            const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+            
+            // Guardar token y expiración en la BD
+            usuario.resetPasswordToken = resetToken;
+            usuario.resetPasswordExpires = resetExpires;
+            await usuario.save();
+            
+            // Construir URL de reset
+            const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+            
+            // Enviar email
+            let emailEnviado = false;
+            try {
+                await emailService.sendPasswordResetEmail({
+                    email: usuario.email,
+                    nombre: usuario.nombre,
+                    resetUrl
+                });
+                emailEnviado = true;
+            } catch (emailError) {
+                console.warn(`[EMAIL] Error enviando reset: ${emailError.message}`);
+                // Limpiar token si el email falló
+                usuario.resetPasswordToken = null;
+                usuario.resetPasswordExpires = null;
+                await usuario.save();
+            }
+            
+            if (!emailEnviado) {
+                return res.status(500).json({
+                    success: false,
+                    error: 'Error al enviar email',
+                    message: 'No se pudo enviar el email de recuperación'
+                });
+            }
+            
+            res.json({
+                success: true,
+                message: 'Email de recuperación enviado exitosamente',
+                info: 'Revisa tu correo para el enlace de reset (válido por 1 hora)'
+            });
+        } catch (error) {
+            console.error('[AUTH] Error en forgotPassword:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Error del servidor',
+                message: 'No se pudo procesar la solicitud'
+            });
+        }
+    }
+    
+    /**
+     * POST /api/auth/reset-password
+     * Resetea la contraseña con token válido
+     * @body { token, newPassword }
+     */
+    async resetPassword(req, res) {
+        try {
+            const { token, newPassword } = req.body;
+            
+            if (!token || !newPassword) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Datos incompletos',
+                    message: 'Token y nueva contraseña son obligatorios'
+                });
+            }
+            
+            if (newPassword.length < 8) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Contraseña débil',
+                    message: 'La contraseña debe tener al menos 8 caracteres'
+                });
+            }
+            
+            // Buscar usuario con token válido y no expirado
+            const usuario = await Usuario.findOne({
+                where: {
+                    resetPasswordToken: token
+                }
+            });
+            
+            if (!usuario) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Token inválido',
+                    message: 'El token de reset no es válido'
+                });
+            }
+            
+            // Verificar que el token no haya expirado
+            if (new Date() > usuario.resetPasswordExpires) {
+                // Limpiar token expirado
+                usuario.resetPasswordToken = null;
+                usuario.resetPasswordExpires = null;
+                await usuario.save();
+                
+                return res.status(410).json({
+                    success: false,
+                    error: 'Token expirado',
+                    message: 'El enlace de reset ha expirado. Solicita uno nuevo'
+                });
+            }
+            
+            // Actualizar contraseña
+            usuario.password = newPassword;
+            usuario.resetPasswordToken = null;
+            usuario.resetPasswordExpires = null;
+            await usuario.save();
+            
+            res.json({
+                success: true,
+                message: 'Contraseña actualizada exitosamente',
+                info: 'Ya puedes iniciar sesión con tu nueva contraseña'
+            });
+        } catch (error) {
+            console.error('[AUTH] Error en resetPassword:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Error del servidor',
+                message: 'No se pudo resetear la contraseña'
             });
         }
     }
