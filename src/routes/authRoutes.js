@@ -9,6 +9,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const googleAuthController = require('../controllers/googleAuthController');
 const { requireAuth } = require('../middleware/auth');
 const securityMiddleware = require('../middleware/security');
 const { schemas, validate, validateAll } = require('../validation/schemas');
@@ -699,5 +700,21 @@ router.post('/verify-email', (req, res) => authController.verifyEmail(req, res))
  *         description: Usuario no encontrado
  */
 router.post('/resend-confirmation', (req, res) => authController.resendConfirmation(req, res));
+
+// ========================================
+// 🔐 GOOGLE OAUTH
+// ========================================
+
+/**
+ * POST /api/auth/google/init
+ * Inicia el flujo de autenticación con Google
+ */
+router.post('/google/init', (req, res) => googleAuthController.initGoogleAuth(req, res));
+
+/**
+ * GET /api/auth/google/callback
+ * Callback de Google OAuth
+ */
+router.get('/google/callback', (req, res) => googleAuthController.googleCallback(req, res));
 
 module.exports = router;
