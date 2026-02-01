@@ -18,34 +18,40 @@ class EmailService {
 
     /**
      * Inicializa el transportador de email
-     * Usa Hostinger SMTP por defecto (más profesional y confiable)
+     * Usa Hostinger SMTP (puerto 465 SSL - configuración correcta)
      * @returns {nodemailer.Transporter|null}
      */
     initializeTransporter() {
         try {
-            // Opción 1: Usar Hostinger SMTP (RECOMENDADO en producción)
-            if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-                return nodemailer.createTransport({
-                    host: process.env.SMTP_HOST,
-                    port: parseInt(process.env.SMTP_PORT) || 587,
-                    secure: process.env.SMTP_SECURE === 'true', // true para 465, false para 587
-                    auth: {
-                        user: process.env.SMTP_USER,
-                        pass: process.env.SMTP_PASS
-                    }
-                });
-            }
-
-            // Opción 2: Hostinger por defecto (con credenciales hardcoded)
-            return nodemailer.createTransport({
-                host: 'smtp.hostinger.com',
-                port: 465,
-                secure: true, // SSL
+            // Usar SIEMPRE Hostinger SMTP con puerto 465 (SSL directo)
+            const smtpConfig = {
+                host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+                port: parseInt(process.env.SMTP_PORT || 465),
+                secure: true, // Puerto 465 requiere SSL directo
                 auth: {
-                    user: process.env.SMTP_USER || 'yavoyen5@yavoy.space', // Email profesional del hosting
-                    pass: process.env.SMTP_PASS || 'BraianCesar26!' // Contraseña del hosting
+                    user: process.env.SMTP_USER || 'yavoyen5@yavoy.space',
+                    pass: process.env.SMTP_PASS || 'BrainCesar26!'
+                }
+            };
+
+            console.log(`📧 Inicializando transporter SMTP:`);
+            console.log(`   Host: ${smtpConfig.host}`);
+            console.log(`   Puerto: ${smtpConfig.port}`);
+            console.log(`   Usuario: ${smtpConfig.auth.user}`);
+            console.log(`   Secure (SSL): ${smtpConfig.secure}`);
+
+            const transporter = nodemailer.createTransport(smtpConfig);
+
+            // Verificar conexión
+            transporter.verify((error, success) => {
+                if (error) {
+                    console.error('❌ Error verificando conexión SMTP:', error.message);
+                } else {
+                    console.log('✅ Conexión SMTP verificada exitosamente');
                 }
             });
+
+            return transporter;
         } catch (error) {
             console.error('❌ Error inicializando servicio de email:', error);
             return null;
@@ -193,7 +199,7 @@ El equipo de YAvoy
             `.trim();
 
             const mailOptions = {
-                from: 'YAvoy <univerzasite@gmail.com>',
+                from: 'YAvoy <yavoyen5@yavoy.space>',
                 to: email,
                 subject: '🎉 ¡Tu cuenta de YAvoy está lista!',
                 html: htmlContent
