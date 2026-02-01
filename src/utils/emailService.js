@@ -1,0 +1,428 @@
+/**
+ * ====================================
+ * YAVOY v3.1 - SERVICIO DE EMAIL
+ * ====================================
+ * 
+ * Gestiona el envío de emails de confirmación, notificaciones, etc.
+ * Usa Nodemailer con Gmail o servicio SMTP configurado
+ */
+
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+class EmailService {
+    constructor() {
+        this.transporter = this.initializeTransporter();
+        this.emailTemplate = this.getEmailTemplate.bind(this);
+    }
+
+    /**
+     * Inicializa el transportador de email
+     * Usa Hostinger SMTP por defecto (más profesional y confiable)
+     * @returns {nodemailer.Transporter|null}
+     */
+    initializeTransporter() {
+        try {
+            // Opción 1: Usar Hostinger SMTP (RECOMENDADO en producción)
+            if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+                return nodemailer.createTransport({
+                    host: process.env.SMTP_HOST,
+                    port: parseInt(process.env.SMTP_PORT) || 587,
+                    secure: process.env.SMTP_SECURE === 'true', // true para 465, false para 587
+                    auth: {
+                        user: process.env.SMTP_USER,
+                        pass: process.env.SMTP_PASS
+                    }
+                });
+            }
+
+            // Opción 2: Hostinger por defecto (con credenciales hardcoded)
+            return nodemailer.createTransport({
+                host: 'smtp.hostinger.com',
+                port: 465,
+                secure: true, // SSL
+                auth: {
+                    user: process.env.SMTP_USER || 'yavoyen5@yavoy.space', // Email profesional del hosting
+                    pass: process.env.SMTP_PASS || 'BraianCesar26!' // Contraseña del hosting
+                }
+            });
+        } catch (error) {
+            console.error('❌ Error inicializando servicio de email:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Genera un código de confirmación aleatorio
+     * @returns {string} Código de 6 dígitos
+     */
+    generateConfirmationCode() {
+        return crypto.randomInt(100000, 999999).toString();
+    }
+
+    /**
+     * Genera un token de verificación único
+     * @returns {string} Token hex de 32 caracteres
+     */
+    generateVerificationToken() {
+        return crypto.randomBytes(16).toString('hex');
+    }
+
+    /**
+     * Envía email de confirmación de registro
+     * @param {Object} userData - Datos del usuario
+     * @param {string} userData.email - Email del usuario
+     * @param {string} userData.nombre - Nombre del usuario
+     * @param {string} userData.id - ID asignado del usuario
+     * @param {string} tipo - Tipo de usuario: 'comercio', 'repartidor', 'cliente'
+     * @returns {Promise<Object>} {success, confirmationCode, message}
+     */
+    async sendRegistrationEmail(userData, tipo = 'cliente') {
+        try {
+            if (!this.transporter) {
+                console.warn('⚠️  Servicio de email no configurado. Simulando envío...');
+                return this.mockEmailResponse(userData, tipo);
+            }
+
+            const { email, nombre, id } = userData;
+            const confirmationCode = this.generateConfirmationCode();
+
+            // Traducir tipos de usuario
+            const tiposMap = {
+                'comercio': 'Comercio',
+                'repartidor': 'Repartidor',
+                'cliente': 'Cliente'
+            };
+
+            const tipoLabel = tiposMap[tipo] || 'Usuario';
+
+            // Generar template HTML
+            const htmlContent = this.getEmailTemplate(nombre, confirmationCode, id, tipoLabel);
+
+            const mailOptions = {
+                from: 'YAvoy <yavoyen5@yavoy.space>',
+                to: email,
+                subject: `✅ Confirma tu registro en YAvoy - Código: ${confirmationCode}`,
+                html: htmlContent,
+                text: `
+Hola ${nombre},
+
+¡Bienvenido a YAvoy!
+
+Tu número de usuario es: ${id}
+Tu código de confirmación es: ${confirmationCode}
+
+Por favor, ingresa este código en la plataforma para activar tu cuenta.
+El código expira en 24 horas.
+
+Si no fuiste tú quien se registró, ignora este mensaje.
+
+Saludos,
+El equipo de YAvoy
+                `.trim()
+            };
+
+            // Enviar email
+            const info = await this.transporter.sendMail(mailOptions);
+
+            console.log(`✅ Email enviado a ${email}:`, info.messageId);
+
+            return {
+                success: true,
+                message: 'Email de confirmación enviado exitosamente',
+                confirmationCode,
+                userId: id,
+                expiresIn: '24 horas'
+            };
+
+        } catch (error) {
+            console.error('❌ Error enviando email de confirmación:', error);
+            
+            // Retornar respuesta de fallo pero no bloquear el registro
+            return {
+                success: false,
+                message: 'No se pudo enviar el email, pero la cuenta fue creada',
+                error: error.message,
+                userId: userData.id
+            };
+        }
+    }
+
+    /**
+     * Envía email de bienvenida después de verificación
+     * @param {string} email - Email del usuario
+     * @param {string} nombre - Nombre del usuario
+     * @param {string} id - ID del usuario
+     */
+    async sendWelcomeEmail(email, nombre, id) {
+        try {
+            if (!this.transporter) {
+                console.warn('⚠️  Servicio de email no configurado.');
+                return { success: false };
+            }
+
+            const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .header { color: #06b6d4; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .content { color: #333; line-height: 1.6; }
+        .footer { color: #999; font-size: 12px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">🎉 ¡Bienvenido a YAvoy!</div>
+        <div class="content">
+            <p>Hola ${nombre},</p>
+            <p>Tu cuenta ha sido verificada exitosamente. Ya puedes usar todos los servicios de YAvoy.</p>
+            <p><strong>Tu ID de usuario:</strong> ${id}</p>
+            <p>Accede a tu panel: <a href="https://yavoy.com.ar/login">Inicia sesión aquí</a></p>
+            <hr>
+            <p>¿Preguntas? Contacta a nuestro soporte en support@yavoy.com.ar</p>
+        </div>
+        <div class="footer">
+            <p>© 2026 YAvoy - Sistema de entregas inteligente</p>
+        </div>
+    </div>
+</body>
+</html>
+            `.trim();
+
+            const mailOptions = {
+                from: 'YAvoy <univerzasite@gmail.com>',
+                to: email,
+                subject: '🎉 ¡Tu cuenta de YAvoy está lista!',
+                html: htmlContent
+            };
+
+            await this.transporter.sendMail(mailOptions);
+            return { success: true };
+
+        } catch (error) {
+            console.error('Error enviando email de bienvenida:', error);
+            return { success: false };
+        }
+    }
+
+    /**
+     * Template HTML para email de confirmación
+     * @private
+     */
+    getEmailTemplate(nombre, codigo, userId, tipoUsuario) {
+        return `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: #333;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 20px auto; 
+            background: white; 
+            border-radius: 12px; 
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .logo { font-size: 32px; font-weight: 900; margin-bottom: 10px; }
+        .subtitle { font-size: 14px; opacity: 0.9; }
+        
+        .content { padding: 40px 20px; }
+        .greeting { font-size: 18px; font-weight: 600; color: #0c0c0c; margin-bottom: 15px; }
+        .message { color: #666; line-height: 1.6; margin-bottom: 30px; }
+        
+        .info-box {
+            background: #f0f9fa;
+            border-left: 4px solid #06b6d4;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .info-label { 
+            font-size: 12px; 
+            color: #999; 
+            text-transform: uppercase; 
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .info-value { 
+            font-size: 20px; 
+            font-weight: bold; 
+            color: #06b6d4;
+            margin-top: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .code-box {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .code-label { font-size: 12px; opacity: 0.9; margin-bottom: 10px; }
+        .code-value { 
+            font-size: 36px; 
+            font-weight: bold; 
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .expiry { 
+            background: #fff3cd; 
+            color: #856404;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .footer {
+            background: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #eee;
+        }
+        .footer-links { margin: 10px 0; }
+        .footer-links a { color: #06b6d4; text-decoration: none; margin: 0 10px; }
+        
+        .security-note {
+            font-size: 11px;
+            color: #999;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">YAvoy</div>
+            <div class="subtitle">Sistema de Entregas Inteligente</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">¡Hola ${nombre}! 👋</div>
+            
+            <div class="message">
+                Gracias por registrarte en <strong>YAvoy</strong>. Te estamos muy felices de tenerte como parte de nuestra comunidad.
+                <br><br>
+                Para activar tu cuenta de <strong>${tipoUsuario}</strong>, necesitas confirmar tu registro usando el código que aparece abajo.
+            </div>
+            
+            <!-- User ID -->
+            <div class="info-box">
+                <div class="info-label">Tu número de usuario (ID)</div>
+                <div class="info-value">${userId}</div>
+            </div>
+            
+            <!-- Confirmation Code -->
+            <div class="code-box">
+                <div class="code-label">CÓDIGO DE CONFIRMACIÓN</div>
+                <div class="code-value">${codigo}</div>
+            </div>
+            
+            <!-- Expiry Warning -->
+            <div class="expiry">
+                ⏰ Este código expira en <strong>24 horas</strong>. No lo compartas con nadie.
+            </div>
+            
+            <!-- Instructions -->
+            <div style="margin: 30px 0; padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                <strong style="color: #0c0c0c;">¿Cómo confirmar tu cuenta?</strong>
+                <ol style="margin: 10px 0 0 20px; color: #666;">
+                    <li>Ingresa a tu panel de YAvoy</li>
+                    <li>Ve a "Confirmar Registro" o "Verificación"</li>
+                    <li>Ingresa el código de arriba</li>
+                    <li>¡Tu cuenta estará lista para usar!</li>
+                </ol>
+            </div>
+            
+            <!-- Security Note -->
+            <div class="security-note">
+                🔒 <strong>Seguridad:</strong> Si no solicitaste este registro o tienes dudas, contacta a nuestro equipo de soporte.
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-links">
+                <a href="https://yavoy.com.ar">YAvoy.com.ar</a> |
+                <a href="https://yavoy.com.ar/soporte">Soporte</a> |
+                <a href="https://yavoy.com.ar/privacidad">Privacidad</a>
+            </div>
+            <p style="margin-top: 10px;">
+                © 2026 YAvoy Enterprise. Todos los derechos reservados.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+        `.trim();
+    }
+
+    /**
+     * Respuesta simulada cuando no hay email configurado
+     * Useful para desarrollo sin credenciales reales
+     */
+    mockEmailResponse(userData, tipo) {
+        const confirmationCode = this.generateConfirmationCode();
+        console.log(`
+┌─────────────────────────────────────────┐
+│  📧 SIMULACIÓN DE EMAIL (MODO DESARROLLO)
+├─────────────────────────────────────────┤
+│  Para: ${userData.email}
+│  Nombre: ${userData.nombre}
+│  Tipo: ${tipo}
+│  ID Usuario: ${userData.id}
+│  Código: ${confirmationCode}
+└─────────────────────────────────────────┘
+        `);
+        return {
+            success: true,
+            message: 'Email simulado (modo desarrollo)',
+            confirmationCode,
+            userId: userData.id,
+            isDeveloperMode: true
+        };
+    }
+}
+
+// Exportar singleton
+module.exports = new EmailService();

@@ -12,6 +12,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { generateToken, generateRefreshToken } = require('../middleware/auth');
 const { sanitizeString } = require('../middleware/security');
+const emailService = require('../utils/emailService');
 
 // Rutas a archivos de datos
 const REGISTROS_PATH = path.join(__dirname, '../../registros');
@@ -140,6 +141,30 @@ class AuthController {
             comercios.push(nuevoComercio);
             await writeJSON(COMERCIOS_FILE, comercios);
             
+            // Enviar email de confirmación
+            let emailEnviado = false;
+            try {
+                const emailResult = await emailService.sendRegistrationEmail(
+                    {
+                        email: nuevoComercio.email,
+                        nombre: nuevoComercio.nombre,
+                        id: nuevoComercio.id
+                    },
+                    'comercio'
+                );
+                
+                if (emailResult.success) {
+                    nuevoComercio.confirmacionCode = emailResult.confirmationCode;
+                    nuevoComercio.confirmacionExpira = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+                    comercios[comercios.length - 1] = nuevoComercio;
+                    await writeJSON(COMERCIOS_FILE, comercios);
+                    emailEnviado = true;
+                    console.log(`[EMAIL] Confirmación enviada a ${nuevoComercio.email} (${nuevoComercio.id})`);
+                }
+            } catch (emailError) {
+                console.warn(`[EMAIL] Error enviando confirmación: ${emailError.message}`);
+            }
+            
             // Generar token JWT
             const token = generateToken({
                 id: nuevoComercio.id,
@@ -160,7 +185,9 @@ class AuthController {
                 message: 'Comercio registrado exitosamente',
                 comercio: comercioSinPassword,
                 token,
-                refreshToken
+                refreshToken,
+                emailEnviado: emailEnviado,
+                instrucciones: 'Por favor verifica tu email para confirmar tu cuenta'
             });
             
         } catch (error) {
@@ -240,6 +267,30 @@ class AuthController {
             repartidores.push(nuevoRepartidor);
             await writeJSON(REPARTIDORES_FILE, repartidores);
             
+            // Enviar email de confirmación
+            let emailEnviado = false;
+            try {
+                const emailResult = await emailService.sendRegistrationEmail(
+                    {
+                        email: nuevoRepartidor.email,
+                        nombre: nuevoRepartidor.nombre,
+                        id: nuevoRepartidor.id
+                    },
+                    'repartidor'
+                );
+                
+                if (emailResult.success) {
+                    nuevoRepartidor.confirmacionCode = emailResult.confirmationCode;
+                    nuevoRepartidor.confirmacionExpira = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+                    repartidores[repartidores.length - 1] = nuevoRepartidor;
+                    await writeJSON(REPARTIDORES_FILE, repartidores);
+                    emailEnviado = true;
+                    console.log(`[EMAIL] Confirmación enviada a ${nuevoRepartidor.email} (${nuevoRepartidor.id})`);
+                }
+            } catch (emailError) {
+                console.warn(`[EMAIL] Error enviando confirmación: ${emailError.message}`);
+            }
+            
             // Generar token JWT
             const token = generateToken({
                 id: nuevoRepartidor.id,
@@ -260,7 +311,9 @@ class AuthController {
                 message: 'Repartidor registrado exitosamente',
                 repartidor: repartidorSinPassword,
                 token,
-                refreshToken
+                refreshToken,
+                emailEnviado: emailEnviado,
+                instrucciones: 'Por favor verifica tu email para confirmar tu cuenta'
             });
             
         } catch (error) {
@@ -530,6 +583,193 @@ class AuthController {
             console.error('[AUTH] Error en changePassword:', error);
             res.status(500).json({
                 error: 'Error del servidor'
+            });
+        }
+    }
+    
+    // ========================================
+    // ✅ VERIFICACIÓN DE EMAIL
+    // ========================================
+    
+    /**
+     * POST /api/auth/verify-email
+     * Verifica el código de confirmación enviado por email
+     */
+    async verifyEmail(req, res) {
+        try {
+            const { userId, confirmationCode } = req.body;
+            
+            if (!userId || !confirmationCode) {
+                return res.status(400).json({
+                    error: 'Datos incompletos',
+                    message: 'userId y confirmationCode son requeridos'
+                });
+            }
+            
+            // Determinar tipo de usuario por el prefijo del ID
+            let usuarios, filePath;
+            
+            if (userId.startsWith('COM')) {
+                usuarios = await readJSON(COMERCIOS_FILE);
+                filePath = COMERCIOS_FILE;
+            } else if (userId.startsWith('REP')) {
+                usuarios = await readJSON(REPARTIDORES_FILE);
+                filePath = REPARTIDORES_FILE;
+            } else {
+                return res.status(400).json({
+                    error: 'ID inválido',
+                    message: 'El ID de usuario no tiene un formato válido'
+                });
+            }
+            
+            // Buscar usuario
+            const usuarioIndex = usuarios.findIndex(u => u.id === userId);
+            if (usuarioIndex === -1) {
+                return res.status(404).json({
+                    error: 'Usuario no encontrado',
+                    message: 'El usuario no existe en el sistema'
+                });
+            }
+            
+            const usuario = usuarios[usuarioIndex];
+            
+            // Validar código de confirmación
+            if (!usuario.confirmacionCode) {
+                return res.status(400).json({
+                    error: 'Sin código pendiente',
+                    message: 'Este usuario ya fue verificado o no tiene código pendiente'
+                });
+            }
+            
+            if (usuario.confirmacionCode !== confirmationCode) {
+                return res.status(401).json({
+                    error: 'Código inválido',
+                    message: 'El código de confirmación es incorrecto'
+                });
+            }
+            
+            // Validar expiración
+            if (new Date(usuario.confirmacionExpira) < new Date()) {
+                return res.status(401).json({
+                    error: 'Código expirado',
+                    message: 'El código de confirmación ha expirado. Solicita uno nuevo.',
+                    requiresNewCode: true
+                });
+            }
+            
+            // Marcar como verificado
+            usuario.verificado = true;
+            usuario.confirmacionCode = null;
+            usuario.confirmacionExpira = null;
+            usuario.estado = 'activo';
+            
+            // Guardar cambios
+            usuarios[usuarioIndex] = usuario;
+            await writeJSON(filePath, usuarios);
+            
+            // Enviar email de bienvenida
+            await emailService.sendWelcomeEmail(usuario.email, usuario.nombre, usuario.id);
+            
+            res.status(200).json({
+                success: true,
+                message: 'Email verificado exitosamente',
+                usuario: {
+                    id: usuario.id,
+                    nombre: usuario.nombre,
+                    email: usuario.email,
+                    verificado: usuario.verificado
+                }
+            });
+            
+        } catch (error) {
+            console.error('[AUTH] Error en verifyEmail:', error);
+            res.status(500).json({
+                error: 'Error del servidor',
+                message: 'No se pudo verificar el email'
+            });
+        }
+    }
+    
+    /**
+     * POST /api/auth/resend-confirmation
+     * Reenvía el código de confirmación si expiró
+     */
+    async resendConfirmation(req, res) {
+        try {
+            const { userId } = req.body;
+            
+            if (!userId) {
+                return res.status(400).json({
+                    error: 'ID requerido',
+                    message: 'userId es requerido'
+                });
+            }
+            
+            // Determinar tipo de usuario
+            let usuarios, filePath;
+            
+            if (userId.startsWith('COM')) {
+                usuarios = await readJSON(COMERCIOS_FILE);
+                filePath = COMERCIOS_FILE;
+            } else if (userId.startsWith('REP')) {
+                usuarios = await readJSON(REPARTIDORES_FILE);
+                filePath = REPARTIDORES_FILE;
+            } else {
+                return res.status(400).json({
+                    error: 'ID inválido',
+                    message: 'El ID de usuario no tiene un formato válido'
+                });
+            }
+            
+            // Buscar usuario
+            const usuarioIndex = usuarios.findIndex(u => u.id === userId);
+            if (usuarioIndex === -1) {
+                return res.status(404).json({
+                    error: 'Usuario no encontrado',
+                    message: 'El usuario no existe'
+                });
+            }
+            
+            const usuario = usuarios[usuarioIndex];
+            
+            // Validar que el usuario no esté ya verificado
+            if (usuario.verificado) {
+                return res.status(400).json({
+                    error: 'Usuario ya verificado',
+                    message: 'Este usuario ya fue verificado previamente'
+                });
+            }
+            
+            // Enviar nuevo email
+            const tipoUsuario = userId.startsWith('COM') ? 'comercio' : 'repartidor';
+            const emailResult = await emailService.sendRegistrationEmail(
+                {
+                    email: usuario.email,
+                    nombre: usuario.nombre,
+                    id: usuario.id
+                },
+                tipoUsuario
+            );
+            
+            // Actualizar código
+            if (emailResult.success) {
+                usuario.confirmacionCode = emailResult.confirmationCode;
+                usuario.confirmacionExpira = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+                usuarios[usuarioIndex] = usuario;
+                await writeJSON(filePath, usuarios);
+            }
+            
+            res.status(200).json({
+                success: emailResult.success,
+                message: 'Nuevo código de confirmación enviado',
+                emailStatus: emailResult.success ? 'enviado' : 'pendiente'
+            });
+            
+        } catch (error) {
+            console.error('[AUTH] Error en resendConfirmation:', error);
+            res.status(500).json({
+                error: 'Error del servidor',
+                message: 'No se pudo reenviar el código'
             });
         }
     }

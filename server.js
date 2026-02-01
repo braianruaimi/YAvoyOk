@@ -4,7 +4,7 @@
 // Sistema de entregas con autenticación JWT y seguridad robusta
 // + WebAuthn Biometrics + 2FA/TOTP + IP Validation
 
-// require('dotenv').config(); // Comentado para evitar error si no está instalado
+require('dotenv').config(); // Cargar variables de entorno desde .env
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs').promises;
@@ -79,12 +79,13 @@ let emailTransporter = null;
 if (process.env.SMTP_USER && process.env.SMTP_PASS) {
   try {
     emailTransporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
       },
-      secure: process.env.SMTP_SECURE === 'true',
       tls: {
         rejectUnauthorized: process.env.SMTP_TLS !== 'false'
       }
@@ -93,11 +94,11 @@ if (process.env.SMTP_USER && process.env.SMTP_PASS) {
     // Verificación asíncrona sin bloquear el inicio
     emailTransporter.verify((error, success) => {
       if (error) {
-        console.log('ℹ️  Email opcional no disponible (modo desarrollo)');
-        console.log('💡 Para habilitar emails: configura contraseña de aplicación en Gmail');
+        console.log('⚠️  Email no disponible (verificar credenciales SMTP)');
+        console.log('💡 SMTP: ' + (process.env.SMTP_HOST || 'smtp.hostinger.com') + ':' + (process.env.SMTP_PORT || '587'));
         emailTransporter = null;
       } else {
-        console.log('✅ Sistema de email configurado y funcionando');
+        console.log('✅ Sistema de email configurado y funcionando (Hostinger SMTP)');
       }
     });
   } catch (error) {

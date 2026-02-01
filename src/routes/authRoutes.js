@@ -616,4 +616,88 @@ router.put('/profile',
     (req, res) => authController.updateUserProfile(req, res)
 );
 
+// ========================================
+// ✅ VERIFICACIÓN DE EMAIL
+// ========================================
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   post:
+ *     summary: Verifica el código de confirmación de registro
+ *     description: |
+ *       Verifica que el usuario ingrese el código correcto que fue enviado por email.
+ *       Una vez verificado, la cuenta se activa completamente.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId, confirmationCode]
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: ID del usuario (ej: COM1234567890)
+ *                 example: "COM1704067200000"
+ *               confirmationCode:
+ *                 type: string
+ *                 pattern: "^[0-9]{6}$"
+ *                 description: Código de 6 dígitos enviado por email
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Email verificado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 usuario:
+ *                   type: object
+ *       400:
+ *         description: Código inválido o expirado
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/verify-email', (req, res) => authController.verifyEmail(req, res));
+
+/**
+ * @swagger
+ * /api/auth/resend-confirmation:
+ *   post:
+ *     summary: Reenvía el código de confirmación
+ *     description: |
+ *       Si el código de confirmación expiró o el usuario no lo recibió,
+ *       puede solicitar que se reenvíe a su email.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId]
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: ID del usuario
+ *                 example: "COM1704067200000"
+ *     responses:
+ *       200:
+ *         description: Nuevo código enviado
+ *       400:
+ *         description: Usuario ya verificado o datos inválidos
+ *       404:
+ *         description: Usuario no encontrado
+ */
+router.post('/resend-confirmation', (req, res) => authController.resendConfirmation(req, res));
+
 module.exports = router;
