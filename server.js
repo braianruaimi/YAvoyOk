@@ -1,11 +1,12 @@
 // =============================
-// SEQUELIZE: Sincronización de modelos
+// SEQUELIZE: Sincronización de modelos con MySQL (REQUERIDO)
 // =============================
 
 const sequelize = require('./config/database');
 const Usuario = require('./models/Usuario');
 const Pedido = require('./models/Pedido');
 
+<<<<<<< HEAD
 // 🎁 FEATURES PREMIUM MODELOS
 const Calificacion = require('./models/Calificacion');
 const PuntosRecompensas = require('./models/PuntosRecompensas');
@@ -13,10 +14,19 @@ const HistorialPuntos = require('./models/HistorialPuntos');
 const RecompensasLibrary = require('./models/RecompensasLibrary');
 const Propina = require('./models/Propina');
 const EstadisticasPropinas = require('./models/EstadisticasPropinas');
+=======
+let dbConnected = false;
+>>>>>>> e6f9431f0b3c9c06ce68f4ee4186704fd2599898
 
 (async () => {
   try {
+    console.log('🔄 Conectando a MySQL...');
+    console.log(`   Host: ${process.env.DB_HOST}`);
+    console.log(`   Database: ${process.env.DB_NAME}`);
+    console.log(`   User: ${process.env.DB_USER}`);
+    
     await sequelize.authenticate();
+<<<<<<< HEAD
     
     // Sincronizar modelos existentes
     await Usuario.sync({ alter: true });
@@ -31,9 +41,27 @@ const EstadisticasPropinas = require('./models/EstadisticasPropinas');
     await EstadisticasPropinas.sync({ alter: true });
     
     console.log('✅ Modelos Sequelize sincronizados (incluyendo Features Premium).');
+=======
+    console.log('✅ Conexión a MySQL establecida');
+    
+    await sequelize.sync({ alter: true });
+    dbConnected = true;
+    console.log('✅ Modelos Sequelize sincronizados con MySQL');
+    console.log('✅ Sistema listo para guardar registros en base de datos');
+>>>>>>> e6f9431f0b3c9c06ce68f4ee4186704fd2599898
   } catch (error) {
-    console.error('❌ Error al sincronizar modelos Sequelize:', error);
-    process.exit(1);
+    console.error('❌ ERROR CRÍTICO: No se pudo conectar a MySQL');
+    console.error('   Razón:', error.message);
+    console.error('\n🔧 SOLUCIONES:');
+    console.error('   1. Verifica las credenciales en .env');
+    console.error('   2. Habilita acceso remoto en Hostinger Panel:');
+    console.error('      → https://hpanel.hostinger.com');
+    console.error('      → Databases → Remote MySQL');
+    console.error('      → Agrega tu IP o usa % (todas las IPs)');
+    console.error('\n💡 Tu IP actual puede ser diferente. Ejecuta: curl ifconfig.me');
+    console.error('   IP detectada en el error:', error.message.match(/'([0-9.]+)'/)?.[1] || 'desconocida');
+    
+    process.exit(1); // Detener el servidor si MySQL falla
   }
 })();
 // ====================================
@@ -164,8 +192,8 @@ app.set('repartidores', repartidores);
 app.set('calificaciones', calificaciones);
 app.set('chats', chats);
 
-// Inicializar controlador de pedidos
-pedidosController.init(app, pedidos, repartidores, calificaciones, chats);
+// Controlador de pedidos inicializado (sin método init necesario)
+// pedidosController maneja sus propios datos internamente
 
 // ============================================
 // SOCKET.IO - NOTIFICACIONES EN TIEMPO REAL
