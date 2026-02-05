@@ -181,7 +181,7 @@ Frontend
 
 Backend
 ├── Node.js + Express 5.1.0
-├── Sequelize ORM + PostgreSQL
+├── Sequelize ORM + MySQL
 ├── JWT + WebAuthn (auth)
 ├── Socket.IO + Redis (real-time)
 └── Jest (testing)

@@ -116,7 +116,7 @@ He creado `.github/workflows/ci-cd.yml` con:
 ✅ Push a main o develop
 ✅ Pull requests
 ✅ Múltiples versiones de Node (18.x, 20.x)
-✅ PostgreSQL test database
+✅ MySQL test database
 ```
 
 ### **Pasos del Pipeline:**

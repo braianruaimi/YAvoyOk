@@ -6,17 +6,12 @@ const sequelize = require('./config/database');
 const Usuario = require('./models/Usuario');
 const Pedido = require('./models/Pedido');
 
-<<<<<<< HEAD
-// 🎁 FEATURES PREMIUM MODELOS
+// =============================
+// Features Premium - Modelos MySQL
+// =============================
 const Calificacion = require('./models/Calificacion');
 const PuntosRecompensas = require('./models/PuntosRecompensas');
-const HistorialPuntos = require('./models/HistorialPuntos');
-const RecompensasLibrary = require('./models/RecompensasLibrary');
 const Propina = require('./models/Propina');
-const EstadisticasPropinas = require('./models/EstadisticasPropinas');
-=======
-let dbConnected = false;
->>>>>>> e6f9431f0b3c9c06ce68f4ee4186704fd2599898
 
 (async () => {
   try {
@@ -26,29 +21,8 @@ let dbConnected = false;
     console.log(`   User: ${process.env.DB_USER}`);
     
     await sequelize.authenticate();
-<<<<<<< HEAD
-    
-    // Sincronizar modelos existentes
-    await Usuario.sync({ alter: true });
-    await Pedido.sync({ alter: true });
-    
-    // 🎁 Sincronizar Features Premium
-    await Calificacion.sync({ alter: true });
-    await PuntosRecompensas.sync({ alter: true });
-    await HistorialPuntos.sync({ alter: true });
-    await RecompensasLibrary.sync({ alter: true });
-    await Propina.sync({ alter: true });
-    await EstadisticasPropinas.sync({ alter: true });
-    
-    console.log('✅ Modelos Sequelize sincronizados (incluyendo Features Premium).');
-=======
-    console.log('✅ Conexión a MySQL establecida');
-    
     await sequelize.sync({ alter: true });
-    dbConnected = true;
-    console.log('✅ Modelos Sequelize sincronizados con MySQL');
-    console.log('✅ Sistema listo para guardar registros en base de datos');
->>>>>>> e6f9431f0b3c9c06ce68f4ee4186704fd2599898
+    console.log('✅ Modelos Sequelize sincronizados con la base de datos.');
   } catch (error) {
     console.error('❌ ERROR CRÍTICO: No se pudo conectar a MySQL');
     console.error('   Razón:', error.message);

@@ -8,7 +8,7 @@
  * CARACTERÍSTICAS:
  * ✅ Rotación diaria automática (logs/error-YYYY-MM-DD.log)
  * ✅ Logs HTTP en archivos separados
- * ✅ Logs de errores en PostgreSQL (tabla system_logs)
+ * ✅ Logs de errores en MySQL (tabla system_logs)
  * ✅ Niveles: error, warn, info, http, debug
  * ✅ Compresión automática de logs antiguos
  * ✅ Retención de 14 días en disco
@@ -21,9 +21,9 @@
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const path = require('path');
-const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 
-// Pool de PostgreSQL para logs en DB
+// Pool de MySQL para logs en DB
 let pool;
 
 function setDatabasePool(dbPool) {
@@ -122,7 +122,7 @@ const logger = winston.createLogger({
 });
 
 // ============================================
-// TRANSPORT PERSONALIZADO: PostgreSQL
+// TRANSPORT PERSONALIZADO: MySQL
 // ============================================
 
 /**
@@ -158,7 +158,7 @@ async function logToDatabase(level, message, metadata = {}) {
         );
     } catch (err) {
         // Si falla el log en DB, no queremos romper la aplicación
-        console.error('❌ Error al guardar log en PostgreSQL:', err.message);
+        console.error('❌ Error al guardar log en MySQL:', err.message);
     }
 }
 
@@ -233,7 +233,7 @@ logger.performance = (operacion, duracionMs, metadata = {}) => {
 // ============================================
 
 /**
- * Elimina logs de PostgreSQL mayores a 30 días
+ * Elimina logs de MySQL mayores a 30 días
  * Ejecutar periódicamente con cron o PM2
  */
 async function cleanupOldLogs() {

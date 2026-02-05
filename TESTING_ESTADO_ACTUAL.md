@@ -40,13 +40,13 @@ DESPUÉS (Este commit):
 - Creación de pedidos
 - Cálculo de comisiones
 - Listar y filtrar pedidos
-- Persistencia en JSON/PostgreSQL
+- Persistencia en JSON/MySQL
 - Validación de datos
 
 ### **3. .github/workflows/ci-cd.yml** (140 líneas)
 ✅ Pipeline completo con:
 - Tests automáticos (Node 18.x, 20.x)
-- PostgreSQL test database
+- MySQL test database
 - Linting (ESLint + Prettier)
 - Security scanning (npm audit, Snyk, SonarCloud)
 - Docker image build
@@ -78,7 +78,7 @@ CONTROLLERS TESTEADOS:
 │  └─ Validación: 4 cases
 │
 ├─ ✅ Database
-│  ├─ PostgreSQL connection: 3 cases
+│  ├─ MySQL connection: 3 cases
 │  └─ JSON fallback: 3 cases
 │
 ├─ ✅ WebAuthn
@@ -272,7 +272,7 @@ expect(fn).toThrow()                    // Lanza error
 🎯 Objetivo: Tests de integración
 ├─ [ ] API integration tests (supertest)
 ├─ [ ] Database integration tests
-├─ [ ] Real PostgreSQL test DB
+├─ [ ] Real MySQL test DB
 └─ [ ] Coverage 50%+
 ```
 

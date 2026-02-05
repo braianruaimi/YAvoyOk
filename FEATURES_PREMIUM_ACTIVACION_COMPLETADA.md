@@ -12,7 +12,7 @@
 Las **3 Features Premium de YAvoyOk** han sido **completamente activadas e integradas** en el proyecto:
 
 ✅ **Código integrado** en server.js  
-✅ **Modelos sincronizados** con BD PostgreSQL  
+✅ **Modelos sincronizados** con BD MySQL  
 ✅ **19 endpoints API** montados y funcionales  
 ✅ **130+ tests** listos para ejecución  
 ✅ **Documentación completa** incluida  

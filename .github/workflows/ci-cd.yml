@@ -15,19 +15,20 @@ jobs:
         node-version: [18.x, 20.x]
     
     services:
-      postgres:
-        image: postgres:15
+      mysql:
+        image: mysql:8.0
         env:
-          POSTGRES_DB: yavoy_test
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          MYSQL_DATABASE: yavoy_test
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
+          MYSQL_ROOT_PASSWORD: root
+        options: >
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
         ports:
-          - 5432:5432
+          - 3306:3306
     
     steps:
     - uses: actions/checkout@v3
@@ -49,13 +50,21 @@ jobs:
       run: npm run test:unit
       env:
         NODE_ENV: test
-        DATABASE_URL: postgresql://test:test@localhost:5432/yavoy_test
+        DB_HOST: localhost
+        DB_USER: test
+        DB_PASSWORD: test
+        DB_NAME: yavoy_test
+        DB_PORT: 3306
     
     - name: Run integration tests
       run: npm run test:integration
       env:
         NODE_ENV: test
-        DATABASE_URL: postgresql://test:test@localhost:5432/yavoy_test
+        DB_HOST: localhost
+        DB_USER: test
+        DB_PASSWORD: test
+        DB_NAME: yavoy_test
+        DB_PORT: 3306
       continue-on-error: true
     
     - name: Generate coverage report

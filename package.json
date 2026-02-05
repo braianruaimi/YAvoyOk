@@ -1,7 +1,7 @@
 {
   "name": "yavoy-app",
   "version": "3.1.0-enterprise",
-  "description": "YAvoy v3.1 Enterprise - Sistema de delivery con PostgreSQL, WebSockets optimizados y arquitectura empresarial",
+  "description": "YAvoy v3.1 Enterprise - Sistema de delivery con MySQL, WebSockets optimizados y arquitectura empresarial",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,7 +13,7 @@
     "status": "node vscode-master.js status",
     "deploy": "node vscode-master.js deploy",
     "migrate": "node migrate-json-to-db.js",
-    "migrate:postgresql": "node migrate-to-postgresql.js",
+    "migrate:mysql": "node migrate-to-mysql.js",
     "test": "jest",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/api",
@@ -47,7 +47,7 @@
     "repartidores",
     "comercios",
     "yavoy",
-    "postgresql",
+    "mysql",
     "enterprise",
     "websockets"
   ],
@@ -77,8 +77,6 @@
     "mysql2": "^3.16.3",
     "node-cache": "^5.1.2",
     "nodemailer": "^7.0.11",
-    "pg": "^8.18.0",
-    "pg-hstore": "^2.3.4",
     "qrcode": "^1.5.4",
     "redis": "^5.10.0",
     "redis-commander": "^0.9.0",
