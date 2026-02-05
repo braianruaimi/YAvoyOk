@@ -1,0 +1,70 @@
+/**
+ * Script para crear archivo .env con credenciales de Hostinger
+ * Ejecutar: node crear-env.js
+ */
+
+const fs = require('fs');
+
+const envContent = `# ====================================
+# YAVOY v3.1 ENTERPRISE - CONFIGURACIÓN HOSTINGER VPS
+# ====================================
+
+# 📊 BASE DE DATOS MYSQL HOSTINGER
+DB_HOST=srv1722.hstgr.io
+DB_PORT=3306
+DB_NAME=u695828542_yavoysql
+DB_USER=u695828542_yavoyspace
+DB_PASSWORD=Yavoy25!
+DB_POOL_MIN=2
+DB_POOL_MAX=20
+
+# 🔐 SEGURIDAD ENTERPRISE
+NODE_ENV=production
+PORT=5502
+WS_PORT=5501
+
+# JWT Secret - Generado para producción
+JWT_SECRET=YAvoy_Enterprise_JWT_Secret_2024_Ultra_Secure_MySQL
+JWT_EXPIRES_IN=24h
+
+# Session Secret
+SESSION_SECRET=YAvoy_Session_Secret_2024_MySQL_Enterprise
+
+# Seguridad CEO Enterprise
+CSRF_SECRET=YAvoy_CSRF_Secret_2024
+ENCRYPT_SECRET=YAvoy_Encryption_Key_2024
+
+# 📧 EMAIL CONFIGURATION HOSTINGER
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=yavoyen5@yavoy.space
+SMTP_PASS=BrainCesar26!
+
+# 🌐 VAPID PARA NOTIFICACIONES PUSH
+VAPID_PUBLIC_KEY=BL4P9zTOxEkQBAmTV3XiyK9305PJDZKoPr52a0NNedpV5OVfuZGlf9SL21zVE9D4AwNfgWzKw8bHA-peL_g-qZs
+VAPID_PRIVATE_KEY=SmZvfO1ZhLtbCrewuGFDnG0gfuTeV5DT9vRBjmWlBL4
+VAPID_SUBJECT=mailto:yavoyen5@yavoy.space
+
+# 🛡️ SEGURIDAD ADICIONAL
+ALLOWED_ORIGINS=https://yavoy.space,http://localhost:5502,http://127.0.0.1:5502
+RATE_LIMIT_WINDOW=15
+RATE_LIMIT_MAX=100
+
+# 📱 MERCADOPAGO CONFIGURACIÓN
+MERCADOPAGO_ACCESS_TOKEN=APP_USR-tu_access_token_aqui
+MERCADOPAGO_PUBLIC_KEY=APP_USR-tu_public_key_aqui
+
+# 🚀 OPTIMIZACIONES
+UV_THREADPOOL_SIZE=256
+NODE_OPTIONS=--max-old-space-size=8192 --optimize-for-size
+`;
+
+try {
+  fs.writeFileSync('.env', envContent);
+  console.log('✅ Archivo .env creado exitosamente');
+  console.log('📁 Ubicación: ' + process.cwd() + '/.env');
+  console.log('🔒 Contiene las credenciales de MySQL de Hostinger');
+} catch (error) {
+  console.error('❌ Error creando archivo .env:', error.message);
+}
