@@ -6,11 +6,31 @@ const sequelize = require('./config/database');
 const Usuario = require('./models/Usuario');
 const Pedido = require('./models/Pedido');
 
+// 🎁 FEATURES PREMIUM MODELOS
+const Calificacion = require('./models/Calificacion');
+const PuntosRecompensas = require('./models/PuntosRecompensas');
+const HistorialPuntos = require('./models/HistorialPuntos');
+const RecompensasLibrary = require('./models/RecompensasLibrary');
+const Propina = require('./models/Propina');
+const EstadisticasPropinas = require('./models/EstadisticasPropinas');
+
 (async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
-    console.log('✅ Modelos Sequelize sincronizados con la base de datos.');
+    
+    // Sincronizar modelos existentes
+    await Usuario.sync({ alter: true });
+    await Pedido.sync({ alter: true });
+    
+    // 🎁 Sincronizar Features Premium
+    await Calificacion.sync({ alter: true });
+    await PuntosRecompensas.sync({ alter: true });
+    await HistorialPuntos.sync({ alter: true });
+    await RecompensasLibrary.sync({ alter: true });
+    await Propina.sync({ alter: true });
+    await EstadisticasPropinas.sync({ alter: true });
+    
+    console.log('✅ Modelos Sequelize sincronizados (incluyendo Features Premium).');
   } catch (error) {
     console.error('❌ Error al sincronizar modelos Sequelize:', error);
     process.exit(1);
@@ -410,6 +430,13 @@ console.log('✅ Rutas CEO registradas: /api/ceo/*');
 // 2. Pedidos (con rate limiting)
 app.use('/api/pedidos', generalLimiter, pedidosRoutes);
 console.log('✅ Rutas de pedidos registradas: /api/pedidos/*');
+
+// ========================================
+// 🎁 RUTAS FEATURES PREMIUM
+// ========================================
+const premiumFeaturesRoutes = require('./src/routes/premiumFeaturesRoutes');
+app.use('/api/premium', generalLimiter, premiumFeaturesRoutes);
+console.log('✅ Rutas Features Premium registradas: /api/premium/* (Calificaciones, Puntos, Propinas)');
 
 // ========================================
 // 🧪 RUTAS DE DEBUG
