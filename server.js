@@ -1,19 +1,24 @@
 // =============================
-// SEQUELIZE: Sincronización de modelos
+// SEQUELIZE: Sincronización de modelos (OPCIONAL - NO BLOQUEANTE)
 // =============================
 
 const sequelize = require('./config/database');
 const Usuario = require('./models/Usuario');
 const Pedido = require('./models/Pedido');
 
+let dbConnected = false;
+
 (async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
-    console.log('✅ Modelos Sequelize sincronizados con la base de datos.');
+    dbConnected = true;
+    console.log('✅ Modelos Sequelize sincronizados con MySQL.');
   } catch (error) {
-    console.error('❌ Error al sincronizar modelos Sequelize:', error);
-    process.exit(1);
+    console.warn('⚠️  MySQL no disponible, usando almacenamiento JSON como fallback');
+    console.warn('   Razón:', error.message);
+    dbConnected = false;
+    // NO detener el servidor, continuar con JSON
   }
 })();
 // ====================================
@@ -144,8 +149,8 @@ app.set('repartidores', repartidores);
 app.set('calificaciones', calificaciones);
 app.set('chats', chats);
 
-// Inicializar controlador de pedidos
-pedidosController.init(app, pedidos, repartidores, calificaciones, chats);
+// Controlador de pedidos inicializado (sin método init necesario)
+// pedidosController maneja sus propios datos internamente
 
 // ============================================
 // SOCKET.IO - NOTIFICACIONES EN TIEMPO REAL
