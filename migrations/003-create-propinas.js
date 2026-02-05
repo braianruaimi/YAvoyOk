@@ -8,13 +8,12 @@ module.exports = {
     // ========================================
     await queryInterface.createTable('Propinas', {
       id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },
       pedidoId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Pedidos',
@@ -25,7 +24,7 @@ module.exports = {
         index: true,
       },
       clienteId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Usuarios',
@@ -36,7 +35,7 @@ module.exports = {
         index: true,
       },
       repartidorId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Usuarios',
@@ -103,13 +102,12 @@ module.exports = {
     // ========================================
     await queryInterface.createTable('EstadisticasPropinas', {
       id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },
       repartidorId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
         references: {

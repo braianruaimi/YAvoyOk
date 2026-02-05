@@ -8,13 +8,12 @@ module.exports = {
     // ========================================
     await queryInterface.createTable('Calificaciones', {
       id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },
       pedidoId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Pedidos',
@@ -25,7 +24,7 @@ module.exports = {
         index: true,
       },
       calificadorId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Usuarios',
@@ -36,7 +35,7 @@ module.exports = {
       },
       calificadoId: {
         // Puede ser comercio, repartidor, o cliente
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Usuarios',

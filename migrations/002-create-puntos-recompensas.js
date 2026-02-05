@@ -8,13 +8,12 @@ module.exports = {
     // ========================================
     await queryInterface.createTable('PuntosRecompensas', {
       id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },
       usuarioId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
         references: {
@@ -74,13 +73,12 @@ module.exports = {
     // ========================================
     await queryInterface.createTable('HistorialPuntos', {
       id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },
       usuarioId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Usuarios',
@@ -130,8 +128,7 @@ module.exports = {
     // ========================================
     await queryInterface.createTable('RecompensasLibrary', {
       id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false,
       },

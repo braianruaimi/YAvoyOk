@@ -8,9 +8,10 @@ const sequelize = require('../config/database');
 
 const PuntosRecompensas = sequelize.define('PuntosRecompensas', {
   id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    type: DataTypes.STRING,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: () => `PUNTOS${Date.now()}${Math.random().toString(36).substr(2, 9)}`
   },
 
   usuarioId: {
