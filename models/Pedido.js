@@ -34,11 +34,11 @@ const Pedido = sequelize.define('Pedido', {
     allowNull: false
   },
   productos: {
-    type: DataTypes.JSONB,
+    type: DataTypes.JSON,
     allowNull: false
   },
   direccionEntrega: {
-    type: DataTypes.JSONB,
+    type: DataTypes.JSON,
     allowNull: false
   },
   fecha: {

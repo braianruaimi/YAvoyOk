@@ -32,7 +32,7 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: true
   },
   metadata: {
-    type: DataTypes.JSONB,
+    type: DataTypes.JSON,
     allowNull: true
   },
   estado: {
