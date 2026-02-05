@@ -1,5 +1,5 @@
 // =============================
-// SEQUELIZE: Sincronización de modelos (OPCIONAL - NO BLOQUEANTE)
+// SEQUELIZE: Sincronización de modelos con MySQL (REQUERIDO)
 // =============================
 
 const sequelize = require('./config/database');
@@ -10,15 +10,31 @@ let dbConnected = false;
 
 (async () => {
   try {
+    console.log('🔄 Conectando a MySQL...');
+    console.log(`   Host: ${process.env.DB_HOST}`);
+    console.log(`   Database: ${process.env.DB_NAME}`);
+    console.log(`   User: ${process.env.DB_USER}`);
+    
     await sequelize.authenticate();
+    console.log('✅ Conexión a MySQL establecida');
+    
     await sequelize.sync({ alter: true });
     dbConnected = true;
-    console.log('✅ Modelos Sequelize sincronizados con MySQL.');
+    console.log('✅ Modelos Sequelize sincronizados con MySQL');
+    console.log('✅ Sistema listo para guardar registros en base de datos');
   } catch (error) {
-    console.warn('⚠️  MySQL no disponible, usando almacenamiento JSON como fallback');
-    console.warn('   Razón:', error.message);
-    dbConnected = false;
-    // NO detener el servidor, continuar con JSON
+    console.error('❌ ERROR CRÍTICO: No se pudo conectar a MySQL');
+    console.error('   Razón:', error.message);
+    console.error('\n🔧 SOLUCIONES:');
+    console.error('   1. Verifica las credenciales en .env');
+    console.error('   2. Habilita acceso remoto en Hostinger Panel:');
+    console.error('      → https://hpanel.hostinger.com');
+    console.error('      → Databases → Remote MySQL');
+    console.error('      → Agrega tu IP o usa % (todas las IPs)');
+    console.error('\n💡 Tu IP actual puede ser diferente. Ejecuta: curl ifconfig.me');
+    console.error('   IP detectada en el error:', error.message.match(/'([0-9.]+)'/)?.[1] || 'desconocida');
+    
+    process.exit(1); // Detener el servidor si MySQL falla
   }
 })();
 // ====================================
