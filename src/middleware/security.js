@@ -26,6 +26,7 @@ const helmetConfig = helmet({
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://unpkg.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "'unsafe-hashes'", "https://sdk.mercadopago.com", "https://cdn.jsdelivr.net", "https://unpkg.com"],
+            scriptSrcAttr: ["'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:", "blob:", "*"],
             connectSrc: ["'self'", "https://api.mercadopago.com", "https://cdn.jsdelivr.net", "ws:", "wss:", "http://localhost:*", "http://127.0.0.1:*", "*"],
             frameSrc: ["'self'", "https://www.mercadopago.com"],

@@ -174,7 +174,14 @@ class AuthController {
             usuario.ultimoLogin = new Date().toISOString();
             await usuario.save();
             const { password: _, ...usuarioSinPassword } = usuario.toJSON();
-            res.json({ success: true, message: 'Login exitoso', usuario: usuarioSinPassword, rol: usuario.tipo, token, refreshToken });
+            res.json({ 
+                success: true, 
+                message: 'Login exitoso', 
+                user: usuarioSinPassword, 
+                rol: usuario.tipo, 
+                token, 
+                refreshToken 
+            });
         } catch (error) {
             console.error('[AUTH] Error en login:', error);
             res.status(500).json({ error: 'Error del servidor', message: 'No se pudo completar el login' });

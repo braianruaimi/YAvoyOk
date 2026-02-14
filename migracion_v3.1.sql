@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
     path VARCHAR(255),
     ip VARCHAR(45),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    details JSONB
+    details JSON
 );
 
 CREATE INDEX IF NOT EXISTS idx_audit_user_id ON audit_log(user_id);

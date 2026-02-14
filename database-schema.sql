@@ -1,7 +1,7 @@
 -- ===========================================
--- YAvoy v3.1 - Esquema PostgreSQL
+-- YAvoy v3.1 - Esquema MySQL
 -- ===========================================
--- Fecha: 21 de diciembre de 2025
+-- Fecha: 13 de febrero de 2026
 -- Descripción: Schema completo para migración desde JSON
 
 -- Eliminar tablas existentes (en orden inverso por FK)
@@ -93,7 +93,7 @@ CREATE TABLE delivery_persons (
     
     -- Horarios (JSON)
     horarios_preferido VARCHAR(50),
-    horarios_disponibilidad JSONB,
+    horarios_disponibilidad JSON,
     
     -- Ubicación en tiempo real
     ubicacion_actual_lat DECIMAL(10, 7),
@@ -135,7 +135,7 @@ CREATE TABLE shops (
     direccion_longitud DECIMAL(10, 7),
     
     -- Horarios (JSON)
-    horarios JSONB,
+    horarios JSON,
     
     -- Estado
     activo BOOLEAN DEFAULT true,
@@ -150,11 +150,11 @@ CREATE TABLE shops (
     -- Multimedia
     logo TEXT,
     banner TEXT,
-    fotos_galeria JSONB,
+    fotos_galeria JSON,
     
     -- SEO
     descripcion TEXT,
-    tags JSONB,
+    tags JSON,
     
     -- Timestamps
     fecha_registro TIMESTAMP DEFAULT NOW(),
@@ -241,13 +241,14 @@ CREATE INDEX idx_orders_codigo ON orders(codigo_seguimiento);
 -- TABLA: order_status_history (Historial de estados)
 -- ===========================================
 CREATE TABLE order_status_history (
-    id SERIAL PRIMARY KEY,
-    order_id VARCHAR(100) REFERENCES orders(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id VARCHAR(100),
     estado_anterior VARCHAR(50),
     estado_nuevo VARCHAR(50) NOT NULL,
     comentario TEXT,
     usuario_id VARCHAR(100),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_status_order ON order_status_history(order_id);
@@ -257,13 +258,13 @@ CREATE INDEX idx_status_fecha ON order_status_history(created_at DESC);
 -- TABLA: reviews (Calificaciones)
 -- ===========================================
 CREATE TABLE reviews (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     
     -- Relaciones
-    order_id VARCHAR(100) UNIQUE REFERENCES orders(id) ON DELETE CASCADE,
-    cliente_id VARCHAR(100) REFERENCES users(id) ON DELETE SET NULL,
-    repartidor_id VARCHAR(100) REFERENCES delivery_persons(id) ON DELETE SET NULL,
-    comercio_id VARCHAR(100) REFERENCES shops(id) ON DELETE SET NULL,
+    order_id VARCHAR(100) UNIQUE,
+    cliente_id VARCHAR(100),
+    repartidor_id VARCHAR(100),
+    comercio_id VARCHAR(100),
     
     -- Calificaciones (1-5)
     rating_repartidor INTEGER CHECK (rating_repartidor BETWEEN 1 AND 5),
@@ -281,7 +282,11 @@ CREATE TABLE reviews (
     recomendaria BOOLEAN,
     
     -- Timestamps
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (cliente_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (repartidor_id) REFERENCES delivery_persons(id) ON DELETE SET NULL,
+    FOREIGN KEY (comercio_id) REFERENCES shops(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_reviews_order ON reviews(order_id);
@@ -293,11 +298,11 @@ CREATE INDEX idx_reviews_rating ON reviews(rating_general DESC);
 -- TABLA: chat_messages (Mensajes de chat)
 -- ===========================================
 CREATE TABLE chat_messages (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     
     -- Relaciones
-    order_id VARCHAR(100) REFERENCES orders(id) ON DELETE CASCADE,
-    user_id VARCHAR(100) REFERENCES users(id) ON DELETE SET NULL,
+    order_id VARCHAR(100),
+    user_id VARCHAR(100),
     
     -- Mensaje
     mensaje TEXT NOT NULL,
@@ -310,7 +315,9 @@ CREATE TABLE chat_messages (
     archivo_adjunto TEXT,
     
     -- Timestamps
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_chat_order ON chat_messages(order_id);
@@ -322,7 +329,7 @@ CREATE INDEX idx_chat_leido ON chat_messages(leido);
 -- TABLA: system_logs (Logs de auditoría)
 -- ===========================================
 CREATE TABLE system_logs (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     
     -- Datos del evento
     evento VARCHAR(100) NOT NULL,
@@ -337,10 +344,10 @@ CREATE TABLE system_logs (
     metodo VARCHAR(10),
     
     -- Metadata (JSON)
-    datos JSONB,
+    datos JSON,
     
     -- Timestamps
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_logs_evento ON system_logs(evento);
@@ -519,8 +526,8 @@ COMMENT ON TABLE system_logs IS 'Logs de auditoría del sistema';
 
 -- TABLA: products (Inventario de comercios)
 CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
-    shop_id VARCHAR(100) NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    shop_id VARCHAR(100) NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     descripcion TEXT,
     categoria VARCHAR(100),
@@ -529,8 +536,9 @@ CREATE TABLE products (
     stock_minimo INTEGER DEFAULT 5,
     imagen_url TEXT,
     activo BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (shop_id) REFERENCES shops(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_products_shop ON products(shop_id);
@@ -539,13 +547,14 @@ CREATE INDEX idx_products_activo ON products(activo);
 
 -- TABLA: referral_codes (Códigos de referidos)
 CREATE TABLE referral_codes (
-    id SERIAL PRIMARY KEY,
-    user_id VARCHAR(100) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(100) NOT NULL,
     codigo VARCHAR(20) UNIQUE NOT NULL,
     activo BOOLEAN DEFAULT true,
     usos INTEGER DEFAULT 0,
     usos_maximos INTEGER DEFAULT 50,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_referral_codes_user ON referral_codes(user_id);
@@ -553,14 +562,16 @@ CREATE INDEX idx_referral_codes_codigo ON referral_codes(codigo);
 
 -- TABLA: referrals (Registro de referidos)
 CREATE TABLE referrals (
-    id SERIAL PRIMARY KEY,
-    referrer_id VARCHAR(100) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    referred_id VARCHAR(100) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    referrer_id VARCHAR(100) NOT NULL,
+    referred_id VARCHAR(100) NOT NULL,
     referred_name VARCHAR(255),
     codigo VARCHAR(20) NOT NULL,
     credito_otorgado DECIMAL(10,2) DEFAULT 50.00,
     estado VARCHAR(50) DEFAULT 'pendiente',
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (referrer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (referred_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_referrals_referrer ON referrals(referrer_id);
@@ -568,17 +579,18 @@ CREATE INDEX idx_referrals_referred ON referrals(referred_id);
 
 -- TABLA: rewards (Sistema de recompensas)
 CREATE TABLE rewards (
-    id SERIAL PRIMARY KEY,
-    user_id VARCHAR(100) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(100) NOT NULL,
     tipo VARCHAR(50) NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     descripcion TEXT,
     valor DECIMAL(10,2),
     canjeado BOOLEAN DEFAULT false,
-    fecha_obtencion TIMESTAMP DEFAULT NOW(),
+    fecha_obtencion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_caducidad TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_rewards_user ON rewards(user_id);
@@ -586,13 +598,15 @@ CREATE INDEX idx_rewards_canjeado ON rewards(canjeado);
 
 -- TABLA: tips (Propinas a repartidores)
 CREATE TABLE tips (
-    id SERIAL PRIMARY KEY,
-    order_id VARCHAR(100) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-    repartidor_id VARCHAR(100) NOT NULL REFERENCES delivery_persons(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id VARCHAR(100) NOT NULL,
+    repartidor_id VARCHAR(100) NOT NULL,
     monto DECIMAL(10,2) NOT NULL,
     tipo VARCHAR(50) DEFAULT 'efectivo',
     metodo_pago VARCHAR(50),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (repartidor_id) REFERENCES delivery_persons(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_tips_order ON tips(order_id);
@@ -609,20 +623,22 @@ CREATE TRIGGER trigger_rewards_updated
 
 -- TABLA: pedidos_grupales (Pedidos colaborativos)
 CREATE TABLE pedidos_grupales (
-    id SERIAL PRIMARY KEY,
-    anfitrion_id VARCHAR(100) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    anfitrion_id VARCHAR(100) NOT NULL,
     codigo_grupo VARCHAR(10) UNIQUE NOT NULL,
     nombre_grupo VARCHAR(255),
     descripcion TEXT,
     estado VARCHAR(20) DEFAULT 'abierto' CHECK (estado IN ('abierto', 'cerrado', 'procesado', 'cancelado')),
-    comercio_id VARCHAR(100) REFERENCES shops(id) ON DELETE SET NULL,
-    participantes_json JSONB DEFAULT '[]'::jsonb,
-    items_json JSONB DEFAULT '[]'::jsonb,
+    comercio_id VARCHAR(100),
+    participantes_json JSON DEFAULT ('[]'),
+    items_json JSON DEFAULT ('[]'),
     total_acumulado DECIMAL(10,2) DEFAULT 0.00,
     fecha_limite TIMESTAMP,
     fecha_cierre TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (anfitrion_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (comercio_id) REFERENCES shops(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_pedidos_grupales_anfitrion ON pedidos_grupales(anfitrion_id);

@@ -349,6 +349,30 @@
       transform: translateY(-1px);
     }
 
+    .comercio-forgot-btn {
+      width: 100%;
+      padding: 12px 20px;
+      margin-top: 15px;
+      background: transparent;
+      border: 2px solid var(--cyan);
+      color: var(--cyan);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .comercio-forgot-btn:hover {
+      background: var(--cyan);
+      color: var(--bg-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(6, 182, 212, 0.3);
+    }
+
     .comercio-login-footer {
       text-align: center;
       margin-top: 30px;
@@ -1769,51 +1793,304 @@
       outline: none;
       border-color: var(--cyan);
     }
+
+    /* ==================== MODAL RESET PASSWORD ==================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px var(--cyan-glow);
+      animation: slideUp 0.4s ease;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--cyan);
+      padding-bottom: 15px;
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--white);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      color: var(--white);
+    }
+
+    .modal-description {
+      margin-bottom: 25px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--gray);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--cyan);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--white);
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+      border: none;
+      border-radius: 8px;
+      color: var(--bg-dark);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
   </style>
   <script>
     // Función de login debe estar disponible antes del formulario
-    function loginComercio(event) {
+    async function loginComercio(event) {
       event.preventDefault();
 
+      const email = document.getElementById('emailInput').value;
       const password = document.getElementById('passwordInput').value;
-      const passwordCorrecta = '2215690902';
 
-      // Verificar contraseña exacta
-      if (password === passwordCorrecta) {
-        // Guardar sesión
-        localStorage.setItem('comercioLoggedIn', 'true');
-        localStorage.setItem('comercioPassword', password);
+      if (!email || !password) {
+        showToast('danger', 'Datos incompletos', 'Por favor ingresa email y contraseña.');
+        return;
+      }
 
-        // Ocultar login y mostrar panel
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('panelContainer').style.display = 'block';
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            tipo_usuario: 'comercio'
+          })
+        });
 
-        // Inicializar el panel sin recargar
-        if (typeof inicializarPanel === 'function') {
-          inicializarPanel();
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Guardar token y datos de usuario
+          localStorage.setItem('yavoy_token', data.token);
+          localStorage.setItem('yavoy_user', JSON.stringify(data.user));
+          localStorage.setItem('comercioLoggedIn', 'true');
+
+          // Ocultar login y mostrar panel
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('panelContainer').style.display = 'block';
+
+          // Inicializar el panel
+          if (typeof inicializarPanel === 'function') {
+            inicializarPanel();
+          }
+
+          showToast('success', '¡Bienvenido!', 'Has iniciado sesión correctamente.');
+        } else {
+          showToast('danger', 'Error de autenticación', data.message || 'Credenciales incorrectas.');
         }
-      } else {
-        showToast('danger', 'Contraseña Incorrecta', 'Por favor, ingresá la contraseña asignada.');
+      } catch (error) {
+        console.error('Error en login:', error);
+        showToast('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
+      }
+    }
+
+    // Funciones para reset de contraseña
+    function mostrarForgotPassword() {
+      document.getElementById('forgotPasswordModal').classList.add('active');
+      document.getElementById('resetEmailInput').focus();
+    }
+
+    function cerrarForgotPassword() {
+      document.getElementById('forgotPasswordModal').classList.remove('active');
+      document.getElementById('forgotPasswordForm').reset();
+      document.getElementById('resetMessage').style.display = 'none';
+    }
+
+    async function solicitarResetPassword(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('resetEmailInput').value;
+      const messageDiv = document.getElementById('resetMessage');
+
+      if (!email) {
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'Por favor ingresa tu email.';
+        messageDiv.style.display = 'block';
+        return;
+      }
+
+      // Validar formato de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'Por favor ingresa un email válido.';
+        messageDiv.style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          messageDiv.className = 'message success';
+          messageDiv.textContent = '¡Email enviado! Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.';
+          messageDiv.style.display = 'block';
+
+          // Limpiar el formulario después de 3 segundos
+          setTimeout(() => {
+            cerrarForgotPassword();
+          }, 3000);
+        } else {
+          messageDiv.className = 'message error';
+          messageDiv.textContent = data.message || 'Error al enviar el email. Inténtalo de nuevo.';
+          messageDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error en forgot password:', error);
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'Error de conexión. Inténtalo de nuevo.';
+        messageDiv.style.display = 'block';
       }
     }
 
     // Verificar si ya está logueado al cargar la página
     function verificarSesionInicial() {
-      const loggedIn = localStorage.getItem('comercioLoggedIn');
-      const passwordGuardada = localStorage.getItem('comercioPassword');
-      const passwordCorrecta = '2215690902';
+      const token = localStorage.getItem('yavoy_token');
+      const user = localStorage.getItem('yavoy_user');
 
-      // Solo mostrar panel si está logueado Y la contraseña guardada es correcta
-      if (loggedIn === 'true' && passwordGuardada === passwordCorrecta) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('panelContainer').style.display = 'block';
-      } else {
-        // Si la sesión es inválida, limpiar localStorage
-        localStorage.removeItem('comercioLoggedIn');
-        localStorage.removeItem('comercioPassword');
-        document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('panelContainer').style.display = 'none';
+      // Verificar si hay token y usuario válido
+      if (token && user) {
+        try {
+          const userData = JSON.parse(user);
+          if (userData.tipo === 'comercio') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('panelContainer').style.display = 'block';
+            return;
+          }
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+        }
       }
+
+      // Si no hay sesión válida, mostrar login
+      localStorage.removeItem('yavoy_token');
+      localStorage.removeItem('yavoy_user');
+      localStorage.removeItem('comercioLoggedIn');
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('panelContainer').style.display = 'none';
     }
 
     // Ejecutar verificación cuando cargue el DOM
@@ -1846,13 +2123,24 @@
 
         <form id="loginForm" onsubmit="loginComercio(event)" class="comercio-login-form">
           <div>
-            <label class="comercio-login-label">🔐 Contraseña de Acceso</label>
-            <input type="password" id="passwordInput" placeholder="Ingresá tu contraseña asignada" required
+            <label class="comercio-login-label">� Email</label>
+            <input type="email" id="emailInput" placeholder="tu@email.com" required
+                   class="comercio-login-input">
+          </div>
+          <div>
+            <label class="comercio-login-label">🔐 Contraseña</label>
+            <input type="password" id="passwordInput" placeholder="Tu contraseña" required
+                   class="comercio-login-input">
+          </div>
               class="comercio-login-input" autocomplete="current-password" />
           </div>
 
           <button type="submit" class="comercio-login-btn">
             🚀 Ingresar al Panel
+          </button>
+
+          <button type="button" onclick="mostrarForgotPassword()" class="comercio-forgot-btn">
+            🔑 Olvidé mi contraseña
           </button>
         </form>
 
@@ -1862,6 +2150,32 @@
             <a href="index.html" class="comercio-login-footer-link">Registrate aquí</a>
           </p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Reset de Contraseña -->
+  <div id="forgotPasswordModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">🔑 Recuperar Contraseña</h2>
+        <button class="modal-close" onclick="cerrarForgotPassword()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">
+          Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.
+        </p>
+        <form id="forgotPasswordForm" onsubmit="solicitarResetPassword(event)">
+          <div class="form-group">
+            <label class="form-label">📧 Email</label>
+            <input type="email" id="resetEmailInput" placeholder="tu@email.com" required
+                   class="form-input">
+          </div>
+          <button type="submit" class="modal-btn">
+            📤 Enviar Enlace de Reset
+          </button>
+        </form>
+        <div id="resetMessage" class="message" style="display: none;"></div>
       </div>
     </div>
   </div>
@@ -3663,8 +3977,9 @@
     // Cerrar sesión
     window.cerrarSesion = function () {
       if (confirm('¿Seguro que deseas cerrar sesión?')) {
+        localStorage.removeItem('yavoy_token');
+        localStorage.removeItem('yavoy_user');
         localStorage.removeItem('comercioLoggedIn');
-        localStorage.removeItem('comercioPassword');
         window.location.href = '../index.html';
       }
     };
@@ -3684,6 +3999,9 @@
       }
     }, 30000);
   </script>
+
+  <!-- Scripts adicionales -->
+  <script src="js/ui-improvements.js"></script>
 </body>
 
 </html>

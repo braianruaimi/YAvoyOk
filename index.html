@@ -760,6 +760,49 @@
         }
     }
     </style>
+
+    <!-- Script para manejar Google OAuth fallback -->
+    <script>
+        // Verificar si hay datos de autenticación en sessionStorage (fallback)
+        const googleAuthData = sessionStorage.getItem('google_auth_success');
+        if (googleAuthData) {
+            try {
+                const data = JSON.parse(googleAuthData);
+                console.log('🔄 Procesando autenticación Google desde sessionStorage');
+
+                // Limpiar sessionStorage
+                sessionStorage.removeItem('google_auth_success');
+
+                // Guardar token en localStorage
+                if (data.token) {
+                    localStorage.setItem('yavoy_token', data.token);
+                    localStorage.setItem('yavoy_user', JSON.stringify(data.user));
+                    console.log('💾 Token guardado desde fallback');
+                }
+
+                // Mostrar mensaje de éxito
+                alert('✅ ¡Bienvenido a YAvoy!\n\nCuenta de Google vinculada exitosamente.');
+
+                // Redirigir después de un breve delay
+                setTimeout(() => {
+                    console.log('🚀 Redirigiendo desde fallback a:', data.redirectUrl);
+                    window.location.href = data.redirectUrl || 'pedidos.html';
+                }, 1000);
+
+            } catch (error) {
+                console.error('❌ Error procesando datos de Google auth:', error);
+                sessionStorage.removeItem('google_auth_success');
+            }
+        }
+
+        // Verificar si hay parámetro de URL para Google auth
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('google_auth') === 'success') {
+            // Limpiar la URL
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+    </script>
 </head>
 
 <body>
@@ -1178,25 +1221,31 @@
 
                     // Escuchar mensaje del popup
                     const messageHandler = function(event) {
+                        console.log('📨 Mensaje recibido del popup:', event.data);
                         if (event.data.type === 'google-auth-success') {
+                            console.log('✅ Google auth success, cerrando popup');
                             popup.close();
                             
                             // Guardar token en localStorage
                             if (event.data.token) {
                                 localStorage.setItem('yavoy_token', event.data.token);
                                 localStorage.setItem('yavoy_user', JSON.stringify(event.data.user));
+                                console.log('💾 Token guardado en localStorage');
                             }
                             
                             alert('✅ ¡Bienvenido a YAvoy!\n\nCuenta de Google vinculada exitosamente.');
                             closeRegisterModal();
                             
                             // Redirigir según tipo de usuario
+                            console.log('🔄 Redirigiendo en 1 segundo a:', event.data.redirectUrl);
                             setTimeout(() => {
+                                console.log('🚀 Ejecutando redirección a:', event.data.redirectUrl);
                                 window.location.href = event.data.redirectUrl || 'pedidos.html';
                             }, 1000);
                             
                             window.removeEventListener('message', messageHandler);
                         } else if (event.data.type === 'google-auth-error') {
+                            console.log('❌ Google auth error:', event.data.message);
                             popup.close();
                             alert('❌ Error: ' + (event.data.message || 'No se pudo autenticar con Google'));
                             window.removeEventListener('message', messageHandler);

@@ -6,7 +6,7 @@
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const UAParser = require('ua-parser-js');
-const geoip = require('geoip-lite');
+// const geoip = require('geoip-lite'); // Temporalmente comentado para iniciar servidor
 const crypto = require('crypto');
 
 // ===========================================

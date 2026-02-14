@@ -27,7 +27,7 @@ class EmailService {
             const smtpConfig = {
                 host: process.env.SMTP_HOST || 'smtp.hostinger.com',
                 port: parseInt(process.env.SMTP_PORT || 465),
-                secure: true, // Puerto 465 requiere SSL directo
+                secure: process.env.SMTP_SECURE === 'true', // Puerto 465 requiere SSL directo
                 auth: {
                     user: process.env.SMTP_USER || 'yavoyen5@yavoy.space',
                     pass: process.env.SMTP_PASS || 'BrainCesar26!'

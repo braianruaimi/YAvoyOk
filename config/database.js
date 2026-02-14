@@ -13,13 +13,18 @@ const sequelize = new Sequelize(
     dialect: 'mysql',
     port: process.env.DB_PORT || 3306,
     pool: {
-      max: parseInt(process.env.DB_POOL_MAX) || 20,
-      min: parseInt(process.env.DB_POOL_MIN) || 2,
+      max: parseInt(process.env.DB_POOL_MAX) || 3,
+      min: parseInt(process.env.DB_POOL_MIN) || 0,
       acquire: 30000,
-      idle: 10000
+      idle: 5000
     },
     logging: isProd ? false : console.log,
-    timezone: '+00:00'
+    timezone: '+00:00',
+    retry: {
+      max: 3, // Número máximo de reintentos
+      backoffBase: 100, // Tiempo base en ms
+      backoffExponent: 1.5 // Exponente para backoff exponencial
+    }
   }
 );
 

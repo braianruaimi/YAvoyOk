@@ -13,31 +13,50 @@ const Calificacion = require('./models/Calificacion');
 const PuntosRecompensas = require('./models/PuntosRecompensas');
 const Propina = require('./models/Propina');
 
-(async () => {
-  try {
-    console.log('🔄 Conectando a MySQL...');
-    console.log(`   Host: ${process.env.DB_HOST}`);
-    console.log(`   Database: ${process.env.DB_NAME}`);
-    console.log(`   User: ${process.env.DB_USER}`);
-    
-    await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
-    console.log('✅ Modelos Sequelize sincronizados con la base de datos.');
-  } catch (error) {
-    console.error('❌ ERROR CRÍTICO: No se pudo conectar a MySQL');
-    console.error('   Razón:', error.message);
-    console.error('\n🔧 SOLUCIONES:');
-    console.error('   1. Verifica las credenciales en .env');
-    console.error('   2. Habilita acceso remoto en Hostinger Panel:');
-    console.error('      → https://hpanel.hostinger.com');
-    console.error('      → Databases → Remote MySQL');
-    console.error('      → Agrega tu IP o usa % (todas las IPs)');
-    console.error('\n💡 Tu IP actual puede ser diferente. Ejecuta: curl ifconfig.me');
-    console.error('   IP detectada en el error:', error.message.match(/'([0-9.]+)'/)?.[1] || 'desconocida');
-    
-    process.exit(1); // Detener el servidor si MySQL falla
+// Configuración de conexión con Reintentos y sin process.exit()
+async function conectarDB() {
+  console.log('🔄 Conectando a MySQL...');
+  console.log(`   Host: ${process.env.DB_HOST}`);
+  console.log(`   Database: ${process.env.DB_NAME}`);
+  console.log(`   User: ${process.env.DB_USER}`);
+  
+  let intentos = 0;
+  const MAX_INTENTOS = 5;
+
+  while (intentos < MAX_INTENTOS) {
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Conexión a MySQL establecida con éxito.');
+      
+      // Sincronizar modelos (solo si es necesario)
+      await sequelize.sync({ alter: true }); // ACTIVADO para crear tablas
+      console.log('✅ Modelos Sequelize listos y tablas creadas.');
+      
+      break; // Salir del bucle si conecta
+    } catch (error) {
+      intentos++;
+      console.error(`❌ Error de conexión (Intento ${intentos}/${MAX_INTENTOS}):`, error.message);
+      
+      if (intentos === MAX_INTENTOS) {
+        console.error('⚠️ El servidor iniciará con funcionalidad limitada. Verifica MySQL en el hosting.');
+        console.error('\n🔧 SOLUCIONES:');
+        console.error('   1. Verifica las credenciales en .env');
+        console.error('   2. Habilita acceso remoto en Hostinger Panel:');
+        console.error('      → https://hpanel.hostinger.com');
+        console.error('      → Databases → Remote MySQL');
+        console.error('      → Agrega tu IP o usa % (todas las IPs)');
+        console.error('\n💡 Tu IP actual puede ser diferente. Ejecuta: curl ifconfig.me');
+        console.error('   IP detectada en el error:', error.message.match(/'([0-9.]+)'/)?.[1] || 'desconocida');
+        // IMPORTANTE: NO usamos process.exit(1) aquí.
+      } else {
+        // Esperar 5 segundos antes de reintentar
+        await new Promise(res => setTimeout(res, 5000));
+      }
+    }
   }
-})();
+}
+
+conectarDB();
 // ====================================
 // YAVOY v3.1 - SERVIDOR SEGURO CON CIBERSEGURIDAD AVANZADA
 // ====================================
@@ -95,7 +114,7 @@ const io = new Server(server, {
   }
 });
 
-const PORT = process.env.PORT || 5502;
+const PORT = process.env.PORT || 3000;
 const BASE_DIR = path.join(__dirname, 'registros');
 
 // Configuración de VAPID para Web Push
@@ -5419,8 +5438,44 @@ console.log('✅ Middleware de archivos estáticos configurado DESPUÉS de las r
 
 inicializarSoporte();
 
+// ========================================
+// GRACEFUL SHUTDOWN - Para hosting compartido
+// ========================================
+const gracefulShutdown = async (signal) => {
+  console.log(`\n🛑 Recibida señal ${signal}. Cerrando servidor gracefully...`);
+  
+  // Cerrar conexiones de Socket.IO
+  io.close(() => {
+    console.log('✅ Socket.IO cerrado.');
+  });
+  
+  // Cerrar conexiones de Sequelize
+  try {
+    await sequelize.close();
+    console.log('✅ Conexiones a MySQL cerradas.');
+  } catch (error) {
+    console.error('❌ Error cerrando MySQL:', error.message);
+  }
+  
+  // Cerrar servidor HTTP
+  server.close(() => {
+    console.log('✅ Servidor HTTP cerrado.');
+    process.exit(0);
+  });
+  
+  // Timeout de 10 segundos para forzar cierre
+  setTimeout(() => {
+    console.error('⚠️ Forzando cierre del proceso...');
+    process.exit(1);
+  }, 10000);
+};
+
+// Manejar señales de terminación
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
 inicializarDirectorios().then(() => {
-  server.listen(PORT, () => {
+  server.listen(PORT, '127.0.0.1', () => {
     console.log('\n╔══════════════════════════════════════════════════════════════╗');
     console.log('║       🚀 YAVOY v3.1 - SERVIDOR SEGURO INICIADO              ║');
     console.log('╚══════════════════════════════════════════════════════════════╝\n');
