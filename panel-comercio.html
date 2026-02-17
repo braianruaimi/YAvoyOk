@@ -17,6 +17,9 @@
   <script src="js/theme-color-polyfill.js" defer></script>
   <!-- Chart.js para gráficos -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Leaflet para mapas -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <title>YAvoy Comercio — Panel de Gestión</title>
   <style>
     :root {
@@ -395,6 +398,41 @@
     .comercio-login-footer-link:hover {
       color: #0891b2;
       text-decoration: underline;
+    }
+
+    /* Botón Google OAuth */
+    .google-signin-btn {
+      width: 100%;
+      padding: 16px 20px;
+      background: white;
+      color: #3c4043;
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .google-signin-btn:hover {
+      background: #f8f9fa;
+      border-color: #c6c9cc;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .google-signin-btn:active {
+      transform: translateY(0);
+    }
+
+    .google-signin-btn svg {
+      width: 20px;
+      height: 20px;
     }
 
     /* Error de login */
@@ -1807,6 +1845,7 @@
       justify-content: center;
       align-items: center;
       animation: fadeIn 0.3s ease;
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
     }
 
@@ -1816,6 +1855,7 @@
 
     .modal-content {
       background: var(--bg-card);
+      -webkit-backdrop-filter: blur(20px);
       backdrop-filter: blur(20px);
       border-radius: 24px;
       padding: 40px;
@@ -1927,6 +1967,7 @@
     }
 
     .message {
+      display: none;
       margin-top: 20px;
       padding: 12px 16px;
       border-radius: 8px;
@@ -1935,12 +1976,14 @@
     }
 
     .message.success {
+      display: block;
       background: rgba(16, 185, 129, 0.2);
       border: 1px solid var(--success);
       color: var(--success);
     }
 
     .message.error {
+      display: block;
       background: rgba(239, 68, 68, 0.2);
       border: 1px solid var(--danger);
       color: var(--danger);
@@ -1948,54 +1991,106 @@
   </style>
   <script>
     // Función de login debe estar disponible antes del formulario
-    async function loginComercio(event) {
-      event.preventDefault();
-
-      const email = document.getElementById('emailInput').value;
-      const password = document.getElementById('passwordInput').value;
-
-      if (!email || !password) {
-        showToast('danger', 'Datos incompletos', 'Por favor ingresa email y contraseña.');
-        return;
-      }
-
+    // Google Sign-In para Comercios
+    async function handleGoogleSignInComercio() {
       try {
-        const response = await fetch('/api/auth/login', {
+        console.log('🔵 Iniciando Google Sign-In para Comercio...');
+        
+        // Mostrar mensaje de carga
+        const loadingMsg = document.createElement('div');
+        loadingMsg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#fbbf24;color:#0f1724;padding:12px 24px;border-radius:25px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:10001;font-weight:600;';
+        loadingMsg.textContent = '⏳ Preparando autenticación de Google...';
+        document.body.appendChild(loadingMsg);
+
+        const response = await fetch('/api/auth/google/init', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            email: email,
-            password: password,
-            tipo_usuario: 'comercio'
-          })
+          body: JSON.stringify({ tipo_usuario: 'comercio' })
         });
 
-        const data = await response.json();
+        loadingMsg.remove();
 
-        if (response.ok && data.success) {
-          // Guardar token y datos de usuario
-          localStorage.setItem('yavoy_token', data.token);
-          localStorage.setItem('yavoy_user', JSON.stringify(data.user));
-          localStorage.setItem('comercioLoggedIn', 'true');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
 
-          // Ocultar login y mostrar panel
-          document.getElementById('loginScreen').style.display = 'none';
-          document.getElementById('panelContainer').style.display = 'block';
+        const result = await response.json();
 
-          // Inicializar el panel
-          if (typeof inicializarPanel === 'function') {
-            inicializarPanel();
+        if (result.success && result.authUrl) {
+          // Abrir ventana popup de Google
+          const width = 500;
+          const height = 600;
+          const left = (screen.width - width) / 2;
+          const top = (screen.height - height) / 2;
+          
+          const popup = window.open(
+            result.authUrl,
+            'Google Sign In - Comercio',
+            `width=${width},height=${height},left=${left},top=${top}`
+          );
+
+          if (!popup) {
+            showToast('warning', 'Ventanas emergentes bloqueadas', 'Por favor permite las ventanas emergentes para continuar.');
+            return;
           }
 
-          showToast('success', '¡Bienvenido!', 'Has iniciado sesión correctamente.');
+          // Escuchar mensaje del popup
+          const messageHandler = function(event) {
+            console.log('📨 Mensaje recibido:', event.data);
+            if (event.data.type === 'google-auth-success') {
+              console.log('✅ Autenticación exitosa');
+              popup.close();
+              
+              // Guardar token y datos
+              if (event.data.token) {
+                localStorage.setItem('yavoy_token', event.data.token);
+                localStorage.setItem('yavoy_user', JSON.stringify(event.data.user));
+                localStorage.setItem('comercioLoggedIn', 'true');
+                console.log('💾 Sesión guardada');
+              }
+              
+              // Ocultar login y mostrar panel
+              document.getElementById('loginScreen').style.display = 'none';
+              document.getElementById('panelContainer').style.display = 'block';
+
+              // Inicializar panel
+              if (typeof inicializarPanel === 'function') {
+                inicializarPanel();
+              }
+              
+              showToast('success', '¡Bienvenido!', 'Autenticación exitosa con Google');
+              
+              window.removeEventListener('message', messageHandler);
+            } else if (event.data.type === 'google-auth-error') {
+              console.log('❌ Error de autenticación:', event.data.message);
+              popup.close();
+              showToast('danger', 'Error de autenticación', event.data.message || 'No se pudo autenticar con Google');
+              window.removeEventListener('message', messageHandler);
+            }
+          };
+          
+          window.addEventListener('message', messageHandler);
         } else {
-          showToast('danger', 'Error de autenticación', data.message || 'Credenciales incorrectas.');
+          console.error('Google OAuth no configurado:', result);
+          showToast('warning', 'Google OAuth no disponible', 'Las credenciales de Google no están configuradas. Contacta al administrador.');
         }
       } catch (error) {
-        console.error('Error en login:', error);
-        showToast('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
+        console.error('Error en Google Sign-In:', error);
+        
+        let mensaje = 'Google Sign-In no disponible';
+        let detalle = 'Contacta al administrador';
+        
+        if (error.message.includes('404')) {
+          detalle = 'Endpoint no encontrado en el servidor';
+        } else if (error.message.includes('500')) {
+          detalle = 'Error en el servidor';
+        } else if (error.message.includes('Failed to fetch')) {
+          detalle = 'Servidor no responde';
+        }
+        
+        showToast('danger', mensaje, detalle);
       }
     }
 
@@ -2118,35 +2213,28 @@
         <div class="comercio-login-header">
           <div class="comercio-login-icon">🏪</div>
           <h1 class="comercio-login-title">Panel de Comercio</h1>
-          <p class="comercio-login-subtitle">Accede a tu centro de control empresarial</p>
+          <p class="comercio-login-subtitle">Accede con tu cuenta de Google</p>
         </div>
 
-        <form id="loginForm" onsubmit="loginComercio(event)" class="comercio-login-form">
-          <div>
-            <label class="comercio-login-label">� Email</label>
-            <input type="email" id="emailInput" placeholder="tu@email.com" required
-                   class="comercio-login-input">
-          </div>
-          <div>
-            <label class="comercio-login-label">🔐 Contraseña</label>
-            <input type="password" id="passwordInput" placeholder="Tu contraseña" required
-                   class="comercio-login-input">
-          </div>
-              class="comercio-login-input" autocomplete="current-password" />
-          </div>
-
-          <button type="submit" class="comercio-login-btn">
-            🚀 Ingresar al Panel
+        <div class="comercio-login-form">
+          <button type="button" class="google-signin-btn" onclick="handleGoogleSignInComercio()">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <span>Continuar con Google</span>
           </button>
 
-          <button type="button" onclick="mostrarForgotPassword()" class="comercio-forgot-btn">
-            🔑 Olvidé mi contraseña
-          </button>
-        </form>
+          <div style="text-align: center; margin-top: 20px; color: var(--gray); font-size: 0.9rem;">
+            🔒 Autenticación segura sin contraseñas
+          </div>
+        </div>
 
         <div class="comercio-login-footer">
           <p class="comercio-login-footer-text">
-            ¿No tenés cuenta?
+            ¿No tenés comercio registrado?
             <a href="index.html" class="comercio-login-footer-link">Registrate aquí</a>
           </p>
         </div>
@@ -2175,7 +2263,7 @@
             📤 Enviar Enlace de Reset
           </button>
         </form>
-        <div id="resetMessage" class="message" style="display: none;"></div>
+        <div id="resetMessage" class="message"></div>
       </div>
     </div>
   </div>
@@ -2205,6 +2293,9 @@
       </button>
       <button class="tab-btn" onclick="cambiarTab('estadisticas')">
         📊 Estadísticas
+      </button>
+      <button class="tab-btn" onclick="cambiarTab('mapa')">
+        🗺️ Mapa de Repartidores
       </button>
       <button class="tab-btn" onclick="cambiarTab('catalogo')">
         📋 Catálogo de Productos
@@ -2376,6 +2467,54 @@
             <h3 class="chart-title">⏰ Horarios Pico</h3>
             <div class="chart-container">
               <canvas id="horariosPicoChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Mapa de Repartidores -->
+    <div id="tabMapa" class="tab-content">
+      <div class="pedidos-section">
+        <h2 class="comercio-stats-title">🗺️ Mapa de Repartidores Cercanos</h2>
+        <p class="text-gray mb-24">
+          Visualiza en tiempo real la ubicación de los repartidores activos en tu zona
+        </p>
+
+        <!-- Resumen de Repartidores -->
+        <div id="repartidores-resumen" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px; background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3);">
+              <div style="font-size: 0.875rem; color: var(--gray); margin-bottom: 0.5rem;">Total Activos</div>
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--cyan);" id="total-repartidores">-</div>
+            </div>
+            <div style="flex: 1; min-width: 150px; background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+              <div style="font-size: 0.875rem; color: var(--gray); margin-bottom: 0.5rem;">Disponibles</div>
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--success);" id="disponibles-repartidores">-</div>
+            </div>
+            <div style="flex: 1; min-width: 150px; background: rgba(251, 191, 36, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.3);">
+              <div style="font-size: 0.875rem; color: var(--gray); margin-bottom: 0.5rem;">Ocupados</div>
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--gold);" id="ocupados-repartidores">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenedor del Mapa -->
+        <div id="comercio-map" style="width: 100%; height: 600px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(6, 182, 212, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.3);"></div>
+
+        <!-- Información -->
+        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(6, 182, 212, 0.1); border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3);">
+          <div style="display: flex; align-items: start; gap: 1rem;">
+            <div style="font-size: 1.5rem;">ℹ️</div>
+            <div>
+              <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--cyan);">Cómo funciona el mapa</div>
+              <ul style="font-size: 0.875rem; color: var(--gray); line-height: 1.6; margin-left: 1.5rem;">
+                <li>🏪 El marcador amarillo muestra la ubicación de tu comercio</li>
+                <li>🛵 Los marcadores verdes muestran repartidores disponibles</li>
+                <li>🛵 Los marcadores grises muestran repartidores ocupados</li>
+                <li>⭐ El círculo cyan indica tu zona de cobertura (3 km)</li>
+                <li>🔄 El mapa se actualiza automáticamente cada 30 segundos</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -2792,7 +2931,7 @@
     </div>
   </div>
 
-  <script type="module">
+  <script>
     // Variables globales
     let comercioActual = null;
     let pedidosRecibidos = [];
@@ -2802,6 +2941,8 @@
     let repartidorSeleccionado = null;
     let filtroActual = 'todos';
     let charts = {}; // Almacenar instancias de gráficos
+    let socket = null; // Socket.IO para tiempo real
+    let comercioMapService = null; // Servicio de mapa
 
     // ==========================================
     // SISTEMA DE NOTIFICACIONES TOAST
@@ -3349,8 +3490,69 @@
       // Cargar productos del comercio
       cargarProductos();
 
+      // Inicializar Socket.IO y Mapa
+      inicializarSocketYMapa();
+
       // Solicitar permisos de notificación
       solicitarPermisosNotificacion();
+    }
+
+    // ==========================================
+    // SOCKET.IO Y MAPA DE REPARTIDORES
+    // ==========================================
+    function inicializarSocketYMapa() {
+      // Verificar que el comercio tiene coordenadas
+      if (!comercioActual.direccion_latitud || !comercioActual.direccion_longitud) {
+        console.warn('⚠️ Comercio sin coordenadas configuradas. El mapa no se mostrará correctamente.');
+        // Usar coordenadas por defecto de Centro Ensenada para demo
+        comercioActual.direccion_latitud = -34.8667;
+        comercioActual.direccion_longitud = -57.9167;
+      }
+
+      // Inicializar Socket.IO
+      if (!socket) {
+        socket = io({
+          auth: {
+            token: localStorage.getItem('yavoy_token'),
+            userId: comercioActual.id,
+            userRole: 'comercio'
+          }
+        });
+
+        // Listener de conexión
+        socket.on('connect', () => {
+          console.log('✅ Socket.IO conectado:', socket.id);
+        });
+
+        // Listener de desconexión
+        socket.on('disconnect', () => {
+          console.log('❌ Socket.IO desconectado');
+        });
+
+        // Listener de errores
+        socket.on('error', (error) => {
+          console.error('❌ Socket.IO error:', error);
+        });
+      }
+
+      // Inicializar servicio de mapa (solo si la tab de mapa existe)
+      if (document.getElementById('comercio-map') && typeof ComercioMapService !== 'undefined') {
+        try {
+          comercioMapService = new ComercioMapService();
+          comercioMapService.init('comercio-map', {
+            id: comercioActual.id,
+            nombre: comercioActual.nombre,
+            lat: parseFloat(comercioActual.direccion_latitud),
+            lng: parseFloat(comercioActual.direccion_longitud)
+          }, socket);
+          
+          console.log('✅ Mapa de comercio inicializado');
+        } catch (error) {
+          console.error('❌ Error al inicializar mapa:', error);
+        }
+      } else {
+        console.warn('⚠️ ComercioMapService no disponible o contenedor de mapa no encontrado');
+      }
     }
 
     // ==========================================
@@ -3634,6 +3836,16 @@
       // Inicializar gráficos si es la tab de estadísticas
       if (tabName === 'estadisticas') {
         setTimeout(() => initCharts(), 100);
+      }
+
+      // Actualizar mapa si es la tab de mapa
+      if (tabName === 'mapa' && comercioMapService) {
+        setTimeout(() => {
+          if (comercioMapService.mapa) {
+            comercioMapService.mapa.invalidateSize();
+            comercioMapService.cargarRepartidoresCercanos();
+          }
+        }, 100);
       }
     };
 
@@ -4002,6 +4214,12 @@
 
   <!-- Scripts adicionales -->
   <script src="js/ui-improvements.js"></script>
+  <!-- Socket.IO para tiempo real -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <!-- Map Engine v2.0 - Motor base de mapas -->
+  <script src="js/map-engine.js"></script>
+  <!-- Script de mapa de comercio -->
+  <script src="js/comercio-map-service.js"></script>
 </body>
 
 </html>
