@@ -31,7 +31,7 @@ jobs:
         pytest
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3.1.0
+      uses: actions/upload-artifact@v6
       with:
         name: test-artifact
         path: path/to/artifact
