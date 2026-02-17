@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map Engine v2.0 - Demo Mejorada</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f3f4f6;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .controls {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .controls h3 {
+      margin: 0 0 16px 0;
+      font-size: 18px;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-info {
+      background: #06b6d4;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: #0891b2;
+    }
+
+    .map-wrapper {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    #mapa {
+      width: 100%;
+      height: 600px;
+    }
+
+    .info-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-panel h3 {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+      color: #1f2937;
+    }
+
+    .info-panel pre {
+      background: #1f2937;
+      color: #10b981;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-inactive {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .example-btn {
+      padding: 8px 16px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .example-btn:hover {
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      #mapa {
+        height: 400px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🗺️ Map Engine v2.0 - Demo Mejorada</h1>
+    <p>Mapa extendido con zonas de expansión y geocodificación automática</p>
+  </div>
+
+  <div class="container">
+    <!-- Controles -->
+    <div class="controls">
+      <h3>
+        ⚙️ Controles del Mapa
+        <span id="status-badge" class="status-badge status-inactive">Sin inicializar</span>
+      </h3>
+      <div class="button-group">
+        <button class="btn btn-primary" onclick="inicializarMapa()">
+          🚀 Inicializar Mapa
+        </button>
+        <button class="btn btn-secondary" onclick="iniciarSimulador()">
+          🚴 Iniciar Simulador
+        </button>
+        <button class="btn btn-danger" onclick="detenerSimulador()">
+          ⏹️ Detener Simulador
+        </button>
+        <button class="btn btn-info" onclick="mostrarInfo()">
+          📊 Ver Info
+        </button>
+        <button class="btn btn-info" onclick="probarGeocoding()">
+          🔍 Probar Geocoding
+        </button>
+        <button class="btn btn-danger" onclick="destruirMapa()">
+          🗑️ Destruir Mapa
+        </button>
+      </div>
+    </div>
+
+    <!-- Controles de Geocoding -->
+    <div class="controls">
+      <h3>🔍 Prueba de Geocodificación</h3>
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
+        <input 
+          type="text" 
+          id="direccion-input" 
+          class="search-input"
+          placeholder="Ej: Calle 50 123, Ensenada" 
+        />
+        <button class="btn btn-primary" onclick="buscarDireccion()">
+          🚀 Buscar en Mapa
+        </button>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="example-btn" onclick="usarDireccionEjemplo('Avenida Costanera, Ensenada')">
+          📍 Av. Costanera
+        </button>
+        <button class="example-btn" onclick="usarDireccionEjemplo('Calle 122, Ensenada')">
+          📍 Calle 122
+        </button>
+        <button class="example-btn" onclick="usarDireccionEjemplo('Puerto de Ensenada')">
+          📍 Puerto
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor del Mapa -->
+    <div class="map-wrapper">
+      <div id="mapa"></div>
+    </div>
+
+    <!-- Panel de Información -->
+    <div class="info-panel">
+      <h3>📊 Información del Motor</h3>
+      <pre id="info-output">Click en "Inicializar Mapa" para comenzar...</pre>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="info-panel">
+      <h3>📖 Instrucciones de Uso</h3>
+      <pre>// 1. Inicializar con COORDENADAS
+await motor.inicializar('mapa', {
+  comercio: {
+    lat: -34.8667,
+    lng: -57.9167,
+    nombre: 'Comercio Demo',
+    id: 'COM-TEST-001'
+  }
+});
+
+// 2. Inicializar con DIRECCIÓN (geocodificación automática)
+await motor.inicializar('mapa', {
+  comercio: {
+    direccion: 'Calle 50 123, Ensenada',
+    nombre: 'Mi Negocio',
+    id: 'COM-TEST-002'
+  }
+});
+
+// 3. Geocodificar dirección manualmente
+const coords = await motor.geocodificarDireccion('Puerto de Ensenada');
+console.log(coords); // { lat: -34.xxx, lng: -57.xxx, displayName: '...' }
+
+// 4. Zonas extendidas con niebla
+// → El mapa ahora muestra +10km en todas direcciones (excepto mar)
+// → Áreas fuera de cobertura con efecto de niebla
+// → Haz click en zonas grises: "Muy pronto disponible"
+</pre>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Map Engine -->
+  <script src="js/map-engine.js"></script>
+
+  <!-- Lógica de la demo -->
+  <script>
+    let motor = null;
+
+    /**
+     * Inicializar el mapa
+     */
+    async function inicializarMapa() {
+      try {
+        // Destruir mapa anterior si existe
+        if (motor) {
+          motor.destruirMapa();
+        }
+
+        // Crear nueva instancia
+        motor = new MapEngine();
+
+        // Inicializar con un comercio de prueba
+        const exito = await motor.inicializar('mapa', {
+          comercio: {
+            lat: -34.8667,
+            lng: -57.9167,
+            nombre: 'Comercio Demo Ensenada',
+            id: 'COM-TEST-001'
+          }
+        });
+
+        if (exito) {
+          actualizarEstado('Mapa inicializado ✅', true);
+          mostrarInfo();
+        } else {
+          actualizarEstado('Error al inicializar ❌', false);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        actualizarEstado('Error: ' + error.message, false);
+      }
+    }
+
+    /**
+     * Iniciar el simulador de trayectoria
+     */
+    function iniciarSimulador() {
+      if (!motor || !motor.map) {
+        alert('⚠️ Primero debes inicializar el mapa');
+        return;
+      }
+
+      motor.simularRecorridoEnsenada('SIM-REPARTIDOR-001', {
+        velocidad: 3000,
+        repetir: true
+      });
+
+      actualizarEstado('Simulador activo 🚴‍♂️', true);
+      
+      // Actualizar info cada 2 segundos mientras el simulador está activo
+      const intervalo = setInterval(() => {
+        if (!motor || !motor.simuladorEstaActivo) {
+          clearInterval(intervalo);
+          return;
+        }
+        mostrarInfo();
+      }, 2000);
+    }
+
+    /**
+     * Detener el simulador
+     */
+    function detenerSimulador() {
+      if (!motor) {
+        alert('⚠️ No hay motor activo');
+        return;
+      }
+
+      motor.detenerSimulador();
+      actualizarEstado('Simulador detenido ⏹️', true);
+      mostrarInfo();
+    }
+
+    /**
+     * Mostrar información del motor
+     */
+    function mostrarInfo() {
+      if (!motor) {
+        document.getElementById('info-output').textContent = 
+          'Motor no inicializado. Click en "Inicializar Mapa"';
+        return;
+      }
+
+      const info = motor.obtenerInfo();
+      document.getElementById('info-output').textContent = 
+        JSON.stringify(info, null, 2);
+    }
+
+    /**
+     * Destruir el mapa
+     */
+    function destruirMapa() {
+      if (!motor) {
+        alert('⚠️ No hay motor activo');
+        return;
+      }
+
+      motor.destruirMapa();
+      motor = null;
+      actualizarEstado('Mapa destruido 🗑️', false);
+      document.getElementById('info-output').textContent = 
+        'Mapa destruido. Click en "Inicializar Mapa" para crear uno nuevo.';
+    }
+
+    /**
+     * Probar geocodificación con Av. Costanera
+     */
+    async function probarGeocoding() {
+      if (!motor) {
+        alert('⚠️ Primero debes inicializar el mapa');
+        return;
+      }
+
+      try {
+        actualizarEstado('Geocodificando...', true);
+        
+        const resultado = await motor.geocodificarDireccion('Avenida Costanera, Ensenada');
+        
+        if (resultado) {
+          // Agregar marcador en el mapa
+          const marker = L.marker([resultado.lat, resultado.lng], {
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          }).addTo(motor.map);
+
+          marker.bindPopup(`
+            <div style="font-size: 14px;">
+              <strong>📍 Av. Costanera</strong><br>
+              <small>${resultado.displayName}</small><br>
+              <small>Lat: ${resultado.lat}, Lng: ${resultado.lng}</small>
+            </div>
+          `).openPopup();
+
+          motor.map.setView([resultado.lat, resultado.lng], 16);
+          
+          actualizarEstado('Geocoding exitoso ✅', true);
+          console.log('✅ Resultado:', resultado);
+        } else {
+          actualizarEstado('No se encontró dirección ⚠️', false);
+        }
+      } catch (error) {
+        console.error('Error en geocoding:', error);
+        actualizarEstado('Error en geocoding ❌', false);
+      }
+    }
+
+    /**
+     * Buscar dirección ingresada por el usuario
+     */
+    async function buscarDireccion() {
+      if (!motor || !motor.map) {
+        alert('⚠️ Primero debes inicializar el mapa');
+        return;
+      }
+
+      const direccion = document.getElementById('direccion-input').value.trim();
+      
+      if (!direccion) {
+        alert('⚠️ Por favor ingresa una dirección');
+        return;
+      }
+
+      try {
+        actualizarEstado('Buscando dirección...', true);
+        
+        const resultado = await motor.geocodificarDireccion(direccion);
+        
+        if (resultado) {
+          // Agregar marcador 📍
+          const marker = L.marker([resultado.lat, resultado.lng], {
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          }).addTo(motor.map);
+
+          marker.bindPopup(`
+            <div style="font-size: 14px;">
+              <strong>📍 ${direccion}</strong><br>
+              <small>${resultado.displayName}</small><br>
+              <small>Lat: ${resultado.lat.toFixed(4)}, Lng: ${resultado.lng.toFixed(4)}</small>
+            </div>
+          `).openPopup();
+
+          motor.map.setView([resultado.lat, resultado.lng], 16);
+          
+          actualizarEstado('Dirección encontrada ✅', true);
+        } else {
+          alert('❌ No se pudo encontrar la dirección');
+          actualizarEstado('Dirección no encontrada ⚠️', false);
+        }
+      } catch (error) {
+        console.error('Error buscando dirección:', error);
+        alert('❌ Error: ' + error.message);
+        actualizarEstado('Error en búsqueda ❌', false);
+      }
+    }
+
+    /**
+     * Usar dirección de ejemplo
+     */
+    function usarDireccionEjemplo(direccion) {
+      document.getElementById('direccion-input').value = direccion;
+      buscarDireccion();
+    }
+
+    /**
+     * Actualizar el badge de estado
+     */
+    function actualizarEstado(mensaje, activo) {
+      const badge = document.getElementById('status-badge');
+      if (badge) {
+        badge.textContent = mensaje;
+        badge.className = `status-badge ${activo ? 'status-active' : 'status-inactive'}`;
+      }
+    }
+
+    /**
+     * Auto-inicializar al cargar la página
+     */
+    window.addEventListener('load', () => {
+      console.log('🎯 Demo cargada - Lista para usar');
+      console.log('💡 Click "Inicializar Mapa" para comenzar');
+      
+      // Auto-inicializar después de 1 segundo
+      setTimeout(() => {
+        inicializarMapa();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
