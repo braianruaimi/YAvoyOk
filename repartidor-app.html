@@ -1092,6 +1092,16 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Socket.IO para tiempo real -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- Map Engine v2.0 -->
+    <script src="js/map-engine.js"></script>
+    
+    <!-- Repartidor Map Service v3.2 -->
+    <script src="js/repartidor-map-service.js"></script>
+    
     <script>
         // Variables globales
         let repartidorData = null;
@@ -1100,6 +1110,7 @@
         let repartidorMarker = null;
         let rutaPolyline = null;
         let trackingInterval = null;
+        let repartidorMapService = null; // Servicio de mapa v3.2
 
         // API URL
         const API_URL = 'http://localhost:5501';
@@ -1160,8 +1171,48 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'block';
             document.getElementById('repartidorNombre').textContent = repartidorData.nombre || 'Repartidor';
+            
+            // Inicializar servicio de mapa con Socket.IO
+            inicializarRepartidorMapService();
+            
             cargarDatos();
             iniciarActualizacionAutomatica();
+        }
+
+        /**
+         * Inicializa el servicio de mapa con tracking automático
+         */
+        function inicializarRepartidorMapService() {
+            try {
+                // Crear servicio de mapa
+                repartidorMapService = new RepartidorMapService();
+                
+                // Inicializar Socket.IO
+                const socket = io(API_URL, {
+                    auth: {
+                        token: localStorage.getItem('token') || 'demo',
+                        userId: repartidorData.id,
+                        userRole: 'repartidor'
+                    }
+                });
+                
+                socket.on('connect', () => {
+                    console.log('✅ Socket repartidor conectado:', socket.id);
+                });
+                
+                socket.on('connect_error', (error) => {
+                    console.error('❌ Error de conexión Socket:', error);
+                });
+                
+                // Inicializar servicio (solo tracking, sin mapa visual aún)
+                repartidorMapService.init(socket);
+                
+                console.log('✅ Servicio de mapa del repartidor inicializado');
+                console.log('📡 Tracking automático listo para activarse');
+                
+            } catch (error) {
+                console.error('❌ Error al inicializar servicio de mapa:', error);
+            }
         }
 
         function logout() {
@@ -1532,13 +1583,29 @@
                 if (response.ok) {
                     alert('¡Entrega iniciada! 🚴');
                     await cargarPedidoActivo();
-                    iniciarTracking();
+                    
+                    // Activar tracking automático con Map Engine v2.0
+                    if (repartidorMapService && pedidoActivo) {
+                        repartidorMapService.activarTracking(pedidoActivo.id);
+                        console.log('📡 Tracking GPS activado cada 15 segundos');
+                        console.log('🗺️ Tu ubicación se actualiza automáticamente en el mapa');
+                    } else {
+                        // Fallback al sistema legacy
+                        iniciarTracking();
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Entrega iniciada (modo demo)');
                 pedidoActivo.estado = 'en-camino';
-                cargarPedidoActivo();
+                await cargarPedidoActivo();
+                
+                // Activar tracking en modo demo
+                if (repartidorMapService && pedidoActivo) {
+                    repartidorMapService.activarTracking(pedidoActivo.id);
+                } else {
+                    iniciarTracking();
+                }
             }
         }
 
@@ -1557,6 +1624,18 @@
 
                 if (response.ok) {
                     alert('¡Entrega completada! ✓ +$' + (pedidoActivo.precio || '300'));
+                    
+                    // Detener tracking y limpiar mapa
+                    if (repartidorMapService) {
+                        repartidorMapService.detenerTracking();
+                        repartidorMapService.destruirMapa();
+                        console.log('🛑 Tracking detenido');
+                        console.log('🗑️ Mapa limpiado');
+                    }
+                    if (trackingInterval) {
+                        clearInterval(trackingInterval);
+                    }
+                    
                     // Ocultar botón de chat cuando se completa el pedido
                     document.getElementById('btnChatCliente').classList.remove('visible');
                     pedidoActivo = null;
@@ -1566,6 +1645,16 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('Entrega completada (modo demo)');
+                
+                // Detener tracking y limpiar mapa (modo demo)
+                if (repartidorMapService) {
+                    repartidorMapService.detenerTracking();
+                    repartidorMapService.destruirMapa();
+                }
+                if (trackingInterval) {
+                    clearInterval(trackingInterval);
+                }
+                
                 document.getElementById('btnChatCliente').classList.remove('visible');
                 pedidoActivo = null;
                 cargarDatos();
@@ -1573,16 +1662,93 @@
             }
         }
 
-        // ===== MAPA =====
-        function inicializarMapa(pedido) {
+        // ===== MAPA CON MAP ENGINE V2.0 =====
+        
+        /**
+         * Inicializa el mapa visual del repartidor con Map Engine v2.0
+         * Muestra: comercio (azul), destino (rojo), mi ubicación (verde)
+         * NO muestra: ubicaciones de clientes (privacidad protegida)
+         */
+        async function inicializarMapa(pedido) {
+            try {
+                // Verificar que el servicio esté inicializado
+                if (!repartidorMapService) {
+                    console.warn('⚠️ Servicio de mapa no inicializado');
+                    inicializarRepartidorMapService();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+
+                // Destruir mapa anterior si existe
+                if (repartidorMapService && repartidorMapService.mapEngine) {
+                    repartidorMapService.destruirMapa();
+                }
+
+                // Parsear coordenadas del comercio (pueden venir como string o array)
+                let comercioLat, comercioLng;
+                if (typeof pedido.coordsOrigen === 'string') {
+                    const coords = pedido.coordsOrigen.split(',').map(c => parseFloat(c.trim()));
+                    comercioLat = coords[0];
+                    comercioLng = coords[1];
+                } else if (Array.isArray(pedido.coordsOrigen)) {
+                    comercioLat = pedido.coordsOrigen[0];
+                    comercioLng = pedido.coordsOrigen[1];
+                } else {
+                    // Coordenadas de Ensenada por defecto (centro)
+                    comercioLat = -34.8553;
+                    comercioLng = -57.9013;
+                }
+
+                // Parsear coordenadas del destino
+                let entregaLat, entregaLng;
+                if (typeof pedido.coordsDestino === 'string') {
+                    const coords = pedido.coordsDestino.split(',').map(c => parseFloat(c.trim()));
+                    entregaLat = coords[0];
+                    entregaLng = coords[1];
+                } else if (Array.isArray(pedido.coordsDestino)) {
+                    entregaLat = pedido.coordsDestino[0];
+                    entregaLng = pedido.coordsDestino[1];
+                } else {
+                    // Coordenadas de ejemplo cerca del comercio
+                    entregaLat = comercioLat + 0.01;
+                    entregaLng = comercioLng + 0.01;
+                }
+
+                // Inicializar mapa visual con Map Engine v2.0
+                await repartidorMapService.inicializarMapa('map', {
+                    pedidoId: pedido.id,
+                    comercioLat: comercioLat,
+                    comercioLng: comercioLng,
+                    comercioNombre: pedido.comercio || 'Comercio',
+                    comercioDireccion: pedido.direccionOrigen || 'Dirección del comercio',
+                    entregaLat: entregaLat,
+                    entregaLng: entregaLng,
+                    entregaDireccion: pedido.direccionDestino || 'Dirección de entrega'
+                });
+
+                console.log('✅ Mapa del repartidor inicializado con Map Engine v2.0');
+                console.log('🏪 Comercio:', pedido.comercio);
+                console.log('🎯 Destino:', pedido.direccionDestino);
+                console.log('🔒 PRIVACIDAD: Solo mostrando comercio y entrega');
+
+                // Actualizar referencia al mapa (para compatibilidad con código existente)
+                map = repartidorMapService.map;
+
+            } catch (error) {
+                console.error('❌ Error al inicializar mapa:', error);
+                // Fallback al sistema antiguo si falla
+                inicializarMapaLegacy(pedido);
+            }
+        }
+
+        /**
+         * Sistema de mapa legacy (fallback)
+         */
+        function inicializarMapaLegacy(pedido) {
             if (map) {
                 map.remove();
             }
 
-            // Coordenadas de Córdoba (centro por defecto)
             const cordobaCenter = [-31.4201, -64.1888];
-            
-            // Simular coordenadas de origen y destino
             const origen = pedido.coordsOrigen || [-31.4201 + Math.random() * 0.02, -64.1888 + Math.random() * 0.02];
             const destino = pedido.coordsDestino || [-31.4201 + Math.random() * 0.02, -64.1888 + Math.random() * 0.02];
             
@@ -1592,46 +1758,43 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Marker origen (comercio)
             L.marker(origen, {
-                icon: L.divIcon({
-                    html: '🏪',
-                    className: 'emoji-marker',
-                    iconSize: [30, 30]
-                })
+                icon: L.divIcon({ html: '🏪', className: 'emoji-marker', iconSize: [30, 30] })
             }).addTo(map).bindPopup('<b>Origen:</b> ' + pedido.comercio);
 
-            // Marker destino
             L.marker(destino, {
-                icon: L.divIcon({
-                    html: '🎯',
-                    className: 'emoji-marker',
-                    iconSize: [30, 30]
-                })
+                icon: L.divIcon({ html: '🎯', className: 'emoji-marker', iconSize: [30, 30] })
             }).addTo(map).bindPopup('<b>Destino:</b> ' + pedido.direccionDestino);
 
-            // Marker repartidor
             repartidorMarker = L.marker(origen, {
-                icon: L.divIcon({
-                    html: '🚴',
-                    className: 'emoji-marker',
-                    iconSize: [30, 30]
-                })
+                icon: L.divIcon({ html: '🚴', className: 'emoji-marker', iconSize: [30, 30] })
             }).addTo(map).bindPopup('Tu ubicación');
 
-            // Ruta
             rutaPolyline = L.polyline([origen, destino], {
-                color: '#06b6d4',
-                weight: 4,
-                opacity: 0.7
+                color: '#06b6d4', weight: 4, opacity: 0.7
             }).addTo(map);
 
-            // Ajustar vista
             map.fitBounds(rutaPolyline.getBounds(), { padding: [50, 50] });
         }
 
         function centrarMapa() {
-            if (map && rutaPolyline) {
+            if (repartidorMapService && repartidorMapService.map) {
+                // Si hay ruta, centrar en la ruta
+                if (repartidorMapService.rutaLinea) {
+                    repartidorMapService.map.fitBounds(
+                        repartidorMapService.rutaLinea.getBounds(), 
+                        { padding: [50, 50] }
+                    );
+                } else if (repartidorMapService.entregaMarker) {
+                    // Si no hay ruta, centrar en el destino
+                    repartidorMapService.map.setView(
+                        repartidorMapService.entregaMarker.getLatLng(), 
+                        15
+                    );
+                }
+                console.log('📍 Mapa centrado');
+            } else if (map && rutaPolyline) {
+                // Fallback al sistema legacy
                 map.fitBounds(rutaPolyline.getBounds(), { padding: [50, 50] });
             }
         }

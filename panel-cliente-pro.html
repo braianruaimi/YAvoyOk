@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="styles/premium-system.css">
     <script src="js/theme-color-polyfill.js" defer></script>
     <script src="js/intelligent-router.js" defer></script>
+    
+    <!-- Leaflet CSS para mapas -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <!-- Legacy Styles (mantener compatibilidad) -->
     <link rel="stylesheet" href="styles.css?v=13">
@@ -650,6 +653,19 @@
     </div>
 
     <script src="js/theme.js"></script>
+    
+    <!-- Socket.IO para tiempo real -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- Leaflet para mapas -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Map Engine v2.0 -->
+    <script src="js/map-engine.js"></script>
+    
+    <!-- Cliente Map Service v3.2 -->
+    <script src="js/cliente-map-service.js"></script>
+    
     <script>
         // THEME TOGGLE
         const themeToggle = document.getElementById('themeToggle');
@@ -687,9 +703,104 @@
             });
         }
 
+        // ===== MAPA DEL CLIENTE =====
+        let clienteMapService = null;
+        let socket = null;
+
+        /**
+         * Inicializa el mapa del cliente con seguimiento en tiempo real del repartidor
+         * @param {Object} pedidoData - Datos del pedido activo
+         */
+        async function inicializarMapaCliente(pedidoData) {
+            try {
+                // Destruir mapa anterior si existe
+                if (clienteMapService) {
+                    clienteMapService.destroy();
+                }
+
+                // Inicializar Socket.IO si no existe
+                if (!socket) {
+                    socket = io('http://localhost:5501', {
+                        auth: {
+                            token: localStorage.getItem('token') || 'demo',
+                            userId: pedidoData.clienteId || 'cliente-demo',
+                            userRole: 'cliente'
+                        }
+                    });
+                    
+                    socket.on('connect', () => {
+                        console.log('✅ Socket conectado:', socket.id);
+                    });
+                    
+                    socket.on('connect_error', (error) => {
+                        console.error('❌ Error de conexión Socket:', error);
+                    });
+                }
+
+                // Crear servicio de mapa
+                clienteMapService = new ClienteMapService();
+
+                // Inicializar con datos del pedido
+                await clienteMapService.init('mapContainer', {
+                    pedidoId: pedidoData.id,
+                    repartidorId: pedidoData.repartidorId,
+                    comercioLat: pedidoData.comercioLat || pedidoData.comercio?.lat,
+                    comercioLng: pedidoData.comercioLng || pedidoData.comercio?.lng,
+                    comercioNombre: pedidoData.comercioNombre || pedidoData.comercio?.nombre,
+                    comercioDireccion: pedidoData.comercioDireccion || pedidoData.comercio?.direccion,
+                    clienteLat: pedidoData.clienteLat || pedidoData.direccion?.lat,
+                    clienteLng: pedidoData.clienteLng || pedidoData.direccion?.lng,
+                    clienteDireccion: pedidoData.clienteDireccion || pedidoData.direccionDestino
+                }, socket);
+
+                console.log('✅ Mapa del cliente inicializado correctamente');
+                console.log('📍 Comercio:', pedidoData.comercioNombre);
+                console.log('🏠 Destino:', pedidoData.clienteDireccion || pedidoData.direccionDestino);
+                console.log('🚴 Esperando ubicación del repartidor...');
+
+                // Unirse a la sala del pedido
+                socket.emit('unirseRoomPedido', pedidoData.id);
+
+            } catch (error) {
+                console.error('❌ Error al inicializar mapa del cliente:', error);
+                alert('Error al cargar el mapa. Por favor recargá la página.');
+            }
+        }
+
+        /**
+         * Destruye el mapa y libera recursos
+         */
+        function destruirMapaCliente() {
+            if (clienteMapService) {
+                clienteMapService.destroy();
+                clienteMapService = null;
+                console.log('🗑️ Mapa del cliente destruido');
+            }
+        }
+
+        // Ejemplo de uso:
+        // Cuando el cliente tenga un pedido activo, llamar:
+        /*
+        const pedidoActivo = {
+            id: 'pedido-123',
+            clienteId: 'cliente-456',
+            repartidorId: 'repartidor-789',
+            comercioLat: -34.8553,
+            comercioLng: -57.9013,
+            comercioNombre: 'Parrilla La Esquina',
+            comercioDireccion: 'Av. Costanera 123',
+            clienteLat: -34.8623,
+            clienteLng: -57.8923,
+            clienteDireccion: 'Calle 122 y 50'
+        };
+        inicializarMapaCliente(pedidoActivo);
+        */
+
         // Inicializar
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeIcon();
+            console.log('✅ Panel Cliente Pro cargado - Map Engine v2.0 listo');
+            console.log('💡 Para activar el mapa, llamá: inicializarMapaCliente(pedidoData)');
         });
     </script>
 </body>
