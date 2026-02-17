@@ -1,165 +1,37 @@
-name: CI/CD Pipeline - YAvoy v3.1
+name: CI/CD Workflow
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-    
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: yavoy_test
-          MYSQL_USER: test
-          MYSQL_PASSWORD: test
-          MYSQL_ROOT_PASSWORD: root
-        options: >
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-        ports:
-          - 3306:3306
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run linting
-      run: npm run lint --if-present
-      continue-on-error: true
-    
-    - name: Run unit tests
-      run: npm run test:unit
-      env:
-        NODE_ENV: test
-        DB_HOST: localhost
-        DB_USER: test
-        DB_PASSWORD: test
-        DB_NAME: yavoy_test
-        DB_PORT: 3306
-    
-    - name: Run integration tests
-      run: npm run test:integration
-      env:
-        NODE_ENV: test
-        DB_HOST: localhost
-        DB_USER: test
-        DB_PASSWORD: test
-        DB_NAME: yavoy_test
-        DB_PORT: 3306
-      continue-on-error: true
-    
-    - name: Generate coverage report
-      run: npm run test:coverage
-      continue-on-error: true
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-    
-    - name: Archive test results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results-${{ matrix.node-version }}
-        path: |
-          coverage/
-          test-results/
-    
-  lint:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run ESLint
-      run: npm run lint
-      continue-on-error: true
-    
-    - name: Check code formatting with Prettier
-      run: npm run format -- --check
-      continue-on-error: true
-  
-  security:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Run npm audit
-      run: npm audit --audit-level=high
-      continue-on-error: true
-    
-    - name: Run Snyk security scan
-      uses: snyk/actions/node@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      continue-on-error: true
-    
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-      continue-on-error: true
-  
   build:
-    needs: [test, lint]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js
-      uses: actions/setup-node@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        node-version: '20.x'
-        cache: 'npm'
-    
+        python-version: '3.8'
+
     - name: Install dependencies
-      run: npm ci
-    
-    - name: Build application
-      run: npm run build --if-present
-    
-    - name: Create Docker image
       run: |
-        docker build -t yavoyok:latest .
-        docker tag yavoyok:latest yavoyok:${{ github.sha }}
-      continue-on-error: true
-    
-    - name: Notify deployment
-      if: success()
-      run: echo "Build successful! Ready for deployment."
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        pytest
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: test-artifact
+        path: path/to/artifact
