@@ -1,0 +1,178 @@
+name: 🚀 Auto-Deploy YAvoy a Hostinger
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+      - '!.github/workflows/**'
+  
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  deploy:
+    name: Deploy to Hostinger
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies locally (for validation)
+      run: npm ci --production
+      
+    - name: ✅ Validate package.json
+      run: |
+        if [ ! -f "package.json" ]; then
+          echo "❌ package.json not found"
+          exit 1
+        fi
+        echo "✅ package.json validated"
+    
+    - name: 🔐 Setup SSH
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+        SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
+        SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+        SSH_USER: ${{ secrets.HOSTINGER_USER }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -p $SSH_PORT $SSH_HOST >> ~/.ssh/known_hosts
+        echo "✅ SSH configured"
+    
+    - name: 🚀 Deploy to Hostinger
+      env:
+        SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
+        SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+        SSH_USER: ${{ secrets.HOSTINGER_USER }}
+        DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+      run: |
+        echo "🚀 Starting deployment..."
+        
+        ssh -p $SSH_PORT $SSH_USER@$SSH_HOST << 'ENDSSH'
+          set -e
+          
+          echo "📂 Navigating to deployment directory..."
+          cd ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+          
+          echo "🔄 Pulling latest changes from GitHub..."
+          git fetch origin
+          git reset --hard origin/main
+          
+          echo "📦 Installing/updating dependencies..."
+          npm install --production
+          
+          echo "🔄 Restarting application..."
+          # Si tienes Node.js Selector, usa su restart
+          # Si usas PM2 (VPS):
+          if command -v pm2 &> /dev/null; then
+            pm2 restart yavoy || pm2 start server.js --name yavoy
+            pm2 save
+            echo "✅ Application restarted with PM2"
+          else
+            # Método alternativo para shared hosting
+            pkill -f "node server.js" || true
+            nohup node server.js > app.log 2>&1 &
+            echo "✅ Application restarted"
+          fi
+          
+          echo "✅ Deployment completed successfully!"
+        ENDSSH
+    
+    - name: 🧪 Health Check
+      env:
+        APP_URL: ${{ secrets.APP_URL }}
+      run: |
+        echo "🧪 Performing health check..."
+        sleep 10
+        
+        response=$(curl -s -o /dev/null -w "%{http_code}" $APP_URL)
+        
+        if [ $response -eq 200 ] || [ $response -eq 301 ] || [ $response -eq 302 ]; then
+          echo "✅ Health check passed (HTTP $response)"
+        else
+          echo "⚠️  Health check warning (HTTP $response)"
+          echo "   Site may need manual verification"
+        fi
+    
+    - name: 📊 Deployment Summary
+      if: always()
+      run: |
+        echo "============================================"
+        echo "   DEPLOYMENT SUMMARY"
+        echo "============================================"
+        echo "Repository: ${{ github.repository }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Commit message: ${{ github.event.head_commit.message }}"
+        echo "Deployed by: ${{ github.actor }}"
+        echo "Timestamp: $(date)"
+        echo "============================================"
+    
+    - name: ❌ Rollback on failure
+      if: failure()
+      env:
+        SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
+        SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+        SSH_USER: ${{ secrets.HOSTINGER_USER }}
+        DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+      run: |
+        echo "⚠️  Deployment failed, attempting rollback..."
+        
+        ssh -p $SSH_PORT $SSH_USER@$SSH_HOST << 'ENDSSH'
+          cd ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+          git reset --hard HEAD~1
+          npm install --production
+          
+          if command -v pm2 &> /dev/null; then
+            pm2 restart yavoy
+          else
+            pkill -f "node server.js" || true
+            nohup node server.js > app.log 2>&1 &
+          fi
+          
+          echo "✅ Rollback completed"
+        ENDSSH
+    
+    - name: 📧 Notify on failure
+      if: failure()
+      run: |
+        echo "❌ Deployment failed!"
+        echo "Check logs above for details"
+        echo "Manual intervention may be required"
+
+  notify:
+    name: Send Notification
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 📢 Deployment Status
+      run: |
+        if [ "${{ needs.deploy.result }}" == "success" ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment failed!"
+        fi
