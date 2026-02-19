@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - YaVoy 2026</title>
+    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/utilities.css">
+    <link rel="stylesheet" href="styles/animations-improved.css?v=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #050810 0%, #0a0f1a 50%, #0d1117 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #0b1220;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #0f1724;
+        }
+
+        .stat-card {
+            background: #0b1220;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #06b6d4;
+            margin: 10px 0;
+        }
+
+        .stat-card .label {
+            font-size: 1em;
+            color: #ffffff;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            padding: 30px;
+            background: #0b1220;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .filters-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 0.9em;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #06b6d4;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #0f1724;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-export {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #059669;
+        }
+
+        /* Table Section */
+        .table-section {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-info {
+            font-size: 1.1em;
+            color: #ffffff;
+        }
+
+        .results-info strong {
+            color: #06b6d4;
+            font-size: 1.3em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0b1220;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #3a4a5c;
+        }
+
+        tbody tr {
+            transition: background-color 0.3s;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-comercio {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-repartidor {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-alimentacion { background: #0f1724; color: #92400e; }
+        .badge-kiosco { background: #0f1724; color: #831843; }
+        .badge-bazar { background: #e0e7ff; color: #3730a3; }
+        .badge-indumentaria { background: #ddd6fe; color: #5b21b6; }
+        .badge-salud { background: #ccfbf1; color: #115e59; }
+        .badge-otros { background: #e5e7eb; color: #374151; }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .btn-view {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #0b1220;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 1.5em;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            background: #dc2626;
+        }
+
+        .detail-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #0f1724;
+            border-radius: 8px;
+        }
+
+        .detail-group label {
+            display: block;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .detail-group .value {
+            font-size: 1.1em;
+            color: #ffffff;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #06b6d4;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state.active {
+            display: block;
+        }
+
+        .empty-state .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #cccccc;
+        }
+
+        /* Clases utilitarias */
+        .table-hidden {
+            display: none;
+        }
+
+        .modal-title {
+            margin-bottom: 20px;
+            color: #06b6d4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-section {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📊 Panel de Administración</h1>
+            <p>YaVoy 2026 - Gestión Completa de Registros</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="icon">🏪</div>
+                <div class="number" id="totalComercios">0</div>
+                <div class="label">Total Comercios</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🚴</div>
+                <div class="number" id="totalRepartidores">0</div>
+                <div class="label">Total Repartidores</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📅</div>
+                <div class="number" id="registrosHoy">0</div>
+                <div class="label">Registros Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📈</div>
+                <div class="number" id="totalRegistros">0</div>
+                <div class="label">Total Registros</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-title">
+                🔍 Búsqueda y Filtros Avanzados
+            </div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Buscar por Nombre</label>
+                    <input type="text" id="searchNombre" placeholder="Ej: Kiosco Central">
+                </div>
+                <div class="filter-group">
+                    <label for="filterTipo">Tipo</label>
+                    <select id="filterTipo" title="Filtrar por tipo de registro">
+                        <option value="">Todos</option>
+                        <option value="comercio">Comercio</option>
+                        <option value="repartidor">Repartidor</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterCategoria">Categoría</label>
+                    <select id="filterCategoria" title="Filtrar por categoría">
+                        <option value="">Todas</option>
+                        <option value="alimentacion">Alimentación</option>
+                        <option value="kiosco">Kiosco</option>
+                        <option value="bazar">Bazar</option>
+                        <option value="indumentaria">Indumentaria</option>
+                        <option value="salud">Salud</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterFechaDesde">Fecha Desde</label>
+                    <input type="date" id="filterFechaDesde" title="Seleccionar fecha inicial">
+                </div>
+                <div class="filter-group">
+                    <label for="filterFechaHasta">Fecha Hasta</label>
+                    <input type="date" id="filterFechaHasta" title="Seleccionar fecha final">
+                </div>
+                <div class="filter-group">
+                    <label>WhatsApp</label>
+                    <input type="text" id="searchWhatsapp" placeholder="Ej: 1234567890">
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button class="btn btn-primary" onclick="aplicarFiltros()">
+                    🔍 Buscar
+                </button>
+                <button class="btn btn-secondary" onclick="limpiarFiltros()">
+                    🔄 Limpiar Filtros
+                </button>
+                <button class="btn btn-export" onclick="exportarCSV()">
+                    📥 Exportar CSV
+                </button>
+                <button class="btn btn-export" onclick="exportarJSON()">
+                    📥 Exportar JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-section">
+            <div class="table-header">
+                <div class="results-info">
+                    Mostrando <strong id="resultadosCount">0</strong> resultados
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                ⏳ Cargando registros...
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <div class="icon">📭</div>
+                <h3>No hay registros</h3>
+                <p>No se encontraron registros con los filtros aplicados</p>
+            </div>
+
+            <table id="registrosTable" class="table-hidden">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>WhatsApp</th>
+                        <th>Dirección</th>
+                        <th>Fecha Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Detalles -->
+    <div class="modal" id="modalDetalles">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal()">×</button>
+            <h2 class="modal-title">Detalles del Registro</h2>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        let todosLosRegistros = [];
+        let registrosFiltrados = [];
+
+        // Cargar registros al iniciar
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarTodosLosRegistros();
+        });
+
+        async function cargarTodosLosRegistros() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+
+            try {
+                // Llamada real al servidor
+                const response = await fetch('http://localhost:5501/api/registros');
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar registros');
+                }
+                
+                const data = await response.json();
+                
+                todosLosRegistros = data;
+                registrosFiltrados = [...todosLosRegistros];
+                
+                actualizarEstadisticas();
+                mostrarRegistros();
+            } catch (error) {
+                console.error('Error cargando registros:', error);
+                alert('Error al conectar con el servidor. Mostrando datos de ejemplo.');
+                // Mostrar datos de ejemplo para demostración
+                cargarDatosEjemplo();
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function cargarDatosEjemplo() {
+            // Datos de ejemplo para demostración
+            todosLosRegistros = [
+                {
+                    tipo: 'comercio',
+                    nombre: 'Kiosco Central',
+                    categoria: 'kiosco',
+                    whatsapp: '3514567890',
+                    direccion: 'Av. Colón 1234',
+                    email: 'kiosco@ejemplo.com',
+                    horario: '8:00 - 22:00',
+                    fecha: new Date().toISOString()
+                },
+                {
+                    tipo: 'comercio',
+                    nombre: 'Panadería Don Pan',
+                    categoria: 'alimentacion',
+                    whatsapp: '3519876543',
+                    direccion: 'Calle Falsa 123',
+                    email: 'donpan@ejemplo.com',
+                    horario: '7:00 - 20:00',
+                    fecha: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    tipo: 'repartidor',
+                    nombre: 'Juan Pérez',
+                    whatsapp: '3511234567',
+                    dni: '12345678',
+                    vehiculo: 'Moto',
+                    experiencia: '2 años',
+                    fecha: new Date().toISOString()
+                }
+            ];
+            
+            registrosFiltrados = [...todosLosRegistros];
+            actualizarEstadisticas();
+            mostrarRegistros();
+        }
+
+        function actualizarEstadisticas() {
+            const comercios = todosLosRegistros.filter(r => r.tipo === 'comercio').length;
+            const repartidores = todosLosRegistros.filter(r => r.tipo === 'repartidor').length;
+            
+            const hoy = new Date().toISOString().split('T')[0];
+            const registrosHoy = todosLosRegistros.filter(r => 
+                r.fecha.split('T')[0] === hoy
+            ).length;
+
+            document.getElementById('totalComercios').textContent = comercios;
+            document.getElementById('totalRepartidores').textContent = repartidores;
+            document.getElementById('registrosHoy').textContent = registrosHoy;
+            document.getElementById('totalRegistros').textContent = todosLosRegistros.length;
+        }
+
+        function aplicarFiltros() {
+            const nombre = document.getElementById('searchNombre').value.toLowerCase();
+            const tipo = document.getElementById('filterTipo').value;
+            const categoria = document.getElementById('filterCategoria').value;
+            const fechaDesde = document.getElementById('filterFechaDesde').value;
+            const fechaHasta = document.getElementById('filterFechaHasta').value;
+            const whatsapp = document.getElementById('searchWhatsapp').value;
+
+            registrosFiltrados = todosLosRegistros.filter(registro => {
+                let cumple = true;
+
+                if (nombre && !registro.nombre.toLowerCase().includes(nombre)) {
+                    cumple = false;
+                }
+
+                if (tipo && registro.tipo !== tipo) {
+                    cumple = false;
+                }
+
+                if (categoria && registro.categoria !== categoria) {
+                    cumple = false;
+                }
+
+                if (whatsapp && !registro.whatsapp.includes(whatsapp)) {
+                    cumple = false;
+                }
+
+                if (fechaDesde) {
+                    const fechaRegistro = registro.fecha.split('T')[0];
+                    if (fechaRegistro < fechaDesde) {
+                        cumple = false;
+                    }
+                }
+
+                if (fechaHasta) {
+                    const fechaRegistro = registro.fecha.split('T')[0];
+                    if (fechaRegistro > fechaHasta) {
+                        cumple = false;
+                    }
+                }
+
+                return cumple;
+            });
+
+            mostrarRegistros();
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('searchNombre').value = '';
+            document.getElementById('filterTipo').value = '';
+            document.getElementById('filterCategoria').value = '';
+            document.getElementById('filterFechaDesde').value = '';
+            document.getElementById('filterFechaHasta').value = '';
+            document.getElementById('searchWhatsapp').value = '';
+            
+            registrosFiltrados = [...todosLosRegistros];
+            mostrarRegistros();
+        }
+
+        function mostrarRegistros() {
+            const tableBody = document.getElementById('tableBody');
+            const table = document.getElementById('registrosTable');
+            const emptyState = document.getElementById('emptyState');
+            const resultadosCount = document.getElementById('resultadosCount');
+
+            tableBody.innerHTML = '';
+            resultadosCount.textContent = registrosFiltrados.length;
+
+            if (registrosFiltrados.length === 0) {
+                table.style.display = 'none';
+                emptyState.classList.add('active');
+                return;
+            }
+
+            table.style.display = 'table';
+            emptyState.classList.remove('active');
+
+            registrosFiltrados.forEach((registro, index) => {
+                const row = document.createElement('tr');
+                
+                const tipoBadge = registro.tipo === 'comercio' ? 'badge-comercio' : 'badge-repartidor';
+                const categoriaBadge = registro.categoria ? `badge-${registro.categoria}` : '';
+                
+                const fecha = new Date(registro.fecha);
+                const fechaFormateada = fecha.toLocaleDateString('es-AR') + ' ' + fecha.toLocaleTimeString('es-AR');
+
+                row.innerHTML = `
+                    <td><span class="badge ${tipoBadge}">${registro.tipo.toUpperCase()}</span></td>
+                    <td><strong>${registro.nombre}</strong></td>
+                    <td>${registro.categoria ? `<span class="badge ${categoriaBadge}">${registro.categoria}</span>` : '-'}</td>
+                    <td>${registro.whatsapp}</td>
+                    <td>${registro.direccion || '-'}</td>
+                    <td>${fechaFormateada}</td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-view" onclick="verDetalles(${index})">👁️ Ver</button>
+                        <button class="btn-action btn-delete" onclick="eliminarRegistro(${index})">🗑️ Eliminar</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function verDetalles(index) {
+            const registro = registrosFiltrados[index];
+            const modal = document.getElementById('modalDetalles');
+            const modalBody = document.getElementById('modalBody');
+
+            let detallesHTML = `
+                <div class="detail-group">
+                    <label>Tipo de Registro</label>
+                    <div class="value"><span class="badge ${registro.tipo === 'comercio' ? 'badge-comercio' : 'badge-repartidor'}">${registro.tipo.toUpperCase()}</span></div>
+                </div>
+                <div class="detail-group">
+                    <label>Nombre</label>
+                    <div class="value">${registro.nombre}</div>
+                </div>
+            `;
+
+            if (registro.categoria) {
+                detallesHTML += `
+                    <div class="detail-group">
+                        <label>Categoría</label>
+                        <div class="value"><span class="badge badge-${registro.categoria}">${registro.categoria}</span></div>
+                    </div>
+                `;
+            }
+
+            detallesHTML += `
+                <div class="detail-group">
+                    <label>WhatsApp</label>
+                    <div class="value">${registro.whatsapp}</div>
+                </div>
+            `;
+
+            if (registro.direccion) {
+                detallesHTML += `
+                    <div class="detail-group">
+                        <label>Dirección</label>
+                        <div class="value">${registro.direccion}</div>
+                    </div>
+                `;
+            }
+
+            if (registro.email) {
+                detallesHTML += `
+                    <div class="detail-group">
+                        <label>Email</label>
+                        <div class="value">${registro.email}</div>
+                    </div>
+                `;
+            }
+
+            if (registro.horario) {
+                detallesHTML += `
+                    <div class="detail-group">
+                        <label>Horario</label>
+                        <div class="value">${registro.horario}</div>
+                    </div>
+                `;
+            }
+
+            if (registro.dni) {
+                detallesHTML += `
+                    <div class="detail-group">
+                        <label>DNI</label>
+                        <div class="value">${registro.dni}</div>
+                    </div>
+                `;
+            }
+
+            if (registro.vehiculo) {
+                detallesHTML += `
+                    <div class="detail-group">
+                        <label>Vehículo</label>
+                        <div class="value">${registro.vehiculo}</div>
+                    </div>
+                `;
+            }
+
+            if (registro.experiencia) {
+                detallesHTML += `
+                    <div class="detail-group">
+                        <label>Experiencia</label>
+                        <div class="value">${registro.experiencia}</div>
+                    </div>
+                `;
+            }
+
+            const fecha = new Date(registro.fecha);
+            detallesHTML += `
+                <div class="detail-group">
+                    <label>Fecha de Registro</label>
+                    <div class="value">${fecha.toLocaleDateString('es-AR')} ${fecha.toLocaleTimeString('es-AR')}</div>
+                </div>
+            `;
+
+            modalBody.innerHTML = detallesHTML;
+            modal.classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalDetalles').classList.remove('active');
+        }
+
+        function eliminarRegistro(index) {
+            if (confirm('¿Estás seguro de eliminar este registro?')) {
+                registrosFiltrados.splice(index, 1);
+                todosLosRegistros = [...registrosFiltrados];
+                actualizarEstadisticas();
+                mostrarRegistros();
+                alert('Registro eliminado correctamente');
+            }
+        }
+
+        function exportarCSV() {
+            if (registrosFiltrados.length === 0) {
+                alert('No hay registros para exportar');
+                return;
+            }
+
+            const headers = ['Tipo', 'Nombre', 'Categoría', 'WhatsApp', 'Dirección', 'Email', 'Fecha'];
+            const rows = registrosFiltrados.map(r => [
+                r.tipo,
+                r.nombre,
+                r.categoria || '',
+                r.whatsapp,
+                r.direccion || '',
+                r.email || '',
+                new Date(r.fecha).toLocaleString('es-AR')
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `yavoy_registros_${Date.now()}.csv`;
+            a.click();
+        }
+
+        function exportarJSON() {
+            if (registrosFiltrados.length === 0) {
+                alert('No hay registros para exportar');
+                return;
+            }
+
+            const json = JSON.stringify(registrosFiltrados, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `yavoy_registros_${Date.now()}.json`;
+            a.click();
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalDetalles').addEventListener('click', (e) => {
+            if (e.target.id === 'modalDetalles') {
+                cerrarModal();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+# INSTRUCCIONES PARA SUBIR A HOSTINGER
+
+## MÉTODO 1: FTP con FileZilla (RECOMENDADO)
+
+1. Descargar FileZilla: https://filezilla-project.org
+2. Conectar con:
+   - Host: ftp.yavoy.space
+   - Usuario: u695828542
+   - Contraseña: Yavoy26!
+   - Puerto: 21
+
+3. En FileZilla:
+   - Panel izquierdo: Navegar a esta carpeta DEPLOY_HOSTINGER
+   - Panel derecho: Buscar carpeta public_html (o similar)
+   - Arrastrar TODO de izquierda a derecha
+
+## MÉTODO 2: File Manager de Hostinger
+
+1. Ir a: https://hpanel.hostinger.com
+2. yavoy.space → Files → File Manager
+3. Buscar carpeta: public_html (o www o domains/yavoy.space)
+4. Click en Upload
+5. Seleccionar TODOS los archivos y carpetas de esta carpeta
+6. Esperar que termine la carga
+
+## DESPUÉS DE SUBIR:
+
+1. Ir a: hPanel → yavoy.space → Avanzado → Setup Node.js App
+2. Create Application:
+   - Application root: public_html
+   - Startup file: server.js
+   - Version: Node 18+
+3. Run NPM Install
+4. Restart
+5. Visitar: https://yavoy.space
+
+---
+Archivos generados: 2026-02-19 18:17:09

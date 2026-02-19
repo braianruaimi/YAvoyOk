@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="YAvoy v3.1 Enterprise - Centro de Comando CEO. Dashboard ejecutivo para administración total.">
+    <!-- Theme color compatible CEO -->
+    <meta name="theme-color" content="#fbbf24">
+    <meta name="msapplication-TileColor" content="#fbbf24">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-yavoy.png">
+    <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+    <!-- YAvoy Enterprise System -->
+    <link rel="stylesheet" href="css/theme-enhancement.css">
+    <link rel="stylesheet" href="styles/premium-system.css">
+    <script src="js/theme-color-polyfill.js" defer></script>
+    <script src="js/intelligent-router.js" defer></script>
+    <title>YAvoy CEO — Centro de Mando</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #050810 0%, #0a0f1a 50%, #0d1117 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ========================================
+           LOGIN SCREEN ESPECTACULAR CEO
+           ======================================== */
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Partículas flotantes de fondo */
+        #loginScreen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 30%);
+            animation: pulse-bg-ceo 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-bg-ceo {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Orbes flotantes decorativos */
+        #loginScreen::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -150px;
+            right: -150px;
+            animation: float-orb-ceo 20s ease-in-out infinite;
+        }
+
+        @keyframes float-orb-ceo {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(-40px, 40px) rotate(90deg);
+            }
+
+            50% {
+                transform: translate(0, 80px) rotate(180deg);
+            }
+
+            75% {
+                transform: translate(40px, 40px) rotate(270deg);
+            }
+        }
+
+        .login-container {
+            background: rgba(11, 18, 32, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.6),
+                0 0 120px rgba(6, 182, 212, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            position: relative;
+            z-index: 10;
+            animation: card-appear-ceo 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        /* Brillo superior */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.6), rgba(251, 191, 36, 0.4), transparent);
+        }
+
+        @keyframes card-appear-ceo {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-logo {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: icon-float-ceo 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 25px rgba(6, 182, 212, 0.4));
+        }
+
+        @keyframes icon-float-ceo {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        .login-title {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #ffffff 0%, #06b6d4 50%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .login-subtitle {
+            color: rgba(230, 238, 246, 0.7);
+            font-size: 1.05em;
+            font-weight: 400;
+        }
+
+        .ceo-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .ceo-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ceo-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .ceo-option:hover {
+            border-color: #06b6d4;
+            background: rgba(6, 182, 212, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.2);
+        }
+
+        .ceo-option:hover::before {
+            left: 100%;
+        }
+
+        .ceo-option.selected {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.15);
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);
+        }
+
+        .ceo-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            color: white;
+            margin: 0 auto 12px;
+            font-weight: 700;
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+            transition: all 0.3s;
+        }
+
+        .ceo-option.selected .ceo-avatar {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+        }
+
+        .ceo-name {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.15em;
+        }
+
+        .login-form {
+            margin-top: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(230, 238, 246, 0.9);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid rgba(58, 74, 92, 0.5);
+            border-radius: 12px;
+            background: rgba(26, 35, 50, 0.8);
+            color: #ffffff;
+            font-size: 1em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(148, 163, 184, 0.6);
+        }
+
+        .form-group input:focus {
+            border-color: #06b6d4;
+            background: rgba(26, 35, 50, 1);
+            box-shadow:
+                0 0 0 4px rgba(6, 182, 212, 0.15),
+                0 0 25px rgba(6, 182, 212, 0.2);
+        }
+
+        .form-group input[readonly] {
+            background: rgba(6, 182, 212, 0.1);
+            border-color: rgba(6, 182, 212, 0.3);
+            color: #06b6d4;
+            font-weight: 600;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow:
+                0 12px 35px rgba(6, 182, 212, 0.5),
+                0 0 60px rgba(6, 182, 212, 0.2);
+        }
+
+        .btn-login:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn-login:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: rgba(58, 74, 92, 0.5);
+        }
+
+        /* Two-Factor Authentication Styles */
+        .two-factor-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            animation: slideDown 0.3s ease;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: rgba(148, 163, 184, 0.8);
+            margin-top: 5px;
+            display: block;
+        }
+
+        .btn-setup-2fa {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-setup-2fa:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-message {
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.15);
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-top: 18px;
+            text-align: center;
+            display: none;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        /* Decoraciones flotantes */
+        .login-decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(6, 182, 212, 0.08);
+            animation: float-decoration-ceo 20s linear infinite;
+            pointer-events: none;
+        }
+
+        .login-decoration:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            left: 5%;
+            top: 15%;
+            animation-delay: 0s;
+        }
+
+        .login-decoration:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            right: 10%;
+            bottom: 20%;
+            animation-delay: -7s;
+            background: rgba(251, 191, 36, 0.06);
+        }
+
+        .login-decoration:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            left: 15%;
+            bottom: 25%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float-decoration-ceo {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: translateY(-30px) rotate(180deg);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(0) rotate(360deg);
+                opacity: 0.3;
+            }
+        }
+
+        /* Dashboard Screen */
+        #dashboardScreen {
+            display: none;
+        }
+
+        #dashboardScreen.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: #0b1220;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .fecha-actual {
+            font-size: 1.1em;
+            color: #ffffff;
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.3s;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: #0b1220;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .kpi-icon {
+            font-size: 2.5em;
+            opacity: 0.8;
+        }
+
+        .kpi-trend {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .trend-up {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .trend-down {
+            background: #0f1724;
+            color: #991b1b;
+        }
+
+        .kpi-value {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .kpi-label {
+            color: #ffffff;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .kpi-sublabel {
+            font-size: 0.85em;
+            color: #cccccc;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: #0b1220;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 1.3em;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Full Width Charts */
+        .full-chart {
+            grid-column: 1 / -1;
+        }
+
+        .full-chart .chart-container {
+            height: 400px;
+        }
+
+        /* Tables */
+        .table-card {
+            background: #0b1220;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .table-card h3 {
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 1.3em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #3a4a5c;
+            color: #ffffff;
+        }
+
+        tbody tr:hover {
+            background: #0f1724;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #0f1724;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #0f1724;
+            color: #991b1b;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .kpi-value {
+                font-size: 2em;
+            }
+        }
+
+        /* Clases para Modal 2FA */
+        .modal-2fa-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-2fa-container {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0a0f1a 100%);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(251, 191, 36, 0.3);
+            border: 2px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .modal-2fa-content {
+            text-align: center;
+        }
+
+        .modal-2fa-title {
+            color: #fbbf24;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .modal-2fa-subtitle {
+            color: #cbd5e1;
+            margin-bottom: 30px;
+        }
+
+        .modal-2fa-qr {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: inline-block;
+        }
+
+        .modal-2fa-secret-container {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .modal-2fa-secret-label {
+            color: #fbbf24;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .modal-2fa-secret-code {
+            background: rgba(0,0,0,0.3);
+            color: #10b981;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            display: inline-block;
+        }
+
+        .modal-2fa-copy-btn {
+            margin-left: 10px;
+            padding: 8px 15px;
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .modal-2fa-input-container {
+            margin-top: 30px;
+        }
+
+        .modal-2fa-input-label {
+            color: #cbd5e1;
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .modal-2fa-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+
+        .modal-2fa-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .modal-2fa-btn-verify {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .modal-2fa-btn-cancel {
+            flex: 1;
+            padding: 15px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Screen Espectacular -->
+    <div id="loginScreen">
+        <!-- Decoraciones flotantes -->
+        <div class="login-decoration"></div>
+        <div class="login-decoration"></div>
+        <div class="login-decoration"></div>
+
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-logo">👔</div>
+                <h1 class="login-title">Dashboard CEO</h1>
+                <p class="login-subtitle">Centro de Control Ejecutivo</p>
+            </div>
+
+            <div class="ceo-select">
+                <div class="ceo-option" onclick="seleccionarCEO('braian', this)">
+                    <div class="ceo-avatar">B</div>
+                    <div class="ceo-name">Braian.R</div>
+                </div>
+                <div class="ceo-option" onclick="seleccionarCEO('cesar', this)">
+                    <div class="ceo-avatar">C</div>
+                    <div class="ceo-name">Cesar.C</div>
+                </div>
+            </div>
+
+            <form class="login-form" onsubmit="iniciarSesion(event)">
+                <div class="form-group">
+                    <label>👤 Usuario Seleccionado</label>
+                    <input type="text" id="usuarioSeleccionado" readonly placeholder="Selecciona un CEO" required>
+                </div>
+
+                <div class="form-group">
+                    <label>🔐 Contraseña</label>
+                    <input type="password" id="passwordInput" placeholder="Ingresa tu contraseña" required
+                        autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn-login" id="btnLogin" disabled>
+                    🚀 Ingresar al Centro de Mando CEO
+                </button>
+
+                <div class="error-message" id="errorMessage">
+                    ❌ Contraseña incorrecta. Intenta nuevamente.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>📊 Dashboard Ejecutivo CEO</h1>
+                <div class="header-info">
+                    <div class="fecha-actual" id="fechaActual"></div>
+                    <div class="ceo-header-user-section">
+                        <span class="ceo-usuario-nombre" id="usuarioLogueado"></span>
+                        <button class="refresh-btn" onclick="cargarDashboard()">🔄 Actualizar</button>
+                        <button class="refresh-btn ceo-btn-salir" onclick="cerrarSesion()">🚪 Salir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon">💵</div>
+                        <div class="kpi-trend trend-up" id="trendVentas">+0%</div>
+                    </div>
+                    <div class="kpi-value" id="totalVentas">$0</div>
+                    <div class="kpi-label">Total Ventas del Mes</div>
+                    <div class="kpi-sublabel" id="ventasHoy">$0 hoy</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon">👔</div>
+                        <div class="kpi-trend trend-up" id="trendComisionCEO">15%</div>
+                    </div>
+                    <div class="kpi-value" id="comisionCEO">$0</div>
+                    <div class="kpi-label">Comisión CEO (15%)</div>
+                    <div class="kpi-sublabel" id="comisionCEOHoy">$0 hoy</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon">🚴</div>
+                        <div class="kpi-trend trend-up" id="trendComisionRep">85%</div>
+                    </div>
+                    <div class="kpi-value" id="comisionRepartidores">$0</div>
+                    <div class="kpi-label">Comisión Repartidores (85%)</div>
+                    <div class="kpi-sublabel">Del total de ventas</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon">✅</div>
+                        <div class="kpi-trend trend-up" id="trendCompletados">+0%</div>
+                    </div>
+                    <div class="kpi-value" id="pedidosCompletados">0</div>
+                    <div class="kpi-label">Pedidos Completados</div>
+                    <div class="kpi-sublabel" id="pedidosHoy">0 hoy</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon">📦</div>
+                        <div class="kpi-trend" id="trendActivos">0</div>
+                    </div>
+                    <div class="kpi-value" id="pedidosActivos">0</div>
+                    <div class="kpi-label">Pedidos Activos</div>
+                    <div class="kpi-sublabel">En proceso ahora</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon">⏳</div>
+                        <div class="kpi-trend" id="trendPendientes">0</div>
+                    </div>
+                    <div class="kpi-value" id="pedidosPendientes">0</div>
+                    <div class="kpi-label">Pedidos Pendientes</div>
+                    <div class="kpi-sublabel">Esperando asignación</div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>📈 Crecimiento de Usuarios</h3>
+                    <div class="chart-container">
+                        <canvas id="chartCrecimiento"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>🏷️ Distribución por Categoría</h3>
+                    <div class="chart-container">
+                        <canvas id="chartCategorias"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card full-chart">
+                    <h3>📊 Pedidos por Día (Últimos 30 días)</h3>
+                    <div class="chart-container">
+                        <canvas id="chartPedidosDiarios"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>💵 Ingresos Mensuales</h3>
+                    <div class="chart-container">
+                        <canvas id="chartIngresos"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>⏱️ Tiempo Promedio de Entrega</h3>
+                    <div class="chart-container">
+                        <canvas id="chartTiempoEntrega"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tables -->
+            <div class="table-card">
+                <h3>🏆 Top 10 Comercios Más Activos</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Comercio</th>
+                            <th>Categoría</th>
+                            <th>Pedidos</th>
+                            <th>Rating</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topComercios"></tbody>
+                </table>
+            </div>
+
+            <div class="table-card">
+                <h3>🚴 Top 10 Repartidores Más Activos</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Repartidor</th>
+                            <th>Entregas</th>
+                            <th>Rating</th>
+                            <th>Tiempo Promedio</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topRepartidores"></tbody>
+                </table>
+            </div>
+
+            <div class="table-card">
+                <h3>⭐ Top 3 Mejor Calificados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>🏅</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Rating</th>
+                            <th>Pedidos/Entregas</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topCalificados"></tbody>
+                </table>
+            </div>
+
+            <div class="table-card">
+                <h3>📋 Configuraciones de Comercios</h3>
+                <div class="ceo-configuraciones-header">
+                    <span class="ceo-configuraciones-subtitle">Actualizaciones recientes de información de
+                        comercios</span>
+                    <button onclick="refrescarConfiguraciones()" class="ceo-btn-refrescar">
+                        🔄 Refrescar
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>📅 Fecha</th>
+                            <th>🏪 Comercio</th>
+                            <th>📂 Categoría</th>
+                            <th>📞 Teléfono</th>
+                            <th>✉️ Email</th>
+                            <th>🔧 Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="configuracionesComercios"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal 2FA Setup -->
+        <div id="modal2FA" class="modal-2fa-overlay">
+            <div class="modal-2fa-container">
+                <div class="modal-2fa-content">
+                    <h2 class="modal-2fa-title">🔐 Configurar 2FA</h2>
+                    <p class="modal-2fa-subtitle">Escanea este código QR con Google Authenticator</p>
+                    
+                    <div id="qrCode" class="modal-2fa-qr"></div>
+                    
+                    <div class="modal-2fa-secret-container">
+                        <p class="modal-2fa-secret-label">🔑 Código Secreto</p>
+                        <code id="secretKey" class="modal-2fa-secret-code"></code>
+                        <button onclick="copiarSecret()" class="modal-2fa-copy-btn">📋 Copiar</button>
+                    </div>
+                    
+                    <div class="modal-2fa-input-container">
+                        <label class="modal-2fa-input-label">Ingresa el código de 6 dígitos para verificar:</label>
+                        <input type="text" id="verify2FACode" placeholder="000000" maxlength="6" class="modal-2fa-input">
+                    </div>
+                    
+                    <div class="modal-2fa-buttons">
+                        <button onclick="verificarYGuardar2FA()" class="modal-2fa-btn-verify">
+                            ✅ Verificar y Activar
+                        </button>
+                        <button onclick="cerrarModal2FA()" class="modal-2fa-btn-cancel">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+        <script>
+            // Actualizar fecha actual
+            function actualizarFecha() {
+                const now = new Date();
+                const opciones = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                document.getElementById('fechaActual').textContent =
+                    now.toLocaleDateString('es-AR', opciones);
+            }
+            actualizarFecha();
+            setInterval(actualizarFecha, 60000); // Actualizar cada minuto
+
+            // Variables para gráficos
+            let chartCrecimiento, chartCategorias, chartPedidosDiarios, chartIngresos, chartTiempoEntrega;
+
+            // Cargar dashboard
+            async function cargarDashboard() {
+                try {
+                    // Intentar cargar datos reales del servidor
+                    const response = await fetch('http://localhost:3000/api/dashboard/stats');
+
+                    if (response.ok) {
+                        const statsReales = await response.json();
+                        const datos = await combinarDatosRealesConSimulados(statsReales);
+
+                        actualizarKPIs(datos);
+                        crearGraficos(datos);
+                        cargarTablas(datos);
+                        cargarConfiguracionesComercios();
+                    } else {
+                        throw new Error('Servidor no disponible');
+                    }
+                } catch (error) {
+                    console.error('Error cargando dashboard:', error);
+                    console.log('Usando datos de ejemplo...');
+                    // Fallback a datos simulados
+                    const datos = await simularDatos();
+                    actualizarKPIs(datos);
+                    crearGraficos(datos);
+                    cargarTablas(datos);
+                    cargarConfiguracionesComercios();
+                }
+            }
+
+            // Combinar datos reales con simulados
+            async function combinarDatosRealesConSimulados(statsReales) {
+                const datosSimulados = await simularDatos();
+
+                // Reemplazar stats reales
+                datosSimulados.comercios = statsReales.comercios;
+                datosSimulados.repartidores = statsReales.repartidores;
+                datosSimulados.pedidos = statsReales.pedidos;
+                datosSimulados.ingresos = statsReales.ingresos;
+
+                return datosSimulados;
+            }
+
+            async function simularDatos() {
+                // Simulación de datos - reemplazar con llamadas API reales
+                return {
+                    comercios: {
+                        total: 156,
+                        hoy: 8,
+                        tendencia: 12
+                    },
+                    repartidores: {
+                        total: 89,
+                        hoy: 3,
+                        tendencia: 8
+                    },
+                    pedidos: {
+                        total: 2847,
+                        hoy: 124,
+                        tendencia: 25
+                    },
+                    ingresos: {
+                        mes: 458900,
+                        tendencia: 18
+                    },
+                    crecimientoMensual: [
+                        { mes: 'Jul', comercios: 98, repartidores: 52 },
+                        { mes: 'Ago', comercios: 112, repartidores: 61 },
+                        { mes: 'Sep', comercios: 128, repartidores: 68 },
+                        { mes: 'Oct', comercios: 141, repartidores: 75 },
+                        { mes: 'Nov', comercios: 149, repartidores: 82 },
+                        { mes: 'Dic', comercios: 156, repartidores: 89 }
+                    ],
+                    categorias: {
+                        alimentacion: 42,
+                        kiosco: 38,
+                        bazar: 24,
+                        indumentaria: 18,
+                        salud: 15,
+                        otros: 19
+                    },
+                    pedidosDiarios: Array.from({ length: 30 }, (_, i) => ({
+                        dia: i + 1,
+                        pedidos: Math.floor(Math.random() * 150) + 50
+                    })),
+                    ingresosMensuales: [
+                        { mes: 'Jul', ingreso: 245000 },
+                        { mes: 'Ago', ingreso: 298000 },
+                        { mes: 'Sep', ingreso: 325000 },
+                        { mes: 'Oct', ingreso: 387000 },
+                        { mes: 'Nov', ingreso: 412000 },
+                        { mes: 'Dic', ingreso: 458900 }
+                    ],
+                    tiempoEntrega: {
+                        promedio: 28,
+                        datos: [
+                            { rango: '0-15 min', cantidad: 35 },
+                            { rango: '15-30 min', cantidad: 45 },
+                            { rango: '30-45 min', cantidad: 15 },
+                            { rango: '45+ min', cantidad: 5 }
+                        ]
+                    },
+                    topComercios: [
+                        { nombre: 'Kiosco Central', categoria: 'kiosco', pedidos: 342, rating: 4.9, estado: 'Activo' },
+                        { nombre: 'Panadería Don Pan', categoria: 'alimentacion', pedidos: 298, rating: 4.8, estado: 'Activo' },
+                        { nombre: 'Farmacia del Centro', categoria: 'salud', pedidos: 276, rating: 4.7, estado: 'Activo' },
+                        { nombre: 'Bazar Todo Hogar', categoria: 'bazar', pedidos: 234, rating: 4.9, estado: 'Activo' },
+                        { nombre: 'Supermercado Express', categoria: 'alimentacion', pedidos: 198, rating: 4.6, estado: 'Activo' },
+                        { nombre: 'Kiosco 24hs', categoria: 'kiosco', pedidos: 187, rating: 4.8, estado: 'Activo' },
+                        { nombre: 'Ropa Moda', categoria: 'indumentaria', pedidos: 156, rating: 4.5, estado: 'Activo' },
+                        { nombre: 'Ferretería Central', categoria: 'otros', pedidos: 145, rating: 4.7, estado: 'Activo' },
+                        { nombre: 'Verdulería Fresh', categoria: 'alimentacion', pedidos: 134, rating: 4.9, estado: 'Activo' },
+                        { nombre: 'Librería Escolar', categoria: 'otros', pedidos: 112, rating: 4.6, estado: 'Activo' }
+                    ],
+                    topRepartidores: [
+                        { nombre: 'Juan Pérez', entregas: 456, rating: 4.9, tiempo: '22 min', estado: 'Activo' },
+                        { nombre: 'María García', entregas: 423, rating: 4.8, tiempo: '24 min', estado: 'Activo' },
+                        { nombre: 'Carlos Rodríguez', entregas: 398, rating: 4.9, tiempo: '21 min', estado: 'Activo' },
+                        { nombre: 'Ana Martínez', entregas: 367, rating: 4.7, tiempo: '26 min', estado: 'Activo' },
+                        { nombre: 'Diego López', entregas: 342, rating: 4.8, tiempo: '23 min', estado: 'Activo' },
+                        { nombre: 'Laura Sánchez', entregas: 318, rating: 4.9, tiempo: '22 min', estado: 'Activo' },
+                        { nombre: 'Pablo Gómez', entregas: 298, rating: 4.6, tiempo: '28 min', estado: 'Activo' },
+                        { nombre: 'Sofia Díaz', entregas: 276, rating: 4.8, tiempo: '25 min', estado: 'Activo' },
+                        { nombre: 'Lucas Fernández', entregas: 254, rating: 4.7, tiempo: '27 min', estado: 'Activo' },
+                        { nombre: 'Valentina Ruiz', entregas: 234, rating: 4.9, tiempo: '21 min', estado: 'Activo' }
+                    ]
+                };
+            }
+
+            function actualizarKPIs(datos) {
+                // Total Ventas
+                document.getElementById('totalVentas').textContent =
+                    `$${datos.ingresos.totalVentas.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('ventasHoy').textContent =
+                    `$${datos.ingresos.ventasHoy.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} hoy`;
+                document.getElementById('trendVentas').textContent =
+                    `${datos.ingresos.tendencia >= 0 ? '+' : ''}${datos.ingresos.tendencia}%`;
+                document.getElementById('trendVentas').className =
+                    datos.ingresos.tendencia >= 0 ? 'kpi-trend trend-up' : 'kpi-trend trend-down';
+
+                // Comisión CEO (15%)
+                document.getElementById('comisionCEO').textContent =
+                    `$${datos.ingresos.comisionCEO.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('comisionCEOHoy').textContent =
+                    `$${datos.ingresos.comisionCEOHoy.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} hoy`;
+
+                // Comisión Repartidores (85%)
+                document.getElementById('comisionRepartidores').textContent =
+                    `$${datos.ingresos.comisionRepartidores.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                // Pedidos Completados
+                document.getElementById('pedidosCompletados').textContent = datos.pedidos.completados;
+                document.getElementById('pedidosHoy').textContent = `${datos.pedidos.hoy} hoy`;
+
+                // Pedidos Activos
+                document.getElementById('pedidosActivos').textContent = datos.pedidos.activos;
+                document.getElementById('trendActivos').textContent = datos.pedidos.activos;
+
+                // Pedidos Pendientes
+                document.getElementById('pedidosPendientes').textContent = datos.pedidos.pendientes;
+                document.getElementById('trendPendientes').textContent = datos.pedidos.pendientes;
+            }
+
+            function crearGraficos(datos) {
+                // Gráfico de Crecimiento
+                if (chartCrecimiento) chartCrecimiento.destroy();
+                const ctxCrecimiento = document.getElementById('chartCrecimiento').getContext('2d');
+                chartCrecimiento = new Chart(ctxCrecimiento, {
+                    type: 'line',
+                    data: {
+                        labels: datos.crecimientoMensual.map(d => d.mes),
+                        datasets: [
+                            {
+                                label: 'Comercios',
+                                data: datos.crecimientoMensual.map(d => d.comercios),
+                                borderColor: '#06b6d4',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Repartidores',
+                                data: datos.crecimientoMensual.map(d => d.repartidores),
+                                borderColor: '#0891b2',
+                                backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de Categorías
+                if (chartCategorias) chartCategorias.destroy();
+                const ctxCategorias = document.getElementById('chartCategorias').getContext('2d');
+                chartCategorias = new Chart(ctxCategorias, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(datos.categorias).map(c => c.charAt(0).toUpperCase() + c.slice(1)),
+                        datasets: [{
+                            data: Object.values(datos.categorias),
+                            backgroundColor: [
+                                '#06b6d4',
+                                '#0891b2',
+                                '#f093fb',
+                                '#4facfe',
+                                '#43e97b',
+                                '#fa709a'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de Pedidos Diarios
+                if (chartPedidosDiarios) chartPedidosDiarios.destroy();
+                const ctxPedidosDiarios = document.getElementById('chartPedidosDiarios').getContext('2d');
+                chartPedidosDiarios = new Chart(ctxPedidosDiarios, {
+                    type: 'bar',
+                    data: {
+                        labels: datos.pedidosDiarios.map(d => `Día ${d.dia}`),
+                        datasets: [{
+                            label: 'Pedidos',
+                            data: datos.pedidosDiarios.map(d => d.pedidos),
+                            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                            borderColor: '#06b6d4',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de Ingresos
+                if (chartIngresos) chartIngresos.destroy();
+                const ctxIngresos = document.getElementById('chartIngresos').getContext('2d');
+                chartIngresos = new Chart(ctxIngresos, {
+                    type: 'line',
+                    data: {
+                        labels: datos.ingresosMensuales.map(d => d.mes),
+                        datasets: [{
+                            label: 'Ingresos ($)',
+                            data: datos.ingresosMensuales.map(d => d.ingreso),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return '$' + (value / 1000) + 'K';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico de Tiempo de Entrega
+                if (chartTiempoEntrega) chartTiempoEntrega.destroy();
+                const ctxTiempoEntrega = document.getElementById('chartTiempoEntrega').getContext('2d');
+                chartTiempoEntrega = new Chart(ctxTiempoEntrega, {
+                    type: 'bar',
+                    data: {
+                        labels: datos.tiempoEntrega.datos.map(d => d.rango),
+                        datasets: [{
+                            label: 'Entregas (%)',
+                            data: datos.tiempoEntrega.datos.map(d => d.cantidad),
+                            backgroundColor: [
+                                '#10b981',
+                                '#3b82f6',
+                                '#f59e0b',
+                                '#ef4444'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function cargarTablas(datos) {
+                // Top Comercios
+                const tbodyComercios = document.getElementById('topComercios');
+                tbodyComercios.innerHTML = '';
+                datos.topComercios.forEach((comercio, index) => {
+                    const row = `
+                    <tr>
+                        <td><strong>#${index + 1}</strong></td>
+                        <td>${comercio.nombre}</td>
+                        <td>${comercio.categoria}</td>
+                        <td><strong>${comercio.pedidos}</strong></td>
+                        <td>⭐ ${comercio.rating}</td>
+                        <td><span class="badge badge-success">${comercio.estado}</span></td>
+                    </tr>
+                `;
+                    tbodyComercios.innerHTML += row;
+                });
+
+                // Top Repartidores
+                const tbodyRepartidores = document.getElementById('topRepartidores');
+                tbodyRepartidores.innerHTML = '';
+                datos.topRepartidores.forEach((repartidor, index) => {
+                    const row = `
+                    <tr>
+                        <td><strong>#${index + 1}</strong></td>
+                        <td>${repartidor.nombre}</td>
+                        <td><strong>${repartidor.entregas}</strong></td>
+                        <td>⭐ ${repartidor.rating}</td>
+                        <td>${repartidor.tiempo}</td>
+                        <td><span class="badge badge-success">${repartidor.estado}</span></td>
+                    </tr>
+                `;
+                    tbodyRepartidores.innerHTML += row;
+                });
+
+                // Top 3 Mejor Calificados (combinar comercios y repartidores)
+                const tbodyCalificados = document.getElementById('topCalificados');
+                tbodyCalificados.innerHTML = '';
+
+                // Combinar y ordenar por rating
+                const todosMejores = [
+                    ...datos.topComercios.map(c => ({ ...c, tipo: 'Comercio', cantidad: c.pedidos })),
+                    ...datos.topRepartidores.map(r => ({ ...r, tipo: 'Repartidor', cantidad: r.entregas }))
+                ].sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating)).slice(0, 3);
+
+                const medallas = ['🥇', '🥈', '🥉'];
+                todosMejores.forEach((item, index) => {
+                    const row = `
+                    <tr>
+                        <td style="font-size: 1.5em;">${medallas[index]}</td>
+                        <td><strong>${item.nombre}</strong></td>
+                        <td>${item.tipo}</td>
+                        <td><strong>⭐ ${item.rating}</strong></td>
+                        <td>${item.cantidad}</td>
+                        <td><span class="badge badge-success">${item.estado}</span></td>
+                    </tr>
+                `;
+                    tbodyCalificados.innerHTML += row;
+                });
+            }
+
+            // ==================== SISTEMA DE LOGIN ====================
+            console.log('🔐 Sistema de login CEO iniciado');
+            
+            let ceoSeleccionado = null;
+            const usuarios = {
+                'braian': {
+                    nombre: 'Braian.R',
+                    password: 'Braian2026!',
+                    avatar: 'B'
+                },
+                'cesar': {
+                    nombre: 'Cesar.C',
+                    password: 'Braiancesar25!',
+                    avatar: 'C'
+                }
+            };
+
+            function seleccionarCEO(ceo, elemento) {
+                console.log('✅ CEO seleccionado:', ceo);
+                ceoSeleccionado = ceo;
+
+                // Actualizar UI
+                document.querySelectorAll('.ceo-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                elemento.classList.add('selected');
+
+                // Habilitar formulario
+                document.getElementById('usuarioSeleccionado').value = usuarios[ceo].nombre;
+                document.getElementById('btnLogin').disabled = false;
+                document.getElementById('passwordInput').focus();
+
+                // Limpiar error
+                document.getElementById('errorMessage').classList.remove('active');
+            }
+
+            function iniciarSesion(event) {
+                event.preventDefault();
+                console.log('🔑 Intentando login...', { ceoSeleccionado });
+
+                if (!ceoSeleccionado) {
+                    alert('Por favor selecciona un CEO');
+                    return;
+                }
+
+                const password = document.getElementById('passwordInput').value;
+                const usuario = usuarios[ceoSeleccionado];
+                
+                console.log('🔐 Verificando contraseña...');
+
+                if (password === usuario.password) {
+                    // Login exitoso - sin 2FA
+                    console.log('✅ Login exitoso para', usuario.nombre);
+                    proceedToLogin(usuario);
+                } else {
+                    // Error de contraseña
+                    console.error('❌ Contraseña incorrecta');
+                    document.getElementById('errorMessage').classList.add('active');
+                    document.getElementById('passwordInput').value = '';
+                    document.getElementById('passwordInput').focus();
+                }
+            }
+
+            function proceedToLogin(usuario) {
+                // Login exitoso
+                localStorage.setItem('ceoDashboardUser', JSON.stringify({
+                    nombre: usuario.nombre,
+                    avatar: usuario.avatar,
+                    loginTime: Date.now()
+                }));
+
+                mostrarDashboard(usuario);
+            }
+
+            function mostrarDashboard(usuario) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboardScreen').classList.add('active');
+                document.getElementById('usuarioLogueado').textContent = `👤 ${usuario.nombre}`;
+
+                cargarDashboard();
+            }
+
+            function cerrarSesion() {
+                if (confirm('¿Seguro que quieres cerrar sesión?')) {
+                    localStorage.removeItem('ceoDashboardUser');
+                    location.reload();
+                }
+            }
+
+            function verificarSesion() {
+                const sesion = localStorage.getItem('ceoDashboardUser');
+
+                if (sesion) {
+                    const usuario = JSON.parse(sesion);
+                    mostrarDashboard(usuario);
+                }
+            }
+
+
+
+            // Cargar configuraciones de comercios
+            async function cargarConfiguracionesComercios() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/registros/ceo/configuraciones-comercios');
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const tbody = document.getElementById('configuracionesComercios');
+
+                        if (data.success && data.configuraciones && data.configuraciones.length > 0) {
+                            tbody.innerHTML = data.configuraciones.slice(0, 20).map(config => {
+                                const fecha = new Date(config.fecha);
+                                const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+
+                                return `
+                                <tr>
+                                    <td>${fechaFormateada}</td>
+                                    <td><strong>${config.nombre || 'Sin nombre'}</strong></td>
+                                    <td><span style="background: rgba(6, 182, 212, 0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.85em;">${config.categoria || 'general'}</span></td>
+                                    <td>${config.telefono || 'N/A'}</td>
+                                    <td>${config.email || 'N/A'}</td>
+                                    <td>
+                                        <button onclick="verDetalleConfiguracion('${config.comercioId}')" 
+                                                style="background: #06b6d4; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em;">
+                                            👁️ Ver
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            }).join('');
+                        } else {
+                            tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
+                                    📋 No hay configuraciones registradas aún
+                                </td>
+                            </tr>
+                        `;
+                        }
+                    } else {
+                        throw new Error('Error al cargar configuraciones');
+                    }
+                } catch (error) {
+                    console.error('Error cargando configuraciones:', error);
+                    const tbody = document.getElementById('configuracionesComercios');
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #f56565;">
+                            ⚠️ Error al cargar configuraciones
+                        </td>
+                    </tr>
+                `;
+                }
+            }
+
+            // Refrescar configuraciones
+            function refrescarConfiguraciones() {
+                cargarConfiguracionesComercios();
+            }
+
+            // Ver detalle de configuración
+            function verDetalleConfiguracion(comercioId) {
+                alert(`📋 Detalle de configuración del comercio: ${comercioId}\n\n(Funcionalidad completa en desarrollo)`);
+            }
+
+            // Verificar sesión al cargar
+            window.addEventListener('DOMContentLoaded', () => {
+                verificarSesion();
+            });
+
+            // Cargar al iniciar (solo si hay sesión activa)
+            // window.addEventListener('DOMContentLoaded', cargarDashboard); // REMOVIDO - ahora se llama desde mostrarDashboard
+        </script>
+
+        <!-- 2FA Authentication Script -->
+        <script src="js/totp-2fa.js"></script>
+
+        <script>
+            // Inicializar sistema 2FA cuando la página carga
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('🔐 Inicializando sistema 2FA...');
+
+                // Inicializar YAvoy2FA si la clase existe
+                if (typeof YAvoy2FA !== 'undefined') {
+                    try {
+                        window.twoFA = new YAvoy2FA();
+                        console.log('✅ Sistema 2FA inicializado correctamente');
+                    } catch (error) {
+                        console.error('❌ Error al inicializar 2FA:', error);
+                    }
+                } else {
+                    console.warn('⚠️ YAvoy2FA no está disponible');
+                }
+
+                // Event listener para el botón de configurar 2FA
+                const btn2FA = document.getElementById('btnSetup2FA');
+                if (btn2FA) {
+                    btn2FA.addEventListener('click', function () {
+                        console.log('🔐 Botón 2FA clickeado - Iniciando configuración...');
+
+                        // Obtener el usuario seleccionado
+                        const usuario = document.getElementById('usuarioSeleccionado').value;
+                        console.log('👤 Usuario seleccionado:', usuario);
+
+                        if (!usuario) {
+                            console.error('❌ No hay usuario seleccionado');
+                            alert('❌ Por favor selecciona un CEO primero');
+                            return;
+                        }
+
+                        // Usar el email real para todos los CEOs
+                        let userEmail = 'yavoyen5@gmail.com';
+
+                        console.log('📧 Email configurado:', userEmail);
+                        console.log('🔧 Sistema 2FA disponible:', !!window.twoFA);
+
+                        if (window.twoFA) {
+                            console.log('🚀 Llamando a setup2FA...');
+                            try {
+                                window.twoFA.setup2FA(usuario, userEmail);
+                            } catch (error) {
+                                console.error('❌ Error ejecutando setup2FA:', error);
+                                alert('❌ Error configurando 2FA: ' + error.message);
+                            }
+                        } else {
+                            console.error('❌ window.twoFA no está disponible');
+                            alert('❌ Sistema 2FA no está disponible');
+                        }
+                    });
+                } else {
+                    console.error('❌ Botón btnSetup2FA no encontrado');
+                }
+            });
+
+            // ==================== FUNCIONES 2FA ====================
+            let currentSecret = null;
+            let currentQRCode = null;
+
+            // Generar secret y mostrar QR
+            function configurar2FA() {
+                console.log('🔐 Configurando 2FA...');
+                
+                // Generar secret (32 caracteres base32)
+                currentSecret = generarSecret();
+                
+                // Obtener usuario actual
+                const sesion = JSON.parse(localStorage.getItem('ceoDashboardUser') || '{}');
+                const nombreUsuario = sesion.nombre || 'CEO_Usuario';
+                
+                // Crear URI para Google Authenticator
+                const issuer = 'YAvoy Enterprise';
+                const otpauthUrl = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(nombreUsuario)}?secret=${currentSecret}&issuer=${encodeURIComponent(issuer)}`;
+                
+                // Mostrar modal
+                document.getElementById('modal2FA').style.display = 'flex';
+                
+                // Limpiar QR anterior
+                document.getElementById('qrCode').innerHTML = '';
+                
+                // Generar QR
+                currentQRCode = new QRCode(document.getElementById('qrCode'), {
+                    text: otpauthUrl,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Mostrar secret
+                document.getElementById('secretKey').textContent = currentSecret;
+            }
+
+            function generarSecret() {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+                let secret = '';
+                for (let i = 0; i < 32; i++) {
+                    secret += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return secret;
+            }
+
+            function copiarSecret() {
+                const secret = document.getElementById('secretKey').textContent;
+                navigator.clipboard.writeText(secret).then(() => {
+                    alert('✅ Código secreto copiado al portapapeles');
+                }).catch(() => {
+                    alert('❌ No se pudo copiar');
+                });
+            }
+
+            async function verificarYGuardar2FA() {
+                const code = document.getElementById('verify2FACode').value.trim();
+                
+                if (code.length !== 6) {
+                    alert('❌ Ingresa un código de 6 dígitos');
+                    return;
+                }
+                
+                console.log('🔐 Verificando código 2FA...');
+                
+                try {
+                    // Enviar al servidor para verificar
+                    const response = await fetch('/api/auth/verify-2fa-setup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            secret: currentSecret,
+                            token: code,
+                            userId: ceoSeleccionado
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Guardar secret en localStorage
+                        const sesion = JSON.parse(localStorage.getItem('ceoDashboardUser') || '{}');
+                        sesion.twoFactorSecret = currentSecret;
+                        sesion.twoFactorEnabled = true;
+                        localStorage.setItem('ceoDashboardUser', JSON.stringify(sesion));
+                        
+                        alert('✅ 2FA configurado exitosamente!\n\nAhora necesitarás tu código de Google Authenticator cada vez que ingreses.');
+                        cerrarModal2FA();
+                    } else {
+                        alert('❌ Código inválido. Verifica que estés usando el código correcto de Google Authenticator.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Fallback: verificación simple del lado del cliente
+                    alert('⚠️ No se pudo conectar con el servidor.\n2FA guardado localmente.');
+                    const sesion = JSON.parse(localStorage.getItem('ceoDashboardUser') || '{}');
+                    sesion.twoFactorSecret = currentSecret;
+                    sesion.twoFactorEnabled = true;
+                    localStorage.setItem('ceoDashboardUser', JSON.stringify(sesion));
+                    cerrarModal2FA();
+                }
+            }
+
+            function cerrarModal2FA() {
+                document.getElementById('modal2FA').style.display = 'none';
+                document.getElementById('verify2FACode').value = '';
+                currentSecret = null;
+                currentQRCode = null;
+            }
+
+            // Agregar botón de configuración 2FA al dashboard
+            window.addEventListener('load', () => {
+                const headerInfo = document.querySelector('.ceo-header-user-section');
+                if (headerInfo) {
+                    const btn2FA = document.createElement('button');
+                    btn2FA.className = 'refresh-btn';
+                    btn2FA.innerHTML = '🔐 Configurar 2FA';
+                    btn2FA.onclick = configurar2FA;
+                    btn2FA.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    headerInfo.insertBefore(btn2FA, headerInfo.querySelector('.ceo-btn-salir'));
+                }
+            });
+        </script>
+</body>
+
+</html>

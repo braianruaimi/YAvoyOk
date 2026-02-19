@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel CEO - Verificaciones | YAvoy</title>
+    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/utilities.css">
+    <link rel="stylesheet" href="styles/animations-improved.css?v=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102,126,234,0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .verification-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .verification-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .verification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .verification-card.pending {
+            border-left: 6px solid #f59e0b;
+        }
+
+        .verification-card.approved {
+            border-left: 6px solid #10b981;
+        }
+
+        .verification-card.rejected {
+            border-left: 6px solid #ef4444;
+        }
+
+        .repartidor-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .repartidor-info .nombre {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .repartidor-info .detalle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .verification-data {
+            display: grid;
+            gap: 15px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .data-value {
+            color: #333;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .check-icon {
+            color: #10b981;
+            margin-left: 8px;
+        }
+
+        .images-preview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .image-container {
+            position: relative;
+        }
+
+        .image-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 3px solid #e5e7eb;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .zoom-btn {
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            background: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(16,185,129,0.3);
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(239,68,68,0.3);
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102,126,234,0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+        }
+
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+        }
+
+        /* Image Zoom Modal */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+
+        .image-modal .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .refresh-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 1024px) {
+            .verification-card {
+                grid-template-columns: 1fr;
+            }
+
+            .images-preview {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .images-preview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>👑</span>
+                Panel CEO - Verificaciones
+            </h1>
+            <button class="refresh-btn" onclick="cargarDatos()">
+                🔄 Actualizar
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value" id="statPendientes">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="statAprobadas">0</div>
+                <div class="stat-label">Aprobadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">❌</div>
+                <div class="stat-value" id="statRechazadas">0</div>
+                <div class="stat-label">Rechazadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="statComisiones">$0</div>
+                <div class="stat-label">Comisiones Acumuladas</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="cambiarTab('pendientes')">
+                ⏳ Pendientes
+            </button>
+            <button class="tab-btn" onclick="cambiarTab('aprobadas')">
+                ✅ Aprobadas
+            </button>
+            <button class="tab-btn" onclick="cambiarTab('rechazadas')">
+                ❌ Rechazadas
+            </button>
+            <button class="tab-btn" onclick="cambiarTab('todas')">
+                📋 Todas
+            </button>
+        </div>
+
+        <div id="tabPendientes" class="tab-content active">
+            <div class="verification-list" id="listaPendientes"></div>
+        </div>
+
+        <div id="tabAprobadas" class="tab-content">
+            <div class="verification-list" id="listaAprobadas"></div>
+        </div>
+
+        <div id="tabRechazadas" class="tab-content">
+            <div class="verification-list" id="listaRechazadas"></div>
+        </div>
+
+        <div id="tabTodas" class="tab-content">
+            <div class="verification-list" id="listaTodas"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Rechazo -->
+    <div id="modalRechazo" class="modal">
+        <div class="modal-content">
+            <h3>❌ Rechazar Verificación</h3>
+            <p class="text-secondary mb-md">Indica el motivo del rechazo:</p>
+            <textarea id="motivoRechazo" placeholder="Ej: DNI borroso, selfie no coincide, datos incorrectos..."></textarea>
+            <div class="modal-actions">
+                <button class="btn bg-gray text-dark" onclick="cerrarModal()">
+                    Cancelar
+                </button>
+                <button class="btn btn-reject" onclick="confirmarRechazo()">
+                    Rechazar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Zoom de Imagen -->
+    <div id="imageModal" class="image-modal">
+        <button class="close-btn" onclick="cerrarImagenZoom()">✕</button>
+        <img id="imageZoom" src="" alt="Vista ampliada">
+    </div>
+
+    <script>
+        let repartidores = [];
+        let repartidorSeleccionado = null;
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatos();
+            // Auto-refresh cada 30 segundos
+            setInterval(cargarDatos, 30000);
+        });
+
+        async function cargarDatos() {
+            try {
+                const response = await fetch('/api/repartidores');
+                const data = await response.json();
+                
+                if (data.success) {
+                    repartidores = data.repartidores;
+                    actualizarEstadisticas();
+                    renderizarVerificaciones();
+                }
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+            }
+        }
+
+        function actualizarEstadisticas() {
+            const pendientes = repartidores.filter(r => 
+                r.configPago && r.configPago.cbu && 
+                r.configPago.emailVerificado && 
+                r.configPago.identidadVerificada &&
+                (!r.configPago.estadoVerificacion || r.configPago.estadoVerificacion === 'pendiente')
+            ).length;
+
+            const aprobadas = repartidores.filter(r => 
+                r.configPago && r.configPago.estadoVerificacion === 'aprobada'
+            ).length;
+
+            const rechazadas = repartidores.filter(r => 
+                r.configPago && r.configPago.estadoVerificacion === 'rechazada'
+            ).length;
+
+            const comisionesTotal = repartidores.reduce((sum, r) => 
+                sum + (r.comisionesRetenidas || 0), 0
+            );
+
+            document.getElementById('statPendientes').textContent = pendientes;
+            document.getElementById('statAprobadas').textContent = aprobadas;
+            document.getElementById('statRechazadas').textContent = rechazadas;
+            document.getElementById('statComisiones').textContent = `$${comisionesTotal.toFixed(2)}`;
+        }
+
+        function renderizarVerificaciones() {
+            const pendientes = repartidores.filter(r => 
+                r.configPago && r.configPago.cbu && 
+                r.configPago.emailVerificado && 
+                r.configPago.identidadVerificada &&
+                (!r.configPago.estadoVerificacion || r.configPago.estadoVerificacion === 'pendiente')
+            );
+
+            const aprobadas = repartidores.filter(r => 
+                r.configPago && r.configPago.estadoVerificacion === 'aprobada'
+            );
+
+            const rechazadas = repartidores.filter(r => 
+                r.configPago && r.configPago.estadoVerificacion === 'rechazada'
+            );
+
+            document.getElementById('listaPendientes').innerHTML = 
+                pendientes.length ? pendientes.map(crearCardVerificacion).join('') : crearEmptyState('⏳', 'No hay verificaciones pendientes', 'Cuando los repartidores completen su verificación, aparecerán aquí');
+
+            document.getElementById('listaAprobadas').innerHTML = 
+                aprobadas.length ? aprobadas.map(crearCardVerificacion).join('') : crearEmptyState('✅', 'No hay verificaciones aprobadas', 'Las verificaciones aprobadas aparecerán aquí');
+
+            document.getElementById('listaRechazadas').innerHTML = 
+                rechazadas.length ? rechazadas.map(crearCardVerificacion).join('') : crearEmptyState('❌', 'No hay verificaciones rechazadas', 'Las verificaciones rechazadas aparecerán aquí');
+
+            const todas = repartidores.filter(r => r.configPago && r.configPago.cbu);
+            document.getElementById('listaTodas').innerHTML = 
+                todas.length ? todas.map(crearCardVerificacion).join('') : crearEmptyState('📋', 'No hay verificaciones', 'Aún no hay repartidores con datos de verificación');
+        }
+
+        function crearEmptyState(icon, title, description) {
+            return `
+                <div class="empty-state">
+                    <div class="icon">${icon}</div>
+                    <h3>${title}</h3>
+                    <p>${description}</p>
+                </div>
+            `;
+        }
+
+        function crearCardVerificacion(rep) {
+            const config = rep.configPago;
+            const estado = config.estadoVerificacion || 'pendiente';
+            const cbuDisplay = config.alias || `${config.cbu.substring(0, 8)}...${config.cbu.substring(18)}`;
+            
+            const imagenDNI = `/registros/verificaciones/${rep.id}/dni.jpg`;
+            const imagenSelfie = `/registros/verificaciones/${rep.id}/selfie.jpg`;
+
+            const fechaConfig = new Date(config.fechaConfiguracion).toLocaleString('es-AR');
+
+            let botones = '';
+            if (estado === 'pendiente') {
+                botones = `
+                    <button class="btn btn-approve" onclick="aprobarVerificacion('${rep.id}')">
+                        ✓ Aprobar
+                    </button>
+                    <button class="btn btn-reject" onclick="abrirModalRechazo('${rep.id}')">
+                        ✕ Rechazar
+                    </button>
+                `;
+            } else if (estado === 'aprobada') {
+                botones = `
+                    <span class="status-badge approved">✓ Aprobada</span>
+                    ${config.fechaAprobacion ? `<small style="color: #666; text-align: center;">${new Date(config.fechaAprobacion).toLocaleString('es-AR')}</small>` : ''}
+                `;
+            } else if (estado === 'rechazada') {
+                botones = `
+                    <span class="status-badge rejected">✕ Rechazada</span>
+                    ${config.motivoRechazo ? `<small style="color: #666; text-align: center;">"${config.motivoRechazo}"</small>` : ''}
+                    ${config.fechaRechazo ? `<small style="color: #666; text-align: center;">${new Date(config.fechaRechazo).toLocaleString('es-AR')}</small>` : ''}
+                    <button class="btn btn-approve" onclick="aprobarVerificacion('${rep.id}')">
+                        ✓ Aprobar Ahora
+                    </button>
+                `;
+            }
+
+            return `
+                <div class="verification-card ${estado}">
+                    <div class="repartidor-info">
+                        <div class="nombre">${rep.nombre}</div>
+                        <div class="detalle">
+                            <span>📧</span>
+                            <span>${config.email}</span>
+                        </div>
+                        <div class="detalle">
+                            <span>📱</span>
+                            <span>${rep.telefono}</span>
+                        </div>
+                        <div class="detalle">
+                            <span>🏍️</span>
+                            <span>${rep.vehiculo}</span>
+                        </div>
+                        <div class="detalle">
+                            <span>📅</span>
+                            <span>${fechaConfig}</span>
+                        </div>
+                    </div>
+
+                    <div class="verification-data">
+                        <div class="data-row">
+                            <span class="data-label">CBU/CVU</span>
+                            <span class="data-value">${cbuDisplay}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Banco</span>
+                            <span class="data-value">${config.banco || 'N/A'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Titular</span>
+                            <span class="data-value">${config.titular || rep.nombre}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Email Verificado</span>
+                            <span class="data-value">
+                                ${config.emailVerificado ? '<span class="check-icon">✓</span>' : '❌'}
+                            </span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Identidad Verificada</span>
+                            <span class="data-value">
+                                ${config.identidadVerificada ? '<span class="check-icon">✓</span>' : '❌'}
+                            </span>
+                        </div>
+
+                        <div class="images-preview">
+                            <div class="image-container">
+                                <div class="image-label">📄 DNI (Frente)</div>
+                                <img src="${imagenDNI}" alt="DNI" class="image-preview" onclick="abrirImagenZoom('${imagenDNI}')">
+                                <button class="zoom-btn" onclick="abrirImagenZoom('${imagenDNI}')">🔍</button>
+                            </div>
+                            <div class="image-container">
+                                <div class="image-label">🤳 Selfie</div>
+                                <img src="${imagenSelfie}" alt="Selfie" class="image-preview" onclick="abrirImagenZoom('${imagenSelfie}')">
+                                <button class="zoom-btn" onclick="abrirImagenZoom('${imagenSelfie}')">🔍</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        ${botones}
+                    </div>
+                </div>
+            `;
+        }
+
+        function cambiarTab(tab) {
+            // Actualizar botones
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Actualizar contenido
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            const mapaTabs = {
+                'pendientes': 'tabPendientes',
+                'aprobadas': 'tabAprobadas',
+                'rechazadas': 'tabRechazadas',
+                'todas': 'tabTodas'
+            };
+            document.getElementById(mapaTabs[tab]).classList.add('active');
+        }
+
+        async function aprobarVerificacion(repartidorId) {
+            if (!confirm('¿Aprobar esta verificación?')) return;
+
+            try {
+                const response = await fetch(`/api/repartidores/${repartidorId}/aprobar-verificacion`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Verificación aprobada correctamente');
+                    cargarDatos();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error al aprobar:', error);
+                alert('❌ Error al aprobar verificación');
+            }
+        }
+
+        function abrirModalRechazo(repartidorId) {
+            repartidorSeleccionado = repartidorId;
+            document.getElementById('motivoRechazo').value = '';
+            document.getElementById('modalRechazo').classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalRechazo').classList.remove('active');
+            repartidorSeleccionado = null;
+        }
+
+        async function confirmarRechazo() {
+            const motivo = document.getElementById('motivoRechazo').value.trim();
+            
+            if (!motivo) {
+                alert('⚠️ Debes indicar el motivo del rechazo');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/repartidores/${repartidorSeleccionado}/rechazar-verificacion`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ motivo })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Verificación rechazada');
+                    cerrarModal();
+                    cargarDatos();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error al rechazar:', error);
+                alert('❌ Error al rechazar verificación');
+            }
+        }
+
+        function abrirImagenZoom(imagenUrl) {
+            document.getElementById('imageZoom').src = imagenUrl;
+            document.getElementById('imageModal').classList.add('active');
+        }
+
+        function cerrarImagenZoom() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // Cerrar modales con ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                cerrarModal();
+                cerrarImagenZoom();
+            }
+        });
+    </script>
+</body>
+</html>

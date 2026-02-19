@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Repartidor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚴 Test Login Repartidor</h1>
+        <p class="subtitle">Prueba el sistema de autenticación</p>
+        
+        <div class="info">
+            <strong>📝 Credenciales de prueba:</strong>
+            ID: <code>braian_demo_2025</code><br>
+            Contraseña: <code>2215047962</code>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>🆔 ID de Repartidor</label>
+                <input 
+                    type="text" 
+                    id="repartidorId" 
+                    placeholder="Ej: braian_demo_2025"
+                    value="braian_demo_2025"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label>🔐 Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="Ingresa tu contraseña"
+                    value="2215047962"
+                >
+            </div>
+
+            <button type="submit" class="btn">
+                🚀 Probar Login
+            </button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const REPARTIDOR_PASSWORD = '2215047962';
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('repartidorId').value.trim();
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            
+            // Limpiar resultado previo
+            resultDiv.style.display = 'none';
+            resultDiv.className = 'result';
+            
+            console.log('🔍 Intentando login con:', { id, password });
+            
+            // Verificar contraseña
+            if (password !== REPARTIDOR_PASSWORD) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Contraseña incorrecta<br>Esperada: 2215047962';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            console.log('✅ Contraseña correcta');
+            
+            try {
+                console.log('🌐 Consultando API: /api/repartidores');
+                const response = await fetch('/api/repartidores');
+                
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                console.log('📦 Response text length:', text.length);
+                
+                if (!text) {
+                    throw new Error('Respuesta vacía del servidor');
+                }
+                
+                const data = JSON.parse(text);
+                console.log('📊 Data parsed:', data);
+                
+                const repartidor = data.repartidores.find(r => r.id === id);
+                
+                if (repartidor) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ <strong>Login exitoso!</strong><br>
+                        Repartidor: ${repartidor.nombre} ${repartidor.apellido}<br>
+                        Rating: ${repartidor.rating} ⭐<br>
+                        Entregas: ${repartidor.totalEntregas}<br>
+                        <br>
+                        <a href="panel-repartidor.html" style="color: #155724; font-weight: 600;">
+                            👉 Ir al Panel de Repartidor
+                        </a>
+                        <pre>${JSON.stringify(repartidor, null, 2).substring(0, 500)}...</pre>
+                    `;
+                    resultDiv.style.display = 'block';
+                    
+                    // Guardar en localStorage
+                    localStorage.setItem('repartidorId', id);
+                    localStorage.setItem('repartidorAuth', 'true');
+                    
+                    console.log('✅ Login completado con éxito');
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        ❌ <strong>ID de repartidor no encontrado</strong><br>
+                        IDs disponibles:<br>
+                        ${data.repartidores.map(r => `- ${r.id}`).join('<br>')}
+                    `;
+                    resultDiv.style.display = 'block';
+                    console.error('❌ Repartidor no encontrado en la lista');
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    ❌ <strong>Error de conexión</strong><br>
+                    ${error.message}<br>
+                    <br>
+                    ⚠️ Verifica que el servidor esté corriendo en:<br>
+                    <code>http://localhost:5502</code>
+                `;
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

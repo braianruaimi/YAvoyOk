@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Soporte - YaVoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/theme.css">
+    <style>
+        .soporte-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .soporte-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .soporte-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--color-border);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .ticket-form {
+            background: var(--color-bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .ticket-card {
+            background: var(--color-bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ticket-id {
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .ticket-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-nuevo {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-en-progreso {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-resuelto {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cerrado {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .ticket-prioridad {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .prioridad-alta {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .prioridad-media {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .prioridad-baja {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .faq-section {
+            display: grid;
+            gap: 15px;
+        }
+
+        .faq-item {
+            background: var(--color-bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            transition: background 0.3s;
+        }
+
+        .faq-question:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, padding 0.3s;
+            color: var(--color-text-secondary);
+        }
+
+        .faq-item.open .faq-answer {
+            padding: 20px;
+            max-height: 500px;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s;
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .chat-soporte {
+            background: var(--color-bg-card);
+            border-radius: 12px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-md);
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--color-bg-secondary);
+        }
+
+        .mensaje {
+            display: flex;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s;
+        }
+
+        .mensaje.usuario {
+            justify-content: flex-end;
+        }
+
+        .mensaje-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .mensaje.bot .mensaje-content {
+            background: var(--color-bg-card);
+            color: var(--color-text-primary);
+        }
+
+        .mensaje.usuario .mensaje-content {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 2px solid var(--color-border);
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            padding: 12px 24px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--color-bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .rating-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            color: #e5e7eb;
+        }
+
+        .star-btn:hover,
+        .star-btn.active {
+            transform: scale(1.2);
+            color: #fbbf24;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .soporte-tabs {
+                overflow-x: auto;
+            }
+
+            .tab-btn {
+                white-space: nowrap;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="soporte-container">
+        <div class="soporte-header">
+            <h1>🎧 Centro de Soporte YaVoy</h1>
+            <p>Estamos aquí para ayudarte 24/7</p>
+        </div>
+
+        <div class="soporte-tabs">
+            <button class="tab-btn active" onclick="cambiarTab('tickets')">📋 Mis Tickets</button>
+            <button class="tab-btn" onclick="cambiarTab('nuevo')">➕ Nuevo Ticket</button>
+            <button class="tab-btn" onclick="cambiarTab('faq')">❓ FAQ</button>
+            <button class="tab-btn" onclick="cambiarTab('chat')">💬 Chat en Vivo</button>
+            <button class="tab-btn" onclick="cambiarTab('estadisticas')">📊 Estadísticas</button>
+        </div>
+
+        <!-- Tab: Mis Tickets -->
+        <div id="tab-tickets" class="tab-content active">
+            <h2>Tus Tickets de Soporte</h2>
+            <div id="ticketsList"></div>
+        </div>
+
+        <!-- Tab: Nuevo Ticket -->
+        <div id="tab-nuevo" class="tab-content">
+            <div class="ticket-form">
+                <h2>Crear Nuevo Ticket</h2>
+                <form id="formNuevoTicket" onsubmit="crearTicket(event)">
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select id="categoria" class="form-control" required>
+                            <option value="">Selecciona una categoría</option>
+                            <option value="pedido">🛒 Problema con Pedido</option>
+                            <option value="pago">💳 Problema de Pago</option>
+                            <option value="cuenta">👤 Problema con Cuenta</option>
+                            <option value="repartidor">🚗 Problema con Repartidor</option>
+                            <option value="comercio">🏪 Problema con Comercio</option>
+                            <option value="tecnico">🔧 Problema Técnico</option>
+                            <option value="otro">📝 Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prioridad">Prioridad</label>
+                        <select id="prioridad" class="form-control" required>
+                            <option value="baja">🟢 Baja - Puede esperar</option>
+                            <option value="media" selected>🟡 Media - Normal</option>
+                            <option value="alta">🔴 Alta - Urgente</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="asunto">Asunto</label>
+                        <input type="text" id="asunto" class="form-control" placeholder="Describe brevemente tu problema" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">Descripción Detallada</label>
+                        <textarea id="descripcion" class="form-control" rows="6" placeholder="Explica tu problema con el mayor detalle posible..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adjunto">Adjuntar Imagen (opcional)</label>
+                        <input type="file" id="adjunto" class="form-control" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Enviar Ticket</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab: FAQ -->
+        <div id="tab-faq" class="tab-content">
+            <h2>Preguntas Frecuentes</h2>
+            <div class="faq-section" id="faqContainer"></div>
+        </div>
+
+        <!-- Tab: Chat -->
+        <div id="tab-chat" class="tab-content">
+            <div class="chat-soporte">
+                <div class="chat-header">
+                    <h3>Chat en Vivo con Soporte</h3>
+                    <p>Tiempo promedio de respuesta: 2 minutos</p>
+                </div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
+                    <button class="btn-primary" onclick="enviarMensajeChat()">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Estadísticas -->
+        <div id="tab-estadisticas" class="tab-content">
+            <h2>Estadísticas de Soporte</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="statTotalTickets">0</div>
+                    <div class="stat-label">Total Tickets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statResueltos">0</div>
+                    <div class="stat-label">Resueltos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statPendientes">0</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statTiempoPromedio">0</div>
+                    <div class="stat-label">Tiempo Promedio (hrs)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/theme.js"></script>
+    <script>
+        const socket = io();
+        const userId = 'USER-' + Math.random().toString(36).substr(2, 9);
+
+        // FAQs predefinidos
+        const faqs = [
+            {
+                pregunta: "¿Cómo puedo rastrear mi pedido en tiempo real?",
+                respuesta: "Puedes rastrear tu pedido en el panel de cliente. Una vez que el repartidor acepte el pedido, verás su ubicación en tiempo real en el mapa y el ETA estimado de llegada."
+            },
+            {
+                pregunta: "¿Qué métodos de pago aceptan?",
+                respuesta: "Aceptamos Mercado Pago con tarjeta de crédito, débito, y transferencia bancaria. El sistema de billetera virtual también está disponible para repartidores."
+            },
+            {
+                pregunta: "¿Cómo funciona el sistema de calificaciones?",
+                respuesta: "Después de cada entrega, puedes calificar al repartidor con 1 a 5 estrellas en 4 aspectos: puntualidad, amabilidad, presentación y exactitud del pedido. También puedes dejar comentarios y fotos."
+            },
+            {
+                pregunta: "¿Cuál es la comisión que cobra YaVoy?",
+                respuesta: "YaVoy retiene el 15% de cada pedido. El 85% restante va directamente al repartidor. El costo de envío se calcula: $1000 por el primer km + $100 por cada 100m adicionales. Esta distribución es transparente y se muestra en cada transacción."
+            },
+            {
+                pregunta: "¿Cómo me convierto en repartidor?",
+                respuesta: "Para ser repartidor debes completar el proceso de verificación KYC de 3 pasos: verificar email, subir foto de DNI, y tomar una selfie. Una vez aprobado, podrás empezar a recibir pedidos."
+            },
+            {
+                pregunta: "¿Puedo cancelar un pedido?",
+                respuesta: "Sí, puedes cancelar un pedido antes de que sea aceptado por un repartidor sin cargo. Una vez aceptado, aplican políticas de cancelación según el tiempo transcurrido."
+            },
+            {
+                pregunta: "¿Qué hago si hay un problema con mi pedido?",
+                respuesta: "Puedes reportar el problema a través del chat en vivo con el repartidor, o crear un ticket de soporte desde esta sección. Nuestro equipo responderá en menos de 30 minutos."
+            },
+            {
+                pregunta: "¿Cómo funcionan los logros y badges?",
+                respuesta: "Los repartidores pueden desbloquear logros completando ciertos hitos: primeros 5 pedidos, 100 entregas, mantener 5 estrellas, etc. Los badges aparecen en tu perfil y te dan reconocimiento."
+            }
+        ];
+
+        // Cargar FAQs
+        function cargarFAQs() {
+            const container = document.getElementById('faqContainer');
+            container.innerHTML = faqs.map((faq, index) => `
+                <div class="faq-item" onclick="toggleFAQ(${index})">
+                    <div class="faq-question">
+                        <span>${faq.pregunta}</span>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">${faq.respuesta}</div>
+                </div>
+            `).join('');
+        }
+
+        function toggleFAQ(index) {
+            const items = document.querySelectorAll('.faq-item');
+            items[index].classList.toggle('open');
+        }
+
+        // Cambiar tabs
+        function cambiarTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if (tab === 'tickets') cargarTickets();
+            if (tab === 'faq') cargarFAQs();
+            if (tab === 'estadisticas') cargarEstadisticas();
+        }
+
+        // Crear ticket
+        async function crearTicket(event) {
+            event.preventDefault();
+            
+            const ticket = {
+                id: 'TKT-' + Date.now(),
+                usuario: userId,
+                categoria: document.getElementById('categoria').value,
+                prioridad: document.getElementById('prioridad').value,
+                asunto: document.getElementById('asunto').value,
+                descripcion: document.getElementById('descripcion').value,
+                estado: 'nuevo',
+                fecha: new Date().toISOString(),
+                respuestas: []
+            };
+
+            try {
+                const response = await fetch('/api/soporte/tickets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ticket)
+                });
+
+                if (response.ok) {
+                    alert('✅ Ticket creado exitosamente. Te responderemos pronto.');
+                    document.getElementById('formNuevoTicket').reset();
+                    cambiarTab('tickets');
+                }
+            } catch (error) {
+                console.error('Error al crear ticket:', error);
+                alert('❌ Error al crear el ticket. Intenta de nuevo.');
+            }
+        }
+
+        // Cargar tickets del usuario
+        async function cargarTickets() {
+            try {
+                const response = await fetch(`/api/soporte/tickets?usuario=${userId}`);
+                const tickets = await response.json();
+                
+                const container = document.getElementById('ticketsList');
+                
+                if (tickets.length === 0) {
+                    container.innerHTML = '<p class="text-center">No tienes tickets aún. ¡Crea uno si necesitas ayuda!</p>';
+                    return;
+                }
+
+                container.innerHTML = tickets.map(ticket => `
+                    <div class="ticket-card" onclick="verTicket('${ticket.id}')">
+                        <div class="ticket-header">
+                            <div>
+                                <span class="ticket-id">${ticket.id}</span>
+                                <span class="ticket-prioridad prioridad-${ticket.prioridad}">
+                                    ${ticket.prioridad.toUpperCase()}
+                                </span>
+                            </div>
+                            <span class="ticket-status status-${ticket.estado}">
+                                ${ticket.estado.toUpperCase()}
+                            </span>
+                        </div>
+                        <h4>${ticket.asunto}</h4>
+                        <p class="text-secondary">${ticket.descripcion.substring(0, 100)}...</p>
+                        <small>Creado: ${new Date(ticket.fecha).toLocaleDateString()}</small>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error al cargar tickets:', error);
+            }
+        }
+
+        // Ver detalles del ticket
+        function verTicket(ticketId) {
+            alert(`Ver detalles del ticket ${ticketId}`);
+            // Implementar modal con detalles completos
+        }
+
+        // Chat en vivo
+        function enviarMensajeChat() {
+            const input = document.getElementById('chatInput');
+            const mensaje = input.value.trim();
+            
+            if (!mensaje) return;
+
+            agregarMensaje(mensaje, 'usuario');
+            input.value = '';
+
+            // Simular respuesta del bot
+            setTimeout(() => {
+                const respuesta = obtenerRespuestaBot(mensaje);
+                agregarMensaje(respuesta, 'bot');
+            }, 1000);
+
+            // Emitir a socket para soporte real
+            socket.emit('chat-soporte', { usuario: userId, mensaje });
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                enviarMensajeChat();
+            }
+        }
+
+        function agregarMensaje(texto, tipo) {
+            const container = document.getElementById('chatMessages');
+            const mensajeDiv = document.createElement('div');
+            mensajeDiv.className = `mensaje ${tipo}`;
+            mensajeDiv.innerHTML = `<div class="mensaje-content">${texto}</div>`;
+            container.appendChild(mensajeDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function obtenerRespuestaBot(mensaje) {
+            mensaje = mensaje.toLowerCase();
+            
+            if (mensaje.includes('rastrear') || mensaje.includes('pedido') || mensaje.includes('ubicación')) {
+                return 'Para rastrear tu pedido, ve al panel de cliente y selecciona "Rastreo". Verás el mapa en tiempo real con la ubicación del repartidor.';
+            }
+            
+            if (mensaje.includes('pago') || mensaje.includes('tarjeta') || mensaje.includes('mercado pago')) {
+                return 'Aceptamos Mercado Pago. Puedes configurar tu método de pago en Configuración > Pagos.';
+            }
+            
+            if (mensaje.includes('calificación') || mensaje.includes('rating') || mensaje.includes('estrellas')) {
+                return 'Después de cada entrega, podrás calificar al repartidor con 1-5 estrellas. Esto nos ayuda a mantener la calidad del servicio.';
+            }
+            
+            return 'Gracias por tu mensaje. Un agente revisará tu consulta y te responderá en breve. ¿Hay algo más en lo que pueda ayudarte?';
+        }
+
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch(`/api/soporte/estadisticas?usuario=${userId}`);
+                const stats = await response.json();
+                
+                document.getElementById('statTotalTickets').textContent = stats.total || 0;
+                document.getElementById('statResueltos').textContent = stats.resueltos || 0;
+                document.getElementById('statPendientes').textContent = stats.pendientes || 0;
+                document.getElementById('statTiempoPromedio').textContent = stats.tiempoPromedio || 0;
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        // Socket.IO listeners
+        socket.on('ticket-actualizado', (ticket) => {
+            if (ticket.usuario === userId) {
+                cargarTickets();
+            }
+        });
+
+        socket.on('chat-soporte-respuesta', (data) => {
+            if (data.usuario === userId) {
+                agregarMensaje(data.mensaje, 'bot');
+            }
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarTickets();
+            cargarFAQs();
+            
+            // Mensaje de bienvenida en chat
+            setTimeout(() => {
+                agregarMensaje('¡Hola! Soy el asistente virtual de YaVoy. ¿En qué puedo ayudarte hoy?', 'bot');
+            }, 500);
+        });
+
+        // Inicializar tema
+        const themeManager = new ThemeManager();
+    </script>
+</body>
+</html>

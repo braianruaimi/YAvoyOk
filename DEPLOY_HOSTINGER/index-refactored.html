@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="YAvoy v3.1 Enterprise - La plataforma de delivery más rápida y segura del mercado.">
+    <meta name="theme-color" content="#020617">
+    <meta name="msapplication-TileColor" content="#020617">
+
+    <!-- PWA & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-yavoy.png">
+    <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+
+    <!-- Polyfill para compatibilidad theme-color (Firefox/Opera) -->
+    <script src="js/theme-color-polyfill.js" defer></script>
+
+    <!-- Estilos Externos Consolidados -->
+    <link rel="stylesheet" href="css/index-styles.css">
+    <link rel="stylesheet" href="css/theme-enhancement.css">
+    <link rel="stylesheet" href="styles/premium-system.css">
+
+    <!-- MercadoPago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+    <title>YAvoy - Tu plataforma de entregas local</title>
+</head>
+
+<body>
+    <!-- ==================== CONTROLES FLOTANTES ==================== -->
+    <div class="floating-controls">
+        <button id="btnThemeToggle" class="control-btn" data-tooltip="Cambiar tema" title="Cambiar tema (Claro/Oscuro)"
+            aria-label="Cambiar modo de tema">
+            <span id="themeIcon">🌙</span>
+        </button>
+        <button id="btnNotificacionesFlotante" class="control-btn" data-tooltip="Notificaciones" title="Notificaciones"
+            aria-label="Gestionar notificaciones">
+            <span>🔔</span>
+            <span class="notification-dot"></span>
+        </button>
+        <button id="btnChatbotFlotante" class="control-btn" data-tooltip="Asistente YAvoy" title="Asistente Virtual"
+            aria-label="Abrir asistente virtual">
+            <span>💬</span>
+        </button>
+    </div>
+
+    <!-- ==================== MENÚ DE NOTIFICACIONES ==================== -->
+    <div class="notification-popup" id="notificationPopup">
+        <div class="notification-menu-content">
+            <div class="notification-header">
+                <span class="notification-header-icon">🔔</span>
+                <span class="notification-header-title">Notificaciones</span>
+            </div>
+            <p class="notification-description">
+                Recibe alertas sobre pedidos y actualizaciones
+            </p>
+            <div class="notification-buttons">
+                <button id="btnActivarNotif" class="btn-activar-notif">
+                    🔔 Activar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== WIDGET CHATBOT ==================== -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <div class="chatbot-modal" id="chatbotModal">
+            <div class="chatbot-header">
+                <div class="chatbot-header-info">
+                    <span class="chatbot-avatar">🤖</span>
+                    <div>
+                        <h3>Asistente YAvoy</h3>
+                        <p class="chatbot-status">En línea 24/7</p>
+                    </div>
+                </div>
+                <button id="btnCerrarChatbot" class="btn-cerrar-chatbot" title="Cerrar">✕</button>
+            </div>
+            <div class="chatbot-content">
+                <div id="chatbotMessages" class="chatbot-messages"></div>
+                <div id="chatbotSuggestions" class="chatbot-suggestions-container"></div>
+                <div class="chatbot-controls">
+                    <button id="btnChatbotVoz" class="btn-chatbot-control" title="Activar voz">🎤</button>
+                    <button id="btnChatbotTema" class="btn-chatbot-control" title="Cambiar tema">🌙</button>
+                    <button id="btnChatbotHistorial" class="btn-chatbot-control" title="Historial">📋</button>
+                </div>
+                <div class="chatbot-input-area">
+                    <input type="text" id="chatbotInput" class="chatbot-input"
+                        placeholder="Escribe tu pregunta o usa comandos: /ayuda" autocomplete="off" />
+                    <button id="btnEnviarChatbot" class="btn-enviar-chatbot">
+                        <span>➤</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== LOADING OVERLAY ==================== -->
+    <div id="loading-overlay" class="loading-overlay" role="status" aria-live="polite" aria-label="Cargando">
+        <div class="spinner-wrapper">
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="spinner-text">Cargando...</p>
+        </div>
+    </div>
+
+    <!-- ==================== SPLASH SCREEN ==================== -->
+    <div id="splash-screen" role="status" aria-label="Pantalla de bienvenida">
+        <img id="splash-icon" src="icons/icon-yavoy.png?v=11" alt="Logo de YAvoy animado" />
+        <p id="splash-text">YAvoy... ¡Conectando tu pedido!</p>
+    </div>
+
+    <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+    <main id="main" role="main">
+        <!-- HERO SECTION -->
+        <section id="inicio" class="hero" role="banner">
+            <div class="hero-overlay"></div>
+            <div class="hero-content contenedor">
+                <div class="hero-text">
+                    <h1>YaVoy - Tu plataforma de entregas local</h1>
+                    <p>Conectando clientes, comercios y repartidores en tu ciudad</p>
+
+                    <!-- Selector de Rol -->
+                    <div class="role-selector" role="navigation" aria-label="Selección de rol de usuario">
+                        <div class="role-card hover-lift">
+                            <div class="role-icon" aria-hidden="true">🛍️</div>
+                            <h3>Quiero Pedir</h3>
+                            <p>Solicita productos de comercios locales</p>
+                            <button class="btn-role btn-cliente" onclick="abrirModalPedido()"
+                                aria-label="Abrir formulario para hacer un pedido">Hacer Pedido</button>
+                        </div>
+
+                        <div class="role-card hover-lift">
+                            <div class="role-icon" aria-hidden="true">🚴</div>
+                            <h3>Soy Repartidor</h3>
+                            <p>Gana dinero entregando pedidos</p>
+                            <button class="btn-role btn-repartidor" onclick="abrirModalRepartidor()"
+                                aria-label="Abrir formulario de registro para repartidores">Registrarme</button>
+                            <a href="panel-repartidor.html" class="btn-role-secondary"
+                                aria-label="Ir al panel de repartidor">Acceder
+                                a Mi Panel</a>
+                        </div>
+
+                        <div class="role-card hover-lift">
+                            <div class="role-icon" aria-hidden="true">🏪</div>
+                            <h3>Soy Comercio</h3>
+                            <p>Aumenta tus ventas con entregas</p>
+                            <button class="btn-role btn-comercio" onclick="abrirModalComercio()"
+                                aria-label="Abrir formulario de registro para comercios">Registrarme</button>
+                            <a href="panel-comercio.html" class="btn-role-secondary"
+                                aria-label="Ir al panel de comercio">Acceder a Mi
+                                Panel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN CÓMO FUNCIONA -->
+        <section class="seccion-como-funciona">
+            <div class="contenedor">
+                <h2 class="seccion-header-title">¿Cómo Funciona YaVoy?</h2>
+
+                <div class="funciona-grid">
+                    <!-- Para Clientes -->
+                    <div class="funciona-card">
+                        <div class="funciona-icono">🛍️</div>
+                        <h3>Para Clientes</h3>
+                        <div class="pasos">
+                            <div class="paso">
+                                <span class="paso-num">1</span>
+                                <p>Elige tu comercio favorito</p>
+                            </div>
+                            <div class="paso">
+                                <span class="paso-num">2</span>
+                                <p>Crea tu pedido con los productos</p>
+                            </div>
+                            <div class="paso">
+                                <span class="paso-num">3</span>
+                                <p>Un repartidor lo lleva a tu puerta</p>
+                            </div>
+                        </div>
+                        <a href="pedidos.html" class="btn-funciona">Hacer mi Primer Pedido</a>
+                    </div>
+
+                    <!-- Para Repartidores -->
+                    <div class="funciona-card">
+                        <div class="funciona-icono">🚴</div>
+                        <h3>Para Repartidores</h3>
+                        <div class="pasos">
+                            <div class="paso">
+                                <span class="paso-num">1</span>
+                                <p>Regístrate como repartidor</p>
+                            </div>
+                            <div class="paso">
+                                <span class="paso-num">2</span>
+                                <p>Toma los pedidos disponibles</p>
+                            </div>
+                            <div class="paso">
+                                <span class="paso-num">3</span>
+                                <p>Entrega y gana dinero</p>
+                            </div>
+                        </div>
+                        <a href="#repartidores" class="btn-funciona">Empezar a Repartir</a>
+                    </div>
+
+                    <!-- Para Comercios -->
+                    <div class="funciona-card">
+                        <div class="funciona-icono">🏪</div>
+                        <h3>Para Comercios</h3>
+                        <div class="pasos">
+                            <div class="paso">
+                                <span class="paso-num">1</span>
+                                <p>Registra tu comercio gratis</p>
+                            </div>
+                            <div class="paso">
+                                <span class="paso-num">2</span>
+                                <p>Recibe pedidos de clientes</p>
+                            </div>
+                            <div class="paso">
+                                <span class="paso-num">3</span>
+                                <p>Aumenta tus ventas locales</p>
+                            </div>
+                        </div>
+                        <a href="#comercios" class="btn-funciona">Registrar mi Negocio</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN REPARTIDORES -->
+        <section id="repartidores" class="seccion-rol seccion-secundaria">
+            <div class="contenedor">
+                <h3>Genera Ingresos Extras con tu Moto o Auto 🏍️🚗</h3>
+                <p class="subtitulo">Únete a la red de repartidores de YAvoy y sé tu propio jefe.</p>
+
+                <div class="features-grid">
+                    <div class="feature-card" data-feature="horarios">
+                        <div class="icon">⏰</div>
+                        <h4>Horarios Flexibles</h4>
+                        <p>Conéctate cuando quieras. Tú decides cuántas horas trabajas y cuándo descansas.</p>
+                    </div>
+
+                    <div class="feature-card" data-feature="ganancias">
+                        <div class="icon">💰</div>
+                        <h4>Ganancias Claras</h4>
+                        <p>Tarifas competitivas por cada envío. Ve tus ganancias en tiempo real.</p>
+                    </div>
+
+                    <div class="feature-card" data-feature="envios">
+                        <div class="icon">🗺️</div>
+                        <h4>Envíos Locales</h4>
+                        <p>Entrega solo dentro de tu ciudad, optimizando rutas y reduciendo el tiempo de viaje.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN TIENDAS LOCALES -->
+        <section id="tiendas-locales" class="seccion-rol">
+            <div class="contenedor">
+                <h2 class="text-center mb-20 color-text">🏪 Tiendas Locales Destacadas</h2>
+                <p class="seccion-subtitle">
+                    Descubre los comercios locales que confían en YaVoy para llegar a más clientes.
+                </p>
+
+                <div class="tiendas-grid">
+                    <div class="tienda-card" onclick="abrirModalTienda('pizzeria')">
+                        <div class="tienda-icono">🍕</div>
+                        <h3 class="tienda-nombre">Pizzería Don Mario</h3>
+                        <span class="tienda-categoria">Alimentación</span>
+                        <p class="tienda-descripcion">Pizzas artesanales a la piedra con ingredientes frescos.</p>
+                        <div class="tienda-badge">Ver más →</div>
+                    </div>
+
+                    <div class="tienda-card" onclick="abrirModalTienda('farmacia')">
+                        <div class="tienda-icono">💊</div>
+                        <h3 class="tienda-nombre">Farmacia La Salud</h3>
+                        <span class="tienda-categoria">Salud</span>
+                        <p class="tienda-descripcion">Medicamentos y productos de cuidado personal.</p>
+                        <div class="tienda-badge">Ver más →</div>
+                    </div>
+
+                    <div class="tienda-card" onclick="abrirModalTienda('kiosco')">
+                        <div class="tienda-icono">🍬</div>
+                        <h3 class="tienda-nombre">Kiosco El Rápido</h3>
+                        <span class="tienda-categoria">Kiosco</span>
+                        <p class="tienda-descripcion">Golosinas, bebidas y snacks las 24 horas.</p>
+                        <div class="tienda-badge">Ver más →</div>
+                    </div>
+
+                    <div class="tienda-card" onclick="abrirModalTienda('boutique')">
+                        <div class="tienda-icono">👕</div>
+                        <h3 class="tienda-nombre">Boutique Estilo</h3>
+                        <span class="tienda-categoria">Indumentaria</span>
+                        <p class="tienda-descripcion">Ropa de moda para toda la familia.</p>
+                        <div class="tienda-badge">Ver más →</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN CONTACTO -->
+        <section id="contacto" class="seccion-rol">
+            <div class="contenedor contacto-grid">
+                <div class="contacto-info">
+                    <h3>¿Tienes Preguntas? Contáctanos.</h3>
+                    <p>Estamos aquí para ayudarte a impulsar tu negocio o resolver dudas sobre los envíos.</p>
+                    <p>📞 <strong>Teléfono:</strong> <a href="https://wa.me/542215047962" target="_blank"
+                            rel="noopener noreferrer">2215047962</a>
+                    </p>
+                    <p>📧 <strong>Email:</strong> <a href="mailto:yavoyen5@gmail.com">yavoyen5@gmail.com</a></p>
+                    <p>💬 <strong>WhatsApp:</strong> <a href="https://wa.me/542215047962" target="_blank"
+                            rel="noopener noreferrer">+54 221 504
+                            7962</a></p>
+                    <p>📍 <strong>Oficina:</strong> Ensenada</p>
+                </div>
+
+                <div class="contacto-formulario">
+                    <h4>Envíanos un Mensaje Rápido</h4>
+                    <form id="form-contacto" novalidate data-validate="true">
+                        <div class="form-row">
+                            <input type="text" placeholder="Tu Nombre" required />
+                        </div>
+                        <div class="form-row">
+                            <input type="email" placeholder="Tu Correo" required />
+                        </div>
+                        <div class="form-row">
+                            <textarea placeholder="Escribe tu mensaje aquí..." rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primario">Enviar Mensaje</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== MODALES ==================== -->
+
+    <!-- Modal Repartidor -->
+    <div id="modalRepartidor" class="modal-overlay modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content modal-content-large" role="dialog" aria-modal="true">
+            <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalRepartidor()">&times;</button>
+            <h3>Solicitud de Registro - Repartidor 🚴</h3>
+            <p class="color-text-claro mb-25">Completa todos los campos para unirte a nuestro equipo de repartidores.
+            </p>
+
+            <form id="formRegistrarRepartidor" class="form-registro" enctype="multipart/form-data">
+                <div class="form-section-box">
+                    <h4 class="form-section-title">📋 Datos Personales</h4>
+                    <div class="form-row">
+                        <label for="repNombre">Nombre Completo *</label>
+                        <input type="text" id="repNombre" name="repNombre" required placeholder="Ej: Juan Pérez">
+                    </div>
+                    <div class="form-row">
+                        <label for="repTelefono">Teléfono *</label>
+                        <input type="tel" id="repTelefono" name="repTelefono" required placeholder="Ej: 1234567890">
+                    </div>
+                    <div class="form-row">
+                        <label for="repEmail">Email *</label>
+                        <input type="email" id="repEmail" name="repEmail" required placeholder="Ej: juan@example.com">
+                    </div>
+                    <div class="form-row">
+                        <label for="repDni">DNI *</label>
+                        <input type="text" id="repDni" name="repDni" required placeholder="Ej: 12345678">
+                    </div>
+                </div>
+
+                <div class="form-section-box">
+                    <h4 class="form-section-title">🏍️ Vehículo</h4>
+                    <div class="form-row">
+                        <label for="repVehiculo">Tipo de Vehículo *</label>
+                        <select id="repVehiculo" name="repVehiculo" required>
+                            <option value="">-- Selecciona --</option>
+                            <option value="moto">Moto</option>
+                            <option value="bicicleta">Bicicleta</option>
+                            <option value="auto">Auto</option>
+                            <option value="a-pie">A pie</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-terminos-box">
+                    <input type="checkbox" id="repAceptaTerminos" name="aceptaTerminos" required>
+                    <label for="repAceptaTerminos">He leído y acepto los Términos y Condiciones *</label>
+                </div>
+
+                <button type="submit" class="btn-primario w-100">📤 Enviar Solicitud</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Verificación Repartidor -->
+    <div id="modalVerificacionRepartidor" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content text-center modal-content-500" role="dialog">
+            <div class="mb-20">
+                <div class="icon-large mb-15">✅</div>
+                <h2 class="mb-10 color-exito">¡Registro Exitoso!</h2>
+                <p class="color-text-claro">Tu cuenta de repartidor ha sido creada correctamente</p>
+            </div>
+            <div class="id-box-gradient">
+                <p class="id-label">Tu ID de Repartidor</p>
+                <div id="repartidorIdDisplay" class="id-display">REP-XXX</div>
+            </div>
+            <div class="button-group">
+                <button onclick="copiarIdRepartidor()" class="btn-primario flex-1">📋 Copiar ID</button>
+                <a href="panel-repartidor.html" class="btn-secundario flex-1">Ir a Mi Panel</a>
+            </div>
+            <button onclick="cerrarModalVerificacion()" class="btn-outline w-100 mt-15">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal Comercio -->
+    <div id="modalComercio" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content" role="dialog">
+            <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalComercio()">&times;</button>
+            <h3>Registrá tu Comercio 🏪</h3>
+            <p class="color-text mb-20">Completá el formulario y nos pondremos en contacto.</p>
+
+            <form id="formRegistrarComercio" class="form-registro">
+                <div class="form-row">
+                    <label for="comercioNombrePropietario">Nombre del Propietario *</label>
+                    <input id="comercioNombrePropietario" type="text" required placeholder="Juan Pérez" />
+                </div>
+                <div class="form-row">
+                    <label for="comercioNombreNegocio">Nombre del Comercio *</label>
+                    <input id="comercioNombreNegocio" type="text" required placeholder="Ej. Panadería Don José" />
+                </div>
+                <div class="form-row">
+                    <label for="comercioEmail">Email *</label>
+                    <input id="comercioEmail" type="email" required placeholder="comercio@ejemplo.com" />
+                </div>
+                <div class="form-row">
+                    <label for="comercioTelefono">Teléfono *</label>
+                    <input id="comercioTelefono" type="tel" required placeholder="+54 9 11 1234-5678" />
+                </div>
+                <div class="form-row">
+                    <label for="comercioCategoria">Categoría *</label>
+                    <select id="comercioCategoria" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="restaurante">Restaurante / Comida</option>
+                        <option value="indumentaria">Indumentaria</option>
+                        <option value="farmacia">Farmacia / Salud</option>
+                        <option value="kiosco">Kiosco</option>
+                        <option value="bazar">Bazar</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primario">Enviar Registro</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Verificación Comercio -->
+    <div id="modalVerificacionComercio" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content text-center modal-content-500" role="dialog">
+            <div class="mb-20">
+                <div class="icon-large mb-15">🏪</div>
+                <h2 class="mb-10 color-exito">¡Registro Exitoso!</h2>
+                <p class="color-text-claro">Tu comercio ha sido registrado correctamente</p>
+            </div>
+            <div class="id-box-gradient">
+                <p class="id-label">Tu ID de Comercio</p>
+                <div id="comercioIdDisplay" class="id-display">COM-XXX</div>
+            </div>
+            <div class="button-group">
+                <button onclick="copiarIdComercio()" class="btn-primario flex-1">📋 Copiar ID</button>
+                <button onclick="irAPanelComercio()" class="btn-primario flex-2">🏪 Ir a Mi Panel</button>
+            </div>
+            <button onclick="cerrarModalVerificacionComercio()" class="btn-outline w-100 mt-15">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal Pedido -->
+    <div id="modalPedido" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content modal-content-medium" role="dialog">
+            <button class="modal-close" aria-label="Cerrar" onclick="cerrarModalPedido()">&times;</button>
+            <h3>Crear Nuevo Pedido 🛍️</h3>
+            <p class="color-text mb-20">Completá los datos para realizar tu pedido</p>
+
+            <form id="formCrearPedido" class="form-registro">
+                <div class="form-row">
+                    <label for="pedidoNombreCliente">Tu Nombre *</label>
+                    <input id="pedidoNombreCliente" type="text" required placeholder="Juan Pérez" />
+                </div>
+                <div class="form-row">
+                    <label for="pedidoTelefonoCliente">Tu Teléfono *</label>
+                    <input id="pedidoTelefonoCliente" type="tel" required placeholder="+54 9 11 1234-5678" />
+                </div>
+                <div class="form-row">
+                    <label for="pedidoDireccionEntrega">Dirección de Entrega *</label>
+                    <input id="pedidoDireccionEntrega" type="text" required placeholder="Calle 123, Barrio" />
+                </div>
+                <div class="form-row">
+                    <label for="pedidoDescripcion">Descripción del Pedido *</label>
+                    <textarea id="pedidoDescripcion" required rows="4"
+                        placeholder="Describe qué necesitas..."></textarea>
+                </div>
+                <div class="form-row">
+                    <label for="pedidoMonto">Monto Estimado *</label>
+                    <input id="pedidoMonto" type="number" step="0.01" required placeholder="$0.00" />
+                </div>
+                <button type="submit" class="btn-primario">Crear Pedido</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Verificación Pedido -->
+    <div id="modalVerificacionPedido" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content text-center modal-content-500" role="dialog">
+            <div class="mb-20">
+                <div class="icon-large mb-15">🎉</div>
+                <h2 class="mb-10 color-exito">¡Pedido Creado!</h2>
+                <p class="color-text-claro">Tu pedido ha sido registrado exitosamente</p>
+            </div>
+            <div class="id-box-gradient">
+                <p class="id-label">Número de Pedido</p>
+                <div id="pedidoIdDisplay" class="id-display">PED-XXX</div>
+            </div>
+            <div class="button-group">
+                <button onclick="copiarIdPedido()" class="btn-primario flex-1">📋 Copiar N° Pedido</button>
+            </div>
+            <button onclick="cerrarModalVerificacionPedido()" class="btn-outline w-100 mt-15">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modales de Tiendas -->
+    <div id="modalTiendaPizzeria" class="modal-overlay hidden">
+        <div class="modal-content modal-content-medium">
+            <div class="modal-header-tienda">
+                <div class="tienda-icon-large">🍕</div>
+                <h2>Pizzería Don Mario</h2>
+            </div>
+            <div class="modal-body-tienda">
+                <p>Pizzas artesanales con más de 15 años de experiencia.</p>
+                <div class="botones-accion-tienda">
+                    <a href="https://wa.me/542215047962?text=Hola,%20quiero%20hacer%20un%20pedido" class="btn-whatsapp">
+                        Pedir por WhatsApp
+                    </a>
+                </div>
+            </div>
+            <button onclick="cerrarModalTienda('pizzeria')" class="btn-outline w-100 mt-20">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="modalTiendaFarmacia" class="modal-overlay hidden">
+        <div class="modal-content modal-content-medium">
+            <div class="modal-header-tienda">
+                <div class="tienda-icon-large">💊</div>
+                <h2>Farmacia La Salud</h2>
+            </div>
+            <div class="modal-body-tienda">
+                <p>Farmacia de confianza con atención personalizada.</p>
+                <div class="botones-accion-tienda">
+                    <a href="https://wa.me/542215047962?text=Hola,%20necesito%20consultar" class="btn-whatsapp">
+                        Consultar por WhatsApp
+                    </a>
+                </div>
+            </div>
+            <button onclick="cerrarModalTienda('farmacia')" class="btn-outline w-100 mt-20">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="modalTiendaKiosco" class="modal-overlay hidden">
+        <div class="modal-content modal-content-medium">
+            <div class="modal-header-tienda">
+                <div class="tienda-icon-large">🍬</div>
+                <h2>Kiosco El Rápido</h2>
+            </div>
+            <div class="modal-body-tienda">
+                <p>Tu kiosco de barrio abierto las 24 horas.</p>
+                <div class="botones-accion-tienda">
+                    <a href="https://wa.me/542215047962?text=Hola,%20quiero%20hacer%20un%20pedido" class="btn-whatsapp">
+                        Pedir por WhatsApp
+                    </a>
+                </div>
+            </div>
+            <button onclick="cerrarModalTienda('kiosco')" class="btn-outline w-100 mt-20">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="modalTiendaBoutique" class="modal-overlay hidden">
+        <div class="modal-content modal-content-medium">
+            <div class="modal-header-tienda">
+                <div class="tienda-icon-large">👕</div>
+                <h2>Boutique Estilo</h2>
+            </div>
+            <div class="modal-body-tienda">
+                <p>Boutique de moda con las últimas tendencias.</p>
+                <div class="botones-accion-tienda">
+                    <a href="https://wa.me/542215047962?text=Hola,%20quiero%20consultar" class="btn-whatsapp">
+                        Consultar por WhatsApp
+                    </a>
+                </div>
+            </div>
+            <button onclick="cerrarModalTienda('boutique')" class="btn-outline w-100 mt-20">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer>
+        <div class="contenedor footer-grid">
+            <div class="footer-info">
+                <h4>YAvoy</h4>
+                <p>Conectando la ciudad, un envío a la vez.</p>
+                <p>&copy; 2025 Todos los derechos reservados.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Enlaces Rápidos</h4>
+                <a href="#inicio">Inicio</a>
+                <a href="#comercios">Para Comercios</a>
+                <a href="#repartidores">Haz Envíos</a>
+                <a href="faq.html">Preguntas Frecuentes</a>
+                <a href="soporte.html">🤖 Soporte 24/7</a>
+                <a href="portal-gestion.html" class="admin-link">⚙️ Portal Admin</a>
+            </div>
+
+            <div class="footer-social">
+                <h4>Síguenos</h4>
+                <a href="#"><i class="icono-social">FB</i> Facebook</a>
+                <a href="#"><i class="icono-social">IG</i> Instagram</a>
+                <a href="https://wa.me/542215047962" target="_blank" rel="noopener noreferrer"><i
+                        class="icono-social">WA</i> WhatsApp</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botón Scroll to Top -->
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Volver arriba">↑</button>
+
+    <!-- ==================== SCRIPTS EXTERNOS ==================== -->
+    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+    <script src="js/mercadopago-integration.js"></script>
+    <script src="js/soporte-chatbot.js"></script>
+
+    <!-- Scripts Modulares (ORDEN IMPORTANTE) -->
+    <script src="js/index-theme.js"></script>
+    <script src="js/index-modals.js"></script>
+    <script src="js/index-forms.js"></script>
+    <script src="js/index-main.js"></script>
+
+</body>
+
+</html>

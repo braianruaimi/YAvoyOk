@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billetera AstroPay - YAvoy</title>
+  <link rel="stylesheet" href="styles.css?v=2">
+  <style>
+    .billetera-container {
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 20px;
+    }
+
+    .billetera-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .billetera-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 32px;
+    }
+
+    .billetera-header .subtitulo {
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    .saldo-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .saldo-label {
+      font-size: 14px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .saldo-monto {
+      font-size: 56px;
+      font-weight: bold;
+      color: #10b981;
+      margin: 10px 0;
+    }
+
+    .saldo-moneda {
+      font-size: 18px;
+      color: #64748b;
+    }
+
+    .acciones-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .accion-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 2px solid transparent;
+    }
+
+    .accion-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      border-color: #667eea;
+    }
+
+    .accion-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .accion-titulo {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+
+    .accion-descripcion {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .historial-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .historial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    .historial-header h2 {
+      margin: 0;
+      color: #1e293b;
+      font-size: 24px;
+    }
+
+    .transaccion-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.2s ease;
+    }
+
+    .transaccion-item:hover {
+      background: #f8fafc;
+    }
+
+    .transaccion-item:last-child {
+      border-bottom: none;
+    }
+
+    .transaccion-info {
+      flex: 1;
+    }
+
+    .transaccion-tipo {
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+
+    .transaccion-fecha {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .transaccion-monto {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .transaccion-monto.positivo {
+      color: #10b981;
+    }
+
+    .transaccion-monto.negativo {
+      color: #ef4444;
+    }
+
+    .empty-historial {
+      text-align: center;
+      padding: 40px;
+      color: #94a3b8;
+    }
+
+    .empty-historial-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    /* Modal de recarga */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .modal-header h2 {
+      margin: 0 0 10px 0;
+      color: #1e293b;
+      font-size: 28px;
+    }
+
+    .modal-header p {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .modal-form {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .montos-rapidos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .monto-rapido-btn {
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #64748b;
+      transition: all 0.3s ease;
+    }
+
+    .monto-rapido-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+      background: #f8fafc;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancelar {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .btn-cancelar:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-confirmar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-confirmar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-volver {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #f1f5f9;
+      color: #64748b;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .btn-volver:hover {
+      background: #e2e8f0;
+      transform: translateX(-5px);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #64748b;
+    }
+
+    .loading-spinner {
+      border: 4px solid #f1f5f9;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="billetera-container">
+    <a href="panel-repartidor.html" class="btn-volver">← Volver al Panel</a>
+
+    <div class="billetera-header">
+      <h1>💰 Mi Billetera AstroPay</h1>
+      <p class="subtitulo">Administra tu saldo y transacciones</p>
+    </div>
+
+    <div id="loadingSection" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Cargando billetera...</p>
+    </div>
+
+    <div id="billeteraSection" class="d-none">
+      <!-- Saldo Actual -->
+      <div class="saldo-card">
+        <div class="saldo-label">Saldo Disponible</div>
+        <div class="saldo-monto" id="saldoMonto">$0.00</div>
+        <div class="saldo-moneda" id="saldoMoneda">ARS</div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="acciones-container">
+        <div class="accion-card" onclick="mostrarModalRecarga()">
+          <div class="accion-icon">⬆️</div>
+          <div class="accion-titulo">Recargar</div>
+          <div class="accion-descripcion">Agregar fondos a tu billetera</div>
+        </div>
+        
+        <div class="accion-card" onclick="window.location.href='panel-repartidor.html'">
+          <div class="accion-icon">💳</div>
+          <div class="accion-titulo">Usar</div>
+          <div class="accion-descripcion">Pagar pedidos con tu saldo</div>
+        </div>
+      </div>
+
+      <!-- Historial -->
+      <div class="historial-card">
+        <div class="historial-header">
+          <h2>Historial de Transacciones</h2>
+          <button onclick="cargarHistorial()" class="btn-primario p-sm text-sm">🔄 Actualizar</button>
+        </div>
+        <div id="historialLista">
+          <div class="empty-historial">
+            <div class="empty-historial-icon">📋</div>
+            <p>No hay transacciones aún</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Recarga -->
+  <div id="modalRecarga" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>💰 Recargar Billetera</h2>
+        <p>Agrega fondos a tu cuenta AstroPay</p>
+      </div>
+      
+      <div class="modal-form">
+        <div class="form-group">
+          <label for="montoRecarga">Monto a recargar</label>
+          <input type="number" id="montoRecarga" placeholder="0.00" min="100" step="0.01">
+          
+          <div class="montos-rapidos">
+            <button class="monto-rapido-btn" onclick="seleccionarMontoRapido(500)">$500</button>
+            <button class="monto-rapido-btn" onclick="seleccionarMontoRapido(1000)">$1000</button>
+            <button class="monto-rapido-btn" onclick="seleccionarMontoRapido(2000)">$2000</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancelar" onclick="cerrarModalRecarga()">Cancelar</button>
+        <button class="btn-confirmar" onclick="confirmarRecarga()">Recargar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let userId = null;
+    let billeteraData = null;
+
+    // Obtener userId desde sessionStorage o usar REP-01 por defecto
+    window.addEventListener('DOMContentLoaded', async () => {
+      console.log('🔍 Iniciando billetera AstroPay...');
+      
+      const repartidorData = sessionStorage.getItem('repartidorActual');
+      console.log('SessionStorage:', repartidorData ? 'Encontrado' : 'No encontrado');
+      
+      if (repartidorData) {
+        // Usuario autenticado
+        try {
+          const data = JSON.parse(repartidorData);
+          userId = data.id;
+          console.log('✅ Usuario autenticado:', userId);
+        } catch (e) {
+          console.error('Error parsing sessionStorage:', e);
+          userId = 'REP-01';
+        }
+      } else {
+        // Modo demo: usar REP-01 por defecto
+        console.log('⚠️ Modo demo: usando usuario REP-01');
+        userId = 'REP-01';
+        
+        // Mostrar aviso
+        const billeteraHeader = document.querySelector('.billetera-header');
+        const aviso = document.createElement('div');
+        aviso.className = 'bg-white-20 p-sm rounded mt-md text-sm';
+        aviso.innerHTML = '⚠️ Modo Demo - Usuario: REP-01 | <span class="text-xs">Para usar tu cuenta, inicia sesión en el panel de repartidor</span>';
+        billeteraHeader.appendChild(aviso);
+      }
+
+      console.log('🔄 Cargando datos para userId:', userId);
+      await cargarBilletera();
+      await cargarHistorial();
+    });
+
+    // Cargar información de la billetera
+    async function cargarBilletera() {
+      try {
+        const response = await fetch(`http://localhost:5501/api/astropay/saldo/${userId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+
+        const data = JSON.parse(text);
+        
+        if (data.success) {
+          // Mostrar sección
+          document.getElementById('loadingSection').style.display = 'none';
+          document.getElementById('billeteraSection').style.display = 'block';
+          
+          // Actualizar saldo
+          document.getElementById('saldoMonto').textContent = `$${data.saldo.toFixed(2)}`;
+          document.getElementById('saldoMoneda').textContent = data.moneda || 'ARS';
+          billeteraData = data;
+        } else {
+          throw new Error(data.message || 'Error al cargar billetera');
+        }
+
+      } catch (error) {
+        console.error('Error al cargar billetera:', error);
+        document.getElementById('loadingSection').innerHTML = `
+          <div class="empty-historial">
+            <div class="empty-historial-icon">❌</div>
+            <p>Error al cargar billetera</p>
+            <p style="font-size: 14px; color: #94a3b8;">${error.message}</p>
+            <button onclick="location.reload()" class="btn-primario" style="margin-top: 20px;">Reintentar</button>
+          </div>
+        `;
+      }
+    }
+
+    // Cargar historial de transacciones
+    async function cargarHistorial() {
+      try {
+        const response = await fetch(`http://localhost:5501/api/astropay/historial/${userId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+
+        const data = JSON.parse(text);
+        
+        const historialLista = document.getElementById('historialLista');
+        
+        if (!data.success || !data.historial || data.historial.length === 0) {
+          historialLista.innerHTML = `
+            <div class="empty-historial">
+              <div class="empty-historial-icon">📋</div>
+              <p>No hay transacciones aún</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Ordenar por fecha (más reciente primero)
+        const historialOrdenado = data.historial.sort((a, b) => 
+          new Date(b.fecha) - new Date(a.fecha)
+        );
+
+        historialLista.innerHTML = historialOrdenado.map(tx => {
+          const esPositivo = tx.monto > 0;
+          const icono = tx.tipo === 'recarga' ? '⬆️' : 
+                       tx.tipo === 'deposito' ? '💰' : 
+                       tx.tipo === 'pago' ? '🛍️' : '💳';
+          
+          const fecha = new Date(tx.fecha).toLocaleString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          return `
+            <div class="transaccion-item">
+              <div class="transaccion-info">
+                <div class="transaccion-tipo">${icono} ${tx.descripcion}</div>
+                <div class="transaccion-fecha">${fecha}</div>
+              </div>
+              <div class="transaccion-monto ${esPositivo ? 'positivo' : 'negativo'}">
+                ${esPositivo ? '+' : ''}$${Math.abs(tx.monto).toFixed(2)}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error('Error al cargar historial:', error);
+        document.getElementById('historialLista').innerHTML = `
+          <div class="empty-historial">
+            <div class="empty-historial-icon">❌</div>
+            <p>Error al cargar historial</p>
+          </div>
+        `;
+      }
+    }
+
+    // Mostrar modal de recarga
+    function mostrarModalRecarga() {
+      document.getElementById('modalRecarga').classList.add('active');
+      document.getElementById('montoRecarga').value = '';
+      document.getElementById('montoRecarga').focus();
+    }
+
+    // Cerrar modal
+    function cerrarModalRecarga() {
+      document.getElementById('modalRecarga').classList.remove('active');
+    }
+
+    // Seleccionar monto rápido
+    function seleccionarMontoRapido(monto) {
+      document.getElementById('montoRecarga').value = monto;
+    }
+
+    // Confirmar recarga
+    async function confirmarRecarga() {
+      const monto = parseFloat(document.getElementById('montoRecarga').value);
+
+      if (!monto || monto <= 0) {
+        alert('⚠️ Ingresa un monto válido');
+        return;
+      }
+
+      if (monto < 100) {
+        alert('⚠️ El monto mínimo es $100');
+        return;
+      }
+
+      try {
+        const btnConfirmar = document.querySelector('.btn-confirmar');
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = 'Procesando...';
+
+        const response = await fetch('http://localhost:5501/api/astropay/recargar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: userId,
+            monto: monto
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Respuesta vacía del servidor');
+        }
+
+        const data = JSON.parse(text);
+
+        if (data.success) {
+          alert(`✅ Recarga exitosa!\n\nMonto: $${data.recarga.toFixed(2)}\nNuevo saldo: $${data.saldo.toFixed(2)}`);
+          
+          // Cerrar modal
+          cerrarModalRecarga();
+          
+          // Recargar datos
+          await cargarBilletera();
+          await cargarHistorial();
+        } else {
+          throw new Error(data.message || 'Error al recargar');
+        }
+
+      } catch (error) {
+        console.error('Error al recargar:', error);
+        alert(`❌ Error al recargar billetera:\n${error.message}`);
+      } finally {
+        const btnConfirmar = document.querySelector('.btn-confirmar');
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = 'Recargar';
+      }
+    }
+
+    // Cerrar modal con ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        cerrarModalRecarga();
+      }
+    });
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('modalRecarga').addEventListener('click', (e) => {
+      if (e.target.id === 'modalRecarga') {
+        cerrarModalRecarga();
+      }
+    });
+  </script>
+</body>
+</html>

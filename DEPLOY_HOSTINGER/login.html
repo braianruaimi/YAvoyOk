@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="YAvoy v3.1 Enterprise - Acceso Seguro con Biometría">
+    <!-- Theme color compatible -->
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-yavoy.png">
+    <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+    <!-- YAvoy Enterprise System -->
+    <link rel="stylesheet" href="css/theme-enhancement.css">
+    <link rel="stylesheet" href="styles/premium-system.css">
+    <script src="js/theme-color-polyfill.js" defer></script>
+    <script src="js/intelligent-router.js" defer></script>
+    <script src="js/biometric-auth.js" defer></script>
+    <title>YAvoy v3.1 Enterprise — Acceso Seguro</title>
+
+    <style>
+        :root {
+            --bg-dark: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            --bg-glass: rgba(15, 23, 36, 0.9);
+            --cyan: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.4);
+            --gold: #fbbf24;
+            --gold-glow: rgba(251, 191, 36, 0.4);
+            --white: #ffffff;
+            --gray: #94a3b8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: var(--white);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fondo Premium */
+        .premium-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 25% 25%, var(--cyan-glow) 0%, transparent 60%),
+                radial-gradient(circle at 75% 75%, var(--gold-glow) 0%, transparent 60%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            z-index: -1;
+        }
+
+        .premium-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(6,182,212,0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        /* Container Principal */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header Enterprise */
+        .enterprise-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .enterprise-logo {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px var(--cyan-glow);
+        }
+
+        .enterprise-version {
+            color: var(--gold);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .enterprise-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-glass);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--cyan);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Navegación de volver */
+        .back-navigation {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-3px);
+        }
+
+        /* Indicador de estado del sistema */
+        .system-status {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-glass);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--cyan);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .enterprise-header {
+                margin-bottom: 2rem;
+            }
+
+            .enterprise-logo {
+                font-size: 2.8rem;
+            }
+
+            .back-navigation {
+                top: 1rem;
+                left: 1rem;
+            }
+
+            .system-status {
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .login-container {
+                padding: 1rem;
+            }
+        }
+
+        /* Loading overlay específico */
+        .auth-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .auth-loading-content {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .auth-loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Fondo Premium -->
+    <div class="premium-background"></div>
+
+    <!-- Navegación -->
+    <nav class="back-navigation">
+        <a href="/index.html" class="back-btn">
+            <span>←</span>
+            <span>Volver al Inicio</span>
+        </a>
+    </nav>
+
+    <!-- Estado del Sistema -->
+    <div class="system-status">
+        <div class="status-dot"></div>
+        <span class="status-text">Seguridad Activa</span>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="login-container">
+        <!-- Header Enterprise -->
+        <div class="enterprise-header">
+            <h1 class="enterprise-logo">YAvoy</h1>
+            <p class="enterprise-version">Enterprise v3.1</p>
+            <p class="enterprise-subtitle">Plataforma de Delivery Inteligente</p>
+            <div class="security-badge">
+                <span>🔐</span>
+                <span>Seguridad Biométrica Avanzada</span>
+            </div>
+        </div>
+
+        <!-- El sistema biométrico se inyectará aquí automáticamente -->
+        <div class="auth-container" id="authContainer">
+            <!-- YAvoy Biometric System se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="auth-loading" id="authLoading">
+        <div class="auth-loading-content">
+            <div class="auth-loading-spinner"></div>
+            <h3>Verificando Acceso</h3>
+            <p>Procesando autenticación...</p>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Login Page Controller
+         */
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🔐 YAvoy Enterprise Login v3.1 iniciado');
+
+            // Verificar si ya está autenticado
+            checkExistingAuth();
+
+            // Setup event listeners
+            setupAuthListeners();
+        });
+
+        /**
+         * Verificar autenticación existente
+         */
+        function checkExistingAuth() {
+            const token = sessionStorage.getItem('yavoy_token') ||
+                localStorage.getItem('yavoy_token');
+
+            if (token && window.YAvoyRouter && window.YAvoyRouter.isValidToken(token)) {
+                console.log('✅ Usuario ya autenticado, redirigiendo...');
+                showAuthLoading();
+
+                // El router se encargará de la redirección
+                setTimeout(() => {
+                    const payload = window.YAvoyRouter.decodeToken(token);
+                    if (payload) {
+                        window.YAvoyRouter.handleAuthenticatedUser(token);
+                    }
+                }, 1000);
+            }
+        }
+
+        /**
+         * Configurar listeners de autenticación
+         */
+        function setupAuthListeners() {
+            // Listen para login exitoso
+            window.addEventListener('yavoy:login', function (event) {
+                console.log('✅ Login exitoso detectado');
+                showAuthLoading();
+
+                setTimeout(() => {
+                    hideAuthLoading();
+                }, 2000);
+            });
+
+            // Listen para errores de auth
+            window.addEventListener('yavoy:auth_error', function (event) {
+                console.error('❌ Error de autenticación:', event.detail);
+                hideAuthLoading();
+            });
+        }
+
+        /**
+         * Mostrar loading de autenticación
+         */
+        function showAuthLoading() {
+            document.getElementById('authLoading').style.display = 'flex';
+        }
+
+        /**
+         * Ocultar loading de autenticación
+         */
+        function hideAuthLoading() {
+            document.getElementById('authLoading').style.display = 'none';
+        }
+
+        /**
+         * Manejar retroceso del navegador
+         */
+        window.addEventListener('popstate', function (event) {
+            // Si el usuario presiona atrás, limpiar sesión si está en proceso
+            if (document.getElementById('authLoading').style.display === 'flex') {
+                hideAuthLoading();
+            }
+        });
+
+        // Animaciones de entrada
+        window.addEventListener('load', function () {
+            document.body.style.opacity = '0';
+            document.body.style.transform = 'translateY(20px)';
+            document.body.style.transition = 'all 0.8s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                document.body.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // Security: Prevenir back button después de auth exitosa
+        window.addEventListener('beforeunload', function (event) {
+            const token = sessionStorage.getItem('yavoy_token');
+            if (token && window.YAvoyRouter && window.YAvoyRouter.isValidToken(token)) {
+                // Usuario autenticado, prevenir navegación accidental
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

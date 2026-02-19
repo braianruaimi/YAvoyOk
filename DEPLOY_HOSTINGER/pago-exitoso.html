@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Pago Exitoso! - YAvoy</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .success-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounceIn 1s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .success-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .payment-details {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .detail-label {
+            opacity: 0.8;
+        }
+
+        .detail-value {
+            font-weight: bold;
+        }
+
+        .actions {
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #10b981;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #10b981;
+        }
+
+        .next-steps {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 40px;
+            text-align: left;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .next-steps h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .step-number {
+            background: #10b981;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .step-text {
+            color: #64748b;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">✅</div>
+            <h1 class="success-title">¡Pago Exitoso!</h1>
+            <p class="success-subtitle">Tu pago se procesó correctamente</p>
+
+            <div class="payment-details" id="paymentDetails">
+                <div class="detail-row">
+                    <span class="detail-label">Pedido #</span>
+                    <span class="detail-value" id="pedidoId">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Monto</span>
+                    <span class="detail-value" id="monto">$0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Método</span>
+                    <span class="detail-value">MercadoPago</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Estado</span>
+                    <span class="detail-value">Aprobado</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="index.html" class="btn btn-primary">🏠 Volver al Inicio</a>
+                <a href="#" class="btn btn-secondary" onclick="descargarComprobante()">📄 Descargar Comprobante</a>
+            </div>
+        </div>
+
+        <div class="next-steps">
+            <h3>🚀 Próximos pasos</h3>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">
+                    <strong>Repartidor asignado:</strong> En breve se asignará un repartidor a tu pedido
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">
+                    <strong>Seguimiento en tiempo real:</strong> Podrás ver la ubicación del repartidor
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">
+                    <strong>Notificaciones:</strong> Recibirás actualizaciones por WhatsApp y email
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-text">
+                    <strong>Entrega:</strong> El repartidor llegará a la dirección indicada
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obtener parámetros de la URL
+        function getURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                collection_id: params.get('collection_id'),
+                collection_status: params.get('collection_status'),
+                payment_id: params.get('payment_id'),
+                status: params.get('status'),
+                external_reference: params.get('external_reference'),
+                payment_type: params.get('payment_type'),
+                merchant_order_id: params.get('merchant_order_id'),
+                preference_id: params.get('preference_id'),
+                site_id: params.get('site_id'),
+                processing_mode: params.get('processing_mode'),
+                merchant_account_id: params.get('merchant_account_id')
+            };
+        }
+
+        // Mostrar información del pago
+        function mostrarInfoPago() {
+            const params = getURLParams();
+            
+            if (params.external_reference) {
+                const pedidoId = params.external_reference.replace('YAVOY_', '');
+                document.getElementById('pedidoId').textContent = pedidoId;
+            }
+
+            // Guardar en localStorage para posterior uso
+            if (params.payment_id) {
+                localStorage.setItem('lastPaymentId', params.payment_id);
+                localStorage.setItem('lastPaymentStatus', 'approved');
+                localStorage.setItem('lastPaymentTimestamp', new Date().toISOString());
+            }
+
+            console.log('✅ Parámetros de pago exitoso:', params);
+        }
+
+        // Descargar comprobante
+        function descargarComprobante() {
+            const params = getURLParams();
+            const pedidoId = params.external_reference?.replace('YAVOY_', '') || 'N/A';
+            
+            // Crear contenido del comprobante
+            const comprobante = `
+COMPROBANTE DE PAGO - YAVOY
+=============================
+
+Pedido: #${pedidoId}
+Fecha: ${new Date().toLocaleDateString('es-AR')}
+Hora: ${new Date().toLocaleTimeString('es-AR')}
+
+Payment ID: ${params.payment_id || 'N/A'}
+Estado: Aprobado
+Método: MercadoPago
+
+Gracias por usar YAvoy!
+Seguimiento en: https://yavoy.space
+            `;
+
+            // Crear y descargar archivo
+            const blob = new Blob([comprobante], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `comprobante_yavoy_${pedidoId}_${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Notificar al backend sobre el pago exitoso
+        async function notificarPagoExitoso() {
+            const params = getURLParams();
+            
+            if (params.payment_id && params.external_reference) {
+                try {
+                    const pedidoId = params.external_reference.replace('YAVOY_', '');
+                    
+                    const response = await fetch(`/api/pedidos/${pedidoId}/pago-confirmado`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            paymentId: params.payment_id,
+                            paymentStatus: 'approved',
+                            transactionAmount: params.transaction_amount || 0,
+                            paymentMethod: params.payment_type,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    if (response.ok) {
+                        console.log('✅ Pago confirmado en el backend');
+                    } else {
+                        console.warn('⚠️ No se pudo confirmar el pago en el backend');
+                    }
+                } catch (error) {
+                    console.error('❌ Error confirmando pago:', error);
+                }
+            }
+        }
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarInfoPago();
+            notificarPagoExitoso();
+        });
+    </script>
+</body>
+</html>

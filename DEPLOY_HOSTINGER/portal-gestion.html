@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YaVoy 2026 - Portal de Gestión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1724 0%, #1a2332 50%, #0b1220 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Partículas de fondo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: rgba(11, 18, 32, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            margin-bottom: 30px;
+            box-shadow: 
+                0 25px 60px rgba(0, 0, 0, 0.4),
+                0 0 80px rgba(6, 182, 212, 0.08);
+            text-align: center;
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: header-appear 0.6s ease-out;
+        }
+
+        @keyframes header-appear {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.6), rgba(251, 191, 36, 0.4), transparent);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            background: linear-gradient(135deg, #ffffff 0%, #06b6d4 50%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            animation: title-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes title-glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(6, 182, 212, 0.3)); }
+            50% { filter: drop-shadow(0 0 40px rgba(6, 182, 212, 0.5)); }
+        }
+
+        .header p {
+            font-size: 1.25em;
+            color: rgba(230, 238, 246, 0.8);
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .module-card {
+            background: rgba(11, 18, 32, 0.9);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 1px solid rgba(58, 74, 92, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.08), transparent);
+            transition: left 0.6s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(6, 182, 212, 0.15);
+            border-color: rgba(6, 182, 212, 0.4);
+        }
+
+        .module-card:hover::before {
+            left: 100%;
+        }
+
+        .module-icon {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+            transition: transform 0.3s;
+        }
+
+        .module-card:hover .module-icon {
+            transform: scale(1.1);
+        }
+
+        .module-title {
+            font-size: 1.6em;
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .module-description {
+            font-size: 1em;
+            color: rgba(230, 238, 246, 0.75);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .module-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .module-features li {
+            padding: 8px 0;
+            font-size: 0.95em;
+            color: rgba(230, 238, 246, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-features li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .btn-access {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-access:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .stats-bar {
+            background: rgba(11, 18, 32, 0.9);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            border: 1px solid rgba(58, 74, 92, 0.3);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1.05em;
+            color: rgba(230, 238, 246, 0.8);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(230, 238, 246, 0.6);
+            margin-top: 50px;
+            padding: 25px;
+        }
+
+        .footer a {
+            color: #06b6d4;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #0891b2;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .module-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 YaVoy 2026</h1>
+            <p>Portal de Gestión Unificado - Todas las herramientas en un solo lugar</p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="totalComercios">0</div>
+                <div class="stat-label">Comercios Activos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalRepartidores">0</div>
+                <div class="stat-label">Repartidores</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalPedidos">0</div>
+                <div class="stat-label">Pedidos Hoy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalRegistros">0</div>
+                <div class="stat-label">Registros Totales</div>
+            </div>
+        </div>
+
+        <!-- Modules Grid -->
+        <div class="modules-grid">
+            <!-- Panel Admin -->
+            <a href="panel-admin.html" class="module-card">
+                <div class="module-icon">📊</div>
+                <div class="module-title">Panel de Administración</div>
+                <div class="module-description">
+                    Vista completa de todos los registros con búsqueda avanzada y filtros
+                </div>
+                <ul class="module-features">
+                    <li>Todos los comercios y repartidores</li>
+                    <li>Búsqueda y filtros avanzados</li>
+                    <li>Exportar CSV/JSON</li>
+                    <li>Estadísticas en tiempo real</li>
+                </ul>
+                <button class="btn-access">Acceder al Panel →</button>
+            </a>
+
+            <!-- Dashboard CEO -->
+            <a href="dashboard-ceo.html" class="module-card">
+                <div class="module-icon">📈</div>
+                <div class="module-title">Dashboard Ejecutivo</div>
+                <div class="module-description">
+                    Métricas ejecutivas con gráficos interactivos y KPIs en tiempo real
+                </div>
+                <ul class="module-features">
+                    <li>6 KPIs principales con tendencias</li>
+                    <li>5 gráficos interactivos (Chart.js)</li>
+                    <li>Top 10 comercios y repartidores</li>
+                    <li>Análisis de rendimiento</li>
+                </ul>
+                <button class="btn-access">Ver Dashboard →</button>
+            </a>
+
+            <!-- Chat Sistema -->
+            <a href="chat-sistema.html" class="module-card">
+                <div class="module-icon">💬</div>
+                <div class="module-title">Sistema de Chat</div>
+                <div class="module-description">
+                    Comunicación en tiempo real entre comercios, repartidores y clientes
+                </div>
+                <ul class="module-features">
+                    <li>Chat estilo WhatsApp</li>
+                    <li>Indicadores de lectura</li>
+                    <li>Búsqueda de conversaciones</li>
+                    <li>Historial persistente</li>
+                </ul>
+                <button class="btn-access">Abrir Chat →</button>
+            </a>
+
+            <!-- Notificaciones -->
+            <a href="notificaciones-push.html" class="module-card">
+                <div class="module-icon">🔔</div>
+                <div class="module-title">Notificaciones Push</div>
+                <div class="module-description">
+                    Sistema avanzado de notificaciones con plantillas y personalización
+                </div>
+                <ul class="module-features">
+                    <li>Plantillas rápidas predefinidas</li>
+                    <li>Notificaciones personalizadas</li>
+                    <li>Segmentación de destinatarios</li>
+                    <li>Historial y estadísticas</li>
+                </ul>
+                <button class="btn-access">Gestionar Notificaciones →</button>
+            </a>
+
+            <!-- Mapa Entregas -->
+            <a href="mapa-entregas.html" class="module-card">
+                <div class="module-icon">🗺️</div>
+                <div class="module-title">Mapa de Entregas</div>
+                <div class="module-description">
+                    Seguimiento GPS en tiempo real de todas las entregas activas
+                </div>
+                <ul class="module-features">
+                    <li>Mapa interactivo (OpenStreetMap)</li>
+                    <li>Tracking GPS en vivo</li>
+                    <li>Rutas y tiempos estimados</li>
+                    <li>Filtros por estado/repartidor</li>
+                </ul>
+                <button class="btn-access">Ver Mapa →</button>
+            </a>
+
+            <!-- App Repartidor -->
+            <a href="repartidor-app.html" class="module-card">
+                <div class="module-icon">🚴</div>
+                <div class="module-title">App Repartidor</div>
+                <div class="module-description">
+                    Aplicación móvil para repartidores con tracking GPS en vivo
+                </div>
+                <ul class="module-features">
+                    <li>Ver pedidos disponibles</li>
+                    <li>Tracking en tiempo real</li>
+                    <li>Chat con comercios/clientes</li>
+                    <li>Historial de entregas</li>
+                </ul>
+                <button class="btn-access">Abrir App →</button>
+            </a>
+
+            <!-- App Comercio -->
+            <a href="comercio-app.html" class="module-card">
+                <div class="module-icon">🏪</div>
+                <div class="module-title">App Comercio</div>
+                <div class="module-description">
+                    Aplicación móvil para comercios - Crea y gestiona pedidos
+                </div>
+                <ul class="module-features">
+                    <li>Crear pedidos rápidamente</li>
+                    <li>Ver estado en tiempo real</li>
+                    <li>Chat con repartidor</li>
+                    <li>Historial y estadísticas</li>
+                </ul>
+                <button class="btn-access">Abrir App →</button>
+            </a>
+
+            <!-- Portal Principal -->
+            <a href="/" class="module-card">
+                <div class="module-icon">🏠</div>
+                <div class="module-title">Portal Principal</div>
+                <div class="module-description">
+                    Volver a la página principal de YaVoy para registros y pedidos
+                </div>
+                <ul class="module-features">
+                    <li>Registro de comercios</li>
+                    <li>Registro de repartidores</li>
+                    <li>Crear nuevos pedidos</li>
+                    <li>Paneles de usuario</li>
+                </ul>
+                <button class="btn-access">Ir a Principal →</button>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>YaVoy 2026 - Sistema de Gestión Integral</p>
+            <p>Versión 2.0 | <a href="README.md">Documentación</a> | <a href="GUIA_INTEGRACION_BACKEND.md">Guía Técnica</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch('/api/dashboard/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('totalComercios').textContent = stats.comercios.total;
+                    document.getElementById('totalRepartidores').textContent = stats.repartidores.total;
+                    document.getElementById('totalPedidos').textContent = stats.pedidos.hoy;
+                    document.getElementById('totalRegistros').textContent = 
+                        stats.comercios.total + stats.repartidores.total;
+                }
+            } catch (error) {
+                console.log('Usando valores por defecto');
+                // Cargar desde API simple
+                try {
+                    const response = await fetch('/api/registros');
+                    if (response.ok) {
+                        const registros = await response.json();
+                        const comercios = registros.filter(r => r.tipo === 'comercio').length;
+                        const repartidores = registros.filter(r => r.tipo === 'repartidor').length;
+                        
+                        document.getElementById('totalComercios').textContent = comercios;
+                        document.getElementById('totalRepartidores').textContent = repartidores;
+                        document.getElementById('totalRegistros').textContent = registros.length;
+                    }
+                } catch (err) {
+                    console.log('Servidor no disponible');
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', cargarEstadisticas);
+    </script>
+</body>
+</html>

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Soporte - Admin YAvoy</title>
+  <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+  <style>
+    /* ==========================================
+       YAVOY v3.1 - ADMIN SOPORTE (Mismo estilo del landing)
+       ========================================== */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0f1724;
+      --bg-card: rgba(11, 18, 32, 0.85);
+      --cyan: #06b6d4;
+      --cyan-glow: rgba(6, 182, 212, 0.3);
+      --gold: #fbbf24;
+      --gold-glow: rgba(251, 191, 36, 0.3);
+      --white: #ffffff;
+      --gray: #94a3b8;
+      --success: #10b981;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--white);
+    }
+
+    /* Fondo animado como el landing */
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: var(--cyan-glow);
+      top: -200px;
+      right: -200px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--gold-glow);
+      bottom: -100px;
+      left: -100px;
+      animation-delay: -7s;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: rgba(16, 185, 129, 0.2);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -14s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(50px, -50px) scale(1.1); }
+      50% { transform: translate(-30px, 30px) scale(0.95); }
+      75% { transform: translate(40px, 20px) scale(1.05); }
+    }
+
+    .admin-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .admin-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-top: 60px;
+    }
+
+    .admin-header h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--cyan), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+
+    .soporte-subtitle {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--cyan);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--cyan-glow);
+    }
+
+    .stat-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 20px var(--cyan-glow));
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--cyan);
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+      border-color: var(--gold);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .chart-card h3 {
+      color: var(--cyan);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.3rem;
+    }
+
+    .bar-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .bar-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .bar-label {
+      min-width: 120px;
+      color: var(--gray);
+      font-weight: 600;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 30px;
+      background: rgba(15, 23, 36, 0.5);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), #0891b2);
+      border-radius: 6px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+      box-shadow: 0 0 20px var(--cyan-glow);
+    }
+
+    .problem-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .problem-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: rgba(15, 23, 36, 0.6);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .problem-item:hover {
+      border-color: var(--gold);
+      background: rgba(251, 191, 36, 0.05);
+    }
+
+    .problem-text {
+      color: var(--white);
+      flex: 1;
+    }
+
+    .problem-count {
+      background: linear-gradient(135deg, var(--cyan), var(--gold));
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 0 15px var(--cyan-glow);
+    }
+
+    .tickets-table {
+      background: var(--bg-card);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 40px;
+    }
+
+    .tickets-table h3 {
+      color: var(--cyan);
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: rgba(6, 182, 212, 0.1);
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      color: var(--cyan);
+      font-weight: 600;
+      border-bottom: 2px solid rgba(6, 182, 212, 0.3);
+    }
+
+    td {
+      padding: 15px;
+      color: var(--gray);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(6, 182, 212, 0.05);
+      border-color: var(--cyan);
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-resuelto {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-pendiente {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .btn-export {
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+    }
+
+    .btn-export:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(6, 182, 212, 0.5);
+    }
+
+    .btn-volver {
+      display: inline-block;
+      padding: 14px 32px;
+      background: rgba(251, 191, 36, 0.1);
+      color: var(--gold);
+      text-decoration: none;
+      border-radius: 50px;
+      border: 2px solid var(--gold);
+      font-weight: 700;
+      transition: all 0.3s ease;
+      margin-top: 30px;
+    }
+
+    .btn-volver:hover {
+      background: var(--gold);
+      color: var(--bg-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px var(--gold-glow);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .empty-table-cell {
+      text-align: center;
+      padding: 40px !important;
+      color: var(--gray);
+      font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      .admin-header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fondo animado -->
+  <div class="background-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>📊 Dashboard de Soporte Técnico</h1>
+      <p class="soporte-subtitle">Análisis de consultas • Problemas comunes • Métricas en tiempo real</p>
+    </div>
+
+    <!-- Estadísticas Generales -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📞</div>
+        <div class="stat-value" id="totalConsultas">0</div>
+        <div class="stat-label">Total de Consultas</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" id="consultasResueltas">0</div>
+        <div class="stat-label">Consultas Resueltas</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value" id="consultasPendientes">0</div>
+        <div class="stat-label">Pendientes de Revisión</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-value" id="tasaResolucion">0%</div>
+        <div class="stat-label">Tasa de Resolución</div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-grid">
+      <!-- Consultas por Categoría -->
+      <div class="chart-card">
+        <h3>📊 Consultas por Categoría</h3>
+        <div class="bar-chart" id="categoryChart"></div>
+      </div>
+
+      <!-- Problemas Más Comunes -->
+      <div class="chart-card">
+        <h3>🔥 Problemas Más Frecuentes</h3>
+        <ul class="problem-list" id="problemsList"></ul>
+      </div>
+    </div>
+
+    <!-- Tabla de Tickets -->
+    <div class="tickets-table">
+      <h3>🎫 Últimos Tickets Registrados</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Consulta</th>
+            <th>Categoría</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="ticketsTableBody">
+          <tr>
+            <td colspan="5" class="empty-table-cell">
+              No hay tickets registrados aún
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <button class="btn-export" onclick="exportarDatos()">📥 Exportar Datos (CSV)</button>
+    </div>
+
+    <div class="text-center">
+      <a href="soporte.html" class="btn-volver">← Volver a Soporte</a>
+    </div>
+  </div>
+
+  <script>
+    // Cargar datos del sistema
+    function loadDashboardData() {
+      const tickets = JSON.parse(localStorage.getItem('yavoy_tickets') || '[]');
+      const analytics = JSON.parse(localStorage.getItem('yavoy_analytics') || '{}');
+
+      // Estadísticas generales
+      const totalConsultas = tickets.length;
+      const consultasResueltas = tickets.filter(t => t.resuelto).length;
+      const consultasPendientes = totalConsultas - consultasResueltas;
+      const tasaResolucion = totalConsultas > 0 
+        ? Math.round((consultasResueltas / totalConsultas) * 100) 
+        : 0;
+
+      document.getElementById('totalConsultas').textContent = totalConsultas;
+      document.getElementById('consultasResueltas').textContent = consultasResueltas;
+      document.getElementById('consultasPendientes').textContent = consultasPendientes;
+      document.getElementById('tasaResolucion').textContent = `${tasaResolucion}%`;
+
+      // Gráfico de categorías
+      const categorias = analytics.categorias || {};
+      const categoryChart = document.getElementById('categoryChart');
+      categoryChart.innerHTML = '';
+
+      const maxCount = Math.max(...Object.values(categorias), 1);
+      
+      const categoryNames = {
+        'clientes': '🛍️ Clientes',
+        'comercios': '🏪 Comercios',
+        'repartidores': '🚴 Repartidores',
+        'tecnico': '⚙️ Técnico',
+        'sin-resolver': '❓ Sin Resolver',
+        'general': '📋 General'
+      };
+
+      Object.entries(categorias)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([cat, count]) => {
+          const barItem = document.createElement('div');
+          barItem.className = 'bar-item';
+          
+          const percentage = (count / maxCount) * 100;
+          
+          barItem.innerHTML = `
+            <div class="bar-label">${categoryNames[cat] || cat}</div>
+            <div class="bar-container">
+              <div class="bar-fill" style="width: ${percentage}%">${count}</div>
+            </div>
+          `;
+          
+          categoryChart.appendChild(barItem);
+        });
+
+      // Problemas más comunes
+      const problemasComunes = analytics.problemasComunes || {};
+      const problemsList = document.getElementById('problemsList');
+      problemsList.innerHTML = '';
+
+      Object.entries(problemasComunes)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .forEach(([problema, count]) => {
+          const li = document.createElement('li');
+          li.className = 'problem-item';
+          li.innerHTML = `
+            <span class="problem-text">${problema}</span>
+            <span class="problem-count">${count}</span>
+          `;
+          problemsList.appendChild(li);
+        });
+
+      if (Object.keys(problemasComunes).length === 0) {
+        problemsList.innerHTML = '<li class="problem-item"><span class="problem-text">No hay datos suficientes aún</span></li>';
+      }
+
+      // Tabla de tickets
+      const tableBody = document.getElementById('ticketsTableBody');
+      tableBody.innerHTML = '';
+
+      if (tickets.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 40px;">
+              No hay tickets registrados aún
+            </td>
+          </tr>
+        `;
+      } else {
+        tickets
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .slice(0, 20)
+          .forEach(ticket => {
+            const row = document.createElement('tr');
+            const fecha = new Date(ticket.fecha).toLocaleString('es-AR');
+            const statusClass = ticket.resuelto ? 'status-resuelto' : 'status-pendiente';
+            const statusText = ticket.resuelto ? 'Resuelto' : 'Pendiente';
+            
+            row.innerHTML = `
+              <td><code>${ticket.id}</code></td>
+              <td>${fecha}</td>
+              <td>${ticket.mensaje.substring(0, 60)}${ticket.mensaje.length > 60 ? '...' : ''}</td>
+              <td>${ticket.categoria}</td>
+              <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+            `;
+            
+            tableBody.appendChild(row);
+          });
+      }
+    }
+
+    // Exportar datos a CSV
+    function exportarDatos() {
+      const tickets = JSON.parse(localStorage.getItem('yavoy_tickets') || '[]');
+      
+      if (tickets.length === 0) {
+        alert('No hay datos para exportar');
+        return;
+      }
+
+      let csv = 'ID,Fecha,Mensaje,Categoría,Estado\n';
+      
+      tickets.forEach(ticket => {
+        const fecha = new Date(ticket.fecha).toLocaleString('es-AR');
+        const estado = ticket.resuelto ? 'Resuelto' : 'Pendiente';
+        const mensaje = ticket.mensaje.replace(/"/g, '""'); // Escape quotes
+        
+        csv += `"${ticket.id}","${fecha}","${mensaje}","${ticket.categoria}","${estado}"\n`;
+      });
+
+      // Create download link
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `yavoy_soporte_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Cargar datos al iniciar
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboardData();
+      
+      // Auto-refresh cada 30 segundos
+      setInterval(loadDashboardData, 30000);
+    });
+  </script>
+</body>
+</html>

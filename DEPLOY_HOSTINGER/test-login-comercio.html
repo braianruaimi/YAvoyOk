@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Comercio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .btn-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-link:hover {
+            background: #218838;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏪 Test Login Comercio</h1>
+        <p class="subtitle">Prueba el sistema de autenticación</p>
+        
+        <div class="info">
+            <strong>📝 Contraseña de acceso:</strong>
+            <code>2215047962</code>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>🔐 Contraseña de Acceso</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="Ingresa tu contraseña"
+                    value="2215047962"
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" class="btn">
+                🚀 Probar Login
+            </button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const PASSWORD_CORRECTA = '2215047962';
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            
+            // Limpiar resultado previo
+            resultDiv.style.display = 'none';
+            resultDiv.className = 'result';
+            
+            console.log('🔍 Intentando login con contraseña:', password);
+            console.log('🔑 Contraseña esperada:', PASSWORD_CORRECTA);
+            console.log('✅ Coincide:', password === PASSWORD_CORRECTA);
+            
+            // Verificar contraseña
+            if (password === PASSWORD_CORRECTA) {
+                console.log('✅ Contraseña correcta! Guardando sesión...');
+                
+                // Guardar sesión en localStorage
+                localStorage.setItem('comercioLoggedIn', 'true');
+                localStorage.setItem('comercioPassword', password);
+                
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    ✅ <strong>¡Login exitoso!</strong><br><br>
+                    La contraseña es correcta y se ha guardado en localStorage.<br>
+                    <br>
+                    <strong>Datos guardados:</strong><br>
+                    comercioLoggedIn: ${localStorage.getItem('comercioLoggedIn')}<br>
+                    comercioPassword: ${localStorage.getItem('comercioPassword')}<br>
+                    <br>
+                    <a href="panel-comercio.html" class="btn-link">
+                        👉 Ir al Panel de Comercio
+                    </a>
+                `;
+                resultDiv.style.display = 'block';
+                
+                console.log('✅ Sesión guardada correctamente');
+                console.log('📦 localStorage:', {
+                    comercioLoggedIn: localStorage.getItem('comercioLoggedIn'),
+                    comercioPassword: localStorage.getItem('comercioPassword')
+                });
+                
+            } else {
+                console.error('❌ Contraseña incorrecta');
+                
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    ❌ <strong>Contraseña incorrecta</strong><br><br>
+                    Contraseña ingresada: <code>${password}</code><br>
+                    Contraseña esperada: <code>${PASSWORD_CORRECTA}</code><br>
+                    <br>
+                    Verifica que no haya espacios al principio o al final.
+                `;
+                resultDiv.style.display = 'block';
+            }
+        });
+
+        // Verificar estado actual de localStorage
+        window.addEventListener('load', function() {
+            console.log('🔍 Estado actual de localStorage:');
+            console.log('comercioLoggedIn:', localStorage.getItem('comercioLoggedIn'));
+            console.log('comercioPassword:', localStorage.getItem('comercioPassword'));
+        });
+    </script>
+</body>
+</html>

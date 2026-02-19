@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Datos de Prueba - YAvoy</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #667eea;
+            margin: 0 0 10px 0;
+        }
+        p {
+            color: #666;
+            margin: 0 0 30px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+            display: block;
+        }
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚴 Panel Repartidor - Configuración</h1>
+        <p>Configura los datos de prueba para usar el Panel Repartidor</p>
+        
+        <button onclick="configurarDatos()">✅ Configurar Datos de Prueba</button>
+        
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        function configurarDatos() {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                // 1. Configurar repartidor
+                const repartidor = {
+                    id: 'REP-001',
+                    nombre: 'Juan Pérez',
+                    apellido: 'Gómez',
+                    email: 'juan.repartidor@yavoy.com',
+                    telefono: '351-1234567',
+                    tipo: 'repartidor',
+                    ciudad: 'Córdoba',
+                    vehiculo: 'moto',
+                    ubicacionLat: -31.4201,
+                    ubicacionLng: -64.1888,
+                    verificado: true
+                };
+                localStorage.setItem('currentUser', JSON.stringify(repartidor));
+                
+                // 2. Crear pedidos
+                const pedidos = [
+                    {
+                        id: 'PED-' + Date.now(),
+                        numero: '#PED-001',
+                        estado: 'pendiente',
+                        comercio: 'Pizzería Don Mario',
+                        direccion: 'Av. Colón 1234, Córdoba',
+                        telefono: '351-1111111',
+                        total: 850,
+                        fecha: new Date().toISOString()
+                    },
+                    {
+                        id: 'PED-' + (Date.now() + 1),
+                        numero: '#PED-002',
+                        estado: 'pendiente',
+                        comercio: 'Farmacia La Salud',
+                        direccion: 'Calle San Martín 567, Córdoba',
+                        telefono: '351-2222222',
+                        total: 1200,
+                        fecha: new Date().toISOString()
+                    },
+                    {
+                        id: 'PED-' + (Date.now() + 2),
+                        numero: '#PED-003',
+                        estado: 'pendiente',
+                        comercio: 'Kiosco El Rápido',
+                        direccion: 'Av. Vélez Sarsfield 890, Córdoba',
+                        telefono: '351-3333333',
+                        total: 450,
+                        fecha: new Date().toISOString()
+                    },
+                    {
+                        id: 'PED-' + (Date.now() + 3),
+                        numero: '#PED-004',
+                        estado: 'aceptado',
+                        repartidor: 'REP-001',
+                        comercio: 'Boutique Estilo',
+                        direccion: 'Bv. Illia 234, Córdoba',
+                        telefono: '351-4444444',
+                        total: 2500,
+                        fecha: new Date(Date.now() - 600000).toISOString(),
+                        fechaAceptado: new Date(Date.now() - 300000).toISOString()
+                    },
+                    {
+                        id: 'PED-' + (Date.now() + 4),
+                        numero: '#PED-005',
+                        estado: 'en_camino',
+                        repartidor: 'REP-001',
+                        comercio: 'Panadería El Sol',
+                        direccion: 'Calle Rivadavia 445, Córdoba',
+                        telefono: '351-5555555',
+                        total: 680,
+                        fecha: new Date(Date.now() - 1200000).toISOString(),
+                        fechaAceptado: new Date(Date.now() - 900000).toISOString(),
+                        fechaEnCamino: new Date(Date.now() - 300000).toISOString()
+                    },
+                    {
+                        id: 'PED-COMP-1',
+                        numero: '#PED-101',
+                        estado: 'entregado',
+                        repartidor: 'REP-001',
+                        comercio: 'Restaurante La Cocina',
+                        direccion: 'Av. Fader 123, Córdoba',
+                        telefono: '351-6666666',
+                        total: 1500,
+                        fecha: new Date(Date.now() - 7200000).toISOString(),
+                        fechaEntregado: new Date(Date.now() - 6300000).toISOString()
+                    },
+                    {
+                        id: 'PED-COMP-2',
+                        numero: '#PED-102',
+                        estado: 'entregado',
+                        repartidor: 'REP-001',
+                        comercio: 'Supermercado Central',
+                        direccion: 'Av. Colón 5678, Córdoba',
+                        telefono: '351-7777777',
+                        total: 3200,
+                        fecha: new Date(Date.now() - 14400000).toISOString(),
+                        fechaEntregado: new Date(Date.now() - 13500000).toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('pedidos', JSON.stringify(pedidos));
+                
+                // Calcular estadísticas
+                const disponibles = pedidos.filter(p => p.estado === 'pendiente' && !p.repartidor).length;
+                const activos = pedidos.filter(p => p.repartidor === 'REP-001' && ['aceptado', 'en_camino'].includes(p.estado)).length;
+                const completados = pedidos.filter(p => p.repartidor === 'REP-001' && p.estado === 'entregado').length;
+                const ganancia = pedidos.filter(p => p.repartidor === 'REP-001' && p.estado === 'entregado')
+                    .reduce((sum, p) => sum + (p.total * 0.8), 0);
+                
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `
+                    <strong>✅ ¡Datos configurados exitosamente!</strong>
+                    <ul>
+                        <li>👤 Repartidor: ${repartidor.nombre} (${repartidor.id})</li>
+                        <li>📦 Pedidos disponibles: ${disponibles}</li>
+                        <li>🚗 Pedidos activos: ${activos}</li>
+                        <li>✅ Pedidos completados: ${completados}</li>
+                        <li>💰 Ganancias totales: $${ganancia.toFixed(2)}</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Redirigiendo al panel en 3 segundos...</strong></p>
+                `;
+                
+                setTimeout(() => {
+                    window.location.href = '/panel-repartidor-pro.html';
+                }, 3000);
+                
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

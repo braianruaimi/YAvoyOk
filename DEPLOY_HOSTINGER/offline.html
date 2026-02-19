@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YAvoy — Offline</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+
+    body {
+      font-family:
+        Segoe UI,
+        Roboto,
+        Arial,
+        sans-serif;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #0f1724;
+      color: #e6eef6;
+    }
+
+    .card {
+      max-width: 560px;
+      background: #0b1220;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      color: #06b6d4;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    .actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #06b6d4;
+      color: #032;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e6eef6;
+    }
+  </style>
+  <!-- Theme color compatible -->
+  <meta name="theme-color" content="#06b6d4" />
+  <meta name="msapplication-TileColor" content="#06b6d4" />
+</head>
+
+<body>
+  <div class="card" role="status" aria-live="polite">
+    <h1>Estás sin conexión</h1>
+    <p>No pudimos cargar esta página. Cuando recuperes Internet, vuelve a intentarlo.</p>
+    <p>Mientras tanto, puedes regresar al inicio si está en caché.</p>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="location.href = '/'">Ir al inicio</button>
+      <button class="btn btn-secondary" onclick="location.reload()">Reintentar</button>
+    </div>
+  </div>
+  <!-- Polyfill para compatibilidad theme-color -->
+  <script src="js/theme-color-polyfill.js" defer></script>
+</body>
+
+</html>

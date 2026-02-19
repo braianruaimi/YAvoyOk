@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Email - YAvoy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            color: #0c0c0c;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+        
+        input::placeholder {
+            color: #ccc;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-verify {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+        
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.3);
+        }
+        
+        .btn-resend {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-resend:hover {
+            background: #e0e0e0;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .message.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .message.info {
+            display: block;
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #06b6d4;
+            font-size: 14px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #06b6d4;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .info-box strong {
+            color: #333;
+        }
+
+        .back-link-container {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .back-link {
+            color: #06b6d4;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #0891b2;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">✓ YAvoy</div>
+            <h1>Verifica tu Email</h1>
+            <p class="subtitle">Ingresa el código enviado a tu correo</p>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="info-box">
+            <strong>📧 Proceso de verificación:</strong><br>
+            1. Recibiste un email con un código de 6 dígitos<br>
+            2. Ingresa tu ID de usuario y el código<br>
+            3. ¡Tu cuenta estará lista para usar!
+        </div>
+        
+        <form id="verifyForm" onsubmit="handleVerify(event)">
+            <div class="form-group">
+                <label for="userId">ID de Usuario *</label>
+                <input 
+                    type="text" 
+                    id="userId" 
+                    placeholder="Ej: COM1704067200000" 
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="code">Código de Confirmación *</label>
+                <input 
+                    type="text" 
+                    id="code" 
+                    placeholder="Ej: 123456" 
+                    pattern="[0-9]{6}"
+                    maxlength="6"
+                    required
+                >
+            </div>
+            
+            <div class="loading" id="loading">
+                <span class="spinner"></span>
+                Verificando...
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-verify">Verificar</button>
+                <button type="button" class="btn-resend" onclick="handleResend()">Reenviar Código</button>
+            </div>
+        </form>
+        
+        <div class="back-link-container">
+            <a href="login.html" class="back-link">Volver al login</a>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5502/api/auth';
+        
+        async function handleVerify(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value.trim();
+            const code = document.getElementById('code').value.trim();
+            const messageEl = document.getElementById('message');
+            const loadingEl = document.getElementById('loading');
+            const formEl = document.getElementById('verifyForm');
+            
+            if (!userId || !code) {
+                showMessage('Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            if (!/^[0-9]{6}$/.test(code)) {
+                showMessage('El código debe ser 6 dígitos numéricos', 'error');
+                return;
+            }
+            
+            loadingEl.style.display = 'block';
+            formEl.style.opacity = '0.6';
+            formEl.style.pointerEvents = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/verify-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        confirmationCode: code
+                    })
+                });
+                
+                const data = await response.json();
+                
+                loadingEl.style.display = 'none';
+                formEl.style.opacity = '1';
+                formEl.style.pointerEvents = 'auto';
+                
+                if (!response.ok) {
+                    showMessage(
+                        data.message || 'Error al verificar el código',
+                        'error'
+                    );
+                    return;
+                }
+                
+                showMessage(
+                    '✅ ' + data.message + ' Serás redirigido en 3 segundos...',
+                    'success'
+                );
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
+                
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                formEl.style.opacity = '1';
+                formEl.style.pointerEvents = 'auto';
+                
+                console.error('Error:', error);
+                showMessage(
+                    'Error de conexión. Intenta más tarde.',
+                    'error'
+                );
+            }
+        }
+        
+        async function handleResend() {
+            const userId = document.getElementById('userId').value.trim();
+            const messageEl = document.getElementById('message');
+            
+            if (!userId) {
+                showMessage('Ingresa tu ID de usuario', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/resend-confirmation`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showMessage(data.message || 'Error al reenviar', 'error');
+                    return;
+                }
+                
+                showMessage(
+                    '📧 Nuevo código enviado a tu email',
+                    'info'
+                );
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión', 'error');
+            }
+        }
+        
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+        }
+        
+        // Autocompletar si viene en parámetros
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        if (userId) {
+            document.getElementById('userId').value = userId;
+            document.getElementById('code').focus();
+        }
+    </script>
+</body>
+</html>

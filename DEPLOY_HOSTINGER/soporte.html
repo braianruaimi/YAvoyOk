@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Soporte Técnico 24/7 - YAvoy">
+  <meta name="theme-color" content="#06b6d4">
+  <title>Soporte Técnico - YAvoy</title>
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+  <style>
+    /* ==========================================
+       YAVOY v3.1 - SOPORTE CON TEMA CLARO/OSCURO
+       ========================================== */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ==================== TEMA OSCURO (DEFAULT) ==================== */
+    :root[data-theme="dark"] {
+      --bg-dark: #0f1724;
+      --bg-card: rgba(11, 18, 32, 0.85);
+      --cyan: #06b6d4;
+      --cyan-glow: rgba(6, 182, 212, 0.3);
+      --gold: #fbbf24;
+      --gold-glow: rgba(251, 191, 36, 0.3);
+      --white: #ffffff;
+      --gray: #94a3b8;
+      --success: #10b981;
+      --color-fondo: #0f1724;
+      --color-superficie: rgba(11, 18, 32, 0.85);
+      --color-texto: #ffffff;
+      --color-texto-secundario: #94a3b8;
+      --color-borde: rgba(148, 163, 184, 0.2);
+      --color-primario: #06b6d4;
+      --color-acento: #fbbf24;
+      --color-exito: #10b981;
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --orb-1-opacity: 1;
+      --orb-2-opacity: 1;
+      --orb-3-opacity: 1;
+    }
+
+    /* ==================== TEMA CLARO ==================== */
+    :root[data-theme="light"] {
+      --bg-dark: #f0f4f8;
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --cyan: #0891b2;
+      --cyan-glow: rgba(8, 145, 178, 0.15);
+      --gold: #d97706;
+      --gold-glow: rgba(217, 119, 6, 0.15);
+      --white: #1e293b;
+      --gray: #475569;
+      --success: #059669;
+      --color-fondo: #f0f4f8;
+      --color-superficie: rgba(255, 255, 255, 0.95);
+      --color-texto: #1e293b;
+      --color-texto-secundario: #475569;
+      --color-borde: rgba(71, 85, 105, 0.2);
+      --color-primario: #0891b2;
+      --color-acento: #d97706;
+      --color-exito: #059669;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --orb-1-opacity: 0.3;
+      --orb-2-opacity: 0.3;
+      --orb-3-opacity: 0.3;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--color-fondo);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--color-texto);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* ==================== FONDO ANIMADO ==================== */
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 20s infinite ease-in-out;
+      transition: opacity 0.3s ease;
+    }
+
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: var(--cyan-glow);
+      opacity: var(--orb-1-opacity);
+      top: -200px;
+      right: -200px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--gold-glow);
+      opacity: var(--orb-2-opacity);
+      bottom: -100px;
+      left: -100px;
+      animation-delay: -7s;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: rgba(16, 185, 129, 0.2);
+      opacity: var(--orb-3-opacity);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -14s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translate(0, 0);
+      }
+      33% {
+        transform: translate(100px, -100px);
+      }
+      66% {
+        transform: translate(-100px, 100px);
+      }
+    }
+
+    /* ==================== NAVEGACIÓN ==================== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--bg-card);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--color-borde);
+      z-index: 100;
+      padding: 15px 0;
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, var(--cyan), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* ==================== BOTÓN DE TEMA ==================== */
+    .theme-toggle {
+      background: var(--color-superficie);
+      border: 1px solid var(--color-borde);
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 22px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 0 8px 25px var(--shadow-color);
+    }
+
+    .btn-volver {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .btn-volver:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--shadow-color);
+    }
+
+    /* ==================== CONTENIDO ==================== */
+    .soporte-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 20px 40px;
+      min-height: 100vh;
+    }
+
+    .soporte-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .soporte-header h1 {
+      font-size: 3rem;
+      background: linear-gradient(135deg, var(--cyan), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .soporte-subtitle {
+      color: var(--color-texto-secundario);
+      font-size: 1.2rem;
+    }
+
+    .soporte-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    /* ==================== CHAT WIDGET ==================== */
+    .chat-widget {
+      background: var(--color-superficie);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      border: 1px solid var(--color-borde);
+      transition: all 0.3s ease;
+    }
+
+    .chat-widget:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px var(--shadow-color);
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      padding: 25px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .chat-avatar {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .chat-info h3 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .chat-status {
+      font-size: 0.95rem;
+      opacity: 0.95;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse-status 2s ease-in-out infinite;
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    @keyframes pulse-status {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.95); }
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 25px;
+      background: var(--color-fondo);
+      transition: background 0.3s ease;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: var(--color-fondo);
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: var(--color-borde);
+      border-radius: 4px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan);
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+      box-shadow: 0 4px 10px var(--shadow-color);
+    }
+
+    .message.bot .message-avatar {
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+    }
+
+    .message.user .message-avatar {
+      background: linear-gradient(135deg, var(--gold), #d97706);
+    }
+
+    .message-content {
+      max-width: 70%;
+    }
+
+    .message-bubble {
+      padding: 14px 18px;
+      border-radius: 16px;
+      line-height: 1.6;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      transition: all 0.3s ease;
+    }
+
+    .message.bot .message-bubble {
+      background: var(--color-superficie);
+      border: 1px solid var(--color-borde);
+      border-bottom-left-radius: 4px;
+      color: var(--color-texto);
+    }
+
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-time {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-top: 6px;
+      padding: 0 10px;
+      color: var(--color-texto-secundario);
+    }
+
+    /* ==================== RATING BUTTONS ==================== */
+    .message-rating {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 0 10px;
+    }
+
+    .rating-btn {
+      background: var(--color-superficie);
+      border: 1px solid var(--color-borde);
+      border-radius: 8px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      color: var(--color-texto);
+      font-weight: 500;
+    }
+
+    .rating-btn:hover {
+      background: var(--cyan);
+      color: white;
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+    }
+
+    .rating-btn.rated {
+      background: var(--color-exito);
+      color: white;
+      border-color: var(--color-exito);
+    }
+
+    /* ==================== SUGGESTIONS ==================== */
+    .suggestions-container {
+      padding: 15px 20px;
+      background: var(--color-fondo);
+      border-top: 1px solid var(--color-borde);
+      display: none;
+      transition: all 0.3s ease;
+    }
+
+    .suggestions-container.show {
+      display: block;
+    }
+
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .suggestion-chip {
+      padding: 8px 16px;
+      background: var(--color-superficie);
+      border: 1px solid var(--color-borde);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--color-texto);
+      font-weight: 500;
+    }
+
+    .suggestion-chip:hover {
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      color: white;
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+    }
+
+    /* ==================== CHAT INPUT ==================== */
+    .chat-input-area {
+      padding: 20px;
+      background: var(--color-superficie);
+      border-top: 1px solid var(--color-borde);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 12px;
+      position: relative;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 1px solid var(--color-borde);
+      border-radius: 12px;
+      background: var(--color-fondo);
+      color: var(--color-texto);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    }
+
+    .chat-input::placeholder {
+      color: var(--color-texto-secundario);
+    }
+
+    .send-btn {
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+    }
+
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+    }
+
+    .send-btn:active {
+      transform: translateY(0);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ==================== ACCIÓN RÁPIDA ==================== */
+    .quick-actions {
+      background: var(--color-superficie);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      border: 1px solid var(--color-borde);
+      transition: all 0.3s ease;
+    }
+
+    .quick-actions h2 {
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      color: var(--color-texto);
+      background: linear-gradient(135deg, var(--cyan), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .action-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .action-card {
+      background: var(--color-fondo);
+      border: 1px solid var(--color-borde);
+      border-radius: 12px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .action-card:hover {
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      border-color: var(--cyan);
+      transform: translateX(5px);
+      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+    }
+
+    .action-card:hover h4,
+    .action-card:hover p {
+      color: white;
+    }
+
+    .action-card h4 {
+      font-size: 1rem;
+      margin-bottom: 5px;
+      color: var(--color-texto);
+      transition: color 0.3s ease;
+    }
+
+    .action-card p {
+      font-size: 0.85rem;
+      color: var(--color-texto-secundario);
+      margin: 0;
+      transition: color 0.3s ease;
+    }
+
+    /* ==================== KNOWLEDGE BASE ==================== */
+    .knowledge-base {
+      background: var(--color-superficie);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      border: 1px solid var(--color-borde);
+      transition: all 0.3s ease;
+    }
+
+    .knowledge-base h2 {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--cyan), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .kb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+
+    .kb-category h3 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: var(--color-texto);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--cyan);
+    }
+
+    .kb-item {
+      padding: 12px 16px;
+      background: var(--color-fondo);
+      border: 1px solid var(--color-borde);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--color-texto);
+    }
+
+    .kb-item:hover {
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      color: white;
+      border-color: var(--cyan);
+      transform: translateX(8px);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+    }
+
+    /* ==================== CHAT CONTROLS ==================== */
+    .chat-controls {
+      display: flex;
+      gap: 10px;
+      padding: 12px 20px;
+      background: var(--color-superficie);
+      border-top: 1px solid var(--color-borde);
+      flex-wrap: wrap;
+      transition: all 0.3s ease;
+    }
+
+    .control-btn {
+      padding: 8px 16px;
+      background: var(--color-fondo);
+      border: 1px solid var(--color-borde);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      color: var(--color-texto);
+      font-weight: 500;
+    }
+
+    .control-btn:hover {
+      background: var(--cyan);
+      color: white;
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+
+    .control-btn.active {
+      background: linear-gradient(135deg, var(--cyan), #0891b2);
+      color: white;
+      border-color: var(--cyan);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 1024px) {
+      .soporte-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-actions {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .soporte-header h1 {
+        font-size: 2rem;
+      }
+
+      .soporte-subtitle {
+        font-size: 1rem;
+      }
+
+      .chat-widget {
+        height: 500px;
+      }
+
+      .kb-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-logo {
+        font-size: 1.5rem;
+      }
+
+      .theme-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+
+      .btn-volver {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .text-center {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    /* ==================== ANIMACIONES ADICIONALES ==================== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .chat-widget,
+    .quick-actions,
+    .knowledge-base {
+      animation: fadeIn 0.6s ease;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Fondo Animado -->
+  <div class="background-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Navegación -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">🚀 YAvoy</a>
+      <div class="nav-buttons">
+        <button class="theme-toggle" id="themeToggle" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
+        <a href="index.html" class="btn-volver">← Volver</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="soporte-container">
+    <div class="soporte-header">
+      <h1>💬 Soporte Técnico 24/7</h1>
+      <p class="soporte-subtitle">Estamos aquí para ayudarte en todo momento</p>
+    </div>
+
+    <div class="soporte-grid">
+      <!-- Chat Widget -->
+      <div class="chat-widget">
+        <div class="chat-header">
+          <div class="chat-avatar">🤖</div>
+          <div class="chat-info">
+            <h3>Asistente YAvoy</h3>
+            <div class="chat-status">
+              <span class="status-dot"></span>
+              En línea
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <div class="message bot">
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+              <div class="message-bubble">
+                ¡Hola! 👋 Soy el asistente virtual de YAvoy. ¿En qué puedo ayudarte hoy?
+              </div>
+              <div class="message-time">Justo ahora</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="suggestions-container show" id="suggestionsContainer">
+          <div class="suggestion-chips" id="suggestionChips">
+            <div class="suggestion-chip" data-suggestion="¿Cómo hago un pedido?">📦 Hacer pedido</div>
+            <div class="suggestion-chip" data-suggestion="¿Cómo rastrear mi pedido?">📍 Rastrear</div>
+            <div class="suggestion-chip" data-suggestion="Problemas con pagos">💳 Pagos</div>
+          </div>
+        </div>
+
+        <div class="chat-controls">
+          <button class="control-btn" id="clearChat">🗑️ Limpiar</button>
+          <button class="control-btn" id="exportChat">💾 Exportar</button>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu mensaje...">
+            <button class="send-btn" id="sendBtn">Enviar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2>⚡ Acciones Rápidas</h2>
+        <div class="action-grid">
+          <div class="action-card" data-question="¿Cómo registrarme?">
+            <h4>👤 Crear Cuenta</h4>
+            <p>Guía de registro paso a paso</p>
+          </div>
+
+          <div class="action-card" data-question="¿Cómo hago un pedido?">
+            <h4>📦 Hacer un Pedido</h4>
+            <p>Guía para clientes</p>
+          </div>
+
+          <div class="action-card" data-question="Problemas con pagos">
+            <h4>💳 Problemas de Pago</h4>
+            <p>Ayuda con métodos de pago</p>
+          </div>
+
+          <div class="action-card" data-question="No puedo iniciar sesión">
+            <h4>🔐 Acceso a Cuenta</h4>
+            <p>Problemas de inicio de sesión</p>
+          </div>
+
+          <div class="action-card" data-question="Contacto con administrador">
+            <h4>👨‍💼 Soporte Humano</h4>
+            <p>Hablar con un administrador</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Knowledge Base -->
+    <div class="knowledge-base">
+      <h2>📚 Base de Conocimientos</h2>
+      <div class="kb-grid">
+        <div class="kb-category">
+          <h3>🛍️ Para Clientes</h3>
+          <div class="kb-item" data-topic="hacer-pedido">¿Cómo hacer un pedido?</div>
+          <div class="kb-item" data-topic="rastrear-pedido">¿Cómo rastrear mi pedido?</div>
+          <div class="kb-item" data-topic="cancelar-pedido">¿Puedo cancelar un pedido?</div>
+          <div class="kb-item" data-topic="tiempo-entrega">Tiempos de entrega</div>
+          <div class="kb-item" data-topic="costos-envio">Costos de envío</div>
+        </div>
+
+        <div class="kb-category">
+          <h3>🏪 Para Comercios</h3>
+          <div class="kb-item" data-topic="registro-comercio">Proceso de registro</div>
+          <div class="kb-item" data-topic="gestionar-pedidos">Gestionar pedidos</div>
+          <div class="kb-item" data-topic="actualizar-datos">Actualizar información</div>
+          <div class="kb-item" data-topic="horarios">Configurar horarios</div>
+          <div class="kb-item" data-topic="promociones">Crear promociones</div>
+        </div>
+
+        <div class="kb-category">
+          <h3>🚴 Para Repartidores</h3>
+          <div class="kb-item" data-topic="registro-repartidor">Requisitos y registro</div>
+          <div class="kb-item" data-topic="ganancias">¿Cuánto puedo ganar?</div>
+          <div class="kb-item" data-topic="aceptar-pedidos">Aceptar pedidos</div>
+          <div class="kb-item" data-topic="pagos-repartidor">Sistema de pagos</div>
+          <div class="kb-item" data-topic="disponibilidad">Horarios de trabajo</div>
+        </div>
+
+        <div class="kb-category">
+          <h3>⚙️ Problemas Técnicos</h3>
+          <div class="kb-item" data-topic="no-carga">La página no carga</div>
+          <div class="kb-item" data-topic="errores-login">Errores al iniciar sesión</div>
+          <div class="kb-item" data-topic="notificaciones">Problemas con notificaciones</div>
+          <div class="kb-item" data-topic="actualizar-app">Actualizar la aplicación</div>
+          <div class="kb-item" data-topic="limpiar-cache">Limpiar caché</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="index.html" class="btn-volver">← Volver al Inicio</a>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // FUNCIONALIDAD DE TEMA CLARO/OSCURO
+    // ==========================================
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    
+    // Cargar tema guardado
+    const savedTheme = localStorage.getItem('yavoy-theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+    
+    // Toggle de tema
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('yavoy-theme', newTheme);
+      updateThemeIcon(newTheme);
+      
+      // Animación del botón
+      themeToggle.style.transform = 'scale(0.9) rotate(360deg)';
+      setTimeout(() => {
+        themeToggle.style.transform = 'scale(1) rotate(0deg)';
+      }, 300);
+    });
+    
+    function updateThemeIcon(theme) {
+      themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+      themeToggle.title = theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
+    }
+
+    // ==========================================
+    // FUNCIONALIDAD DEL CHAT
+    // ==========================================
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+    const clearChatBtn = document.getElementById('clearChat');
+    const exportChatBtn = document.getElementById('exportChat');
+
+    // Enviar mensaje
+    function sendMessage() {
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      // Agregar mensaje del usuario
+      addMessage(message, 'user');
+      chatInput.value = '';
+      
+      // Ocultar sugerencias
+      suggestionsContainer.classList.remove('show');
+
+      // Simular respuesta del bot (después de un delay)
+      setTimeout(() => {
+        const response = getBotResponse(message);
+        addMessage(response, 'bot');
+      }, 800);
+    }
+
+    function addMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.textContent = sender === 'bot' ? '🤖' : '👤';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.textContent = text;
+      
+      const time = document.createElement('div');
+      time.className = 'message-time';
+      time.textContent = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      
+      content.appendChild(bubble);
+      content.appendChild(time);
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(content);
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getBotResponse(message) {
+      const lowerMsg = message.toLowerCase();
+      
+      if (lowerMsg.includes('pedido') || lowerMsg.includes('comprar')) {
+        return '📦 Para hacer un pedido: 1) Ingresa a tu cuenta, 2) Busca el comercio que deseas, 3) Selecciona productos, 4) Confirma tu dirección y 5) Realiza el pago. ¿Necesitas más ayuda?';
+      } else if (lowerMsg.includes('rastrear') || lowerMsg.includes('seguir')) {
+        return '📍 Puedes rastrear tu pedido en tiempo real desde la sección "Mis Pedidos". También recibirás notificaciones en cada etapa de la entrega.';
+      } else if (lowerMsg.includes('pago') || lowerMsg.includes('método')) {
+        return '💳 Aceptamos tarjetas de crédito/débito, transferencia bancaria, MercadoPago y efectivo. ¿Qué método prefieres usar?';
+      } else if (lowerMsg.includes('registro') || lowerMsg.includes('cuenta')) {
+        return '👤 Para registrarte: 1) Haz clic en "Registrarse", 2) Elige tu tipo de cuenta (Cliente, Comercio o Repartidor), 3) Completa el formulario, 4) Verifica tu email. ¡Listo!';
+      } else if (lowerMsg.includes('admin') || lowerMsg.includes('humano') || lowerMsg.includes('persona')) {
+        return '👨‍💼 Te conecto con un administrador. Por favor envía un email a soporte@yavoy.app o llama al +54 351 XXX-XXXX. Horario de atención: Lun-Vie 9-18hs.';
+      } else {
+        return '¡Entiendo! Puedo ayudarte con: hacer pedidos, rastrear entregas, problemas de pago, registro de cuentas y más. ¿Qué necesitas específicamente?';
+      }
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Sugerencias
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chatInput.value = chip.dataset.suggestion;
+        sendMessage();
+      });
+    });
+
+    // Acciones rápidas
+    document.querySelectorAll('.action-card').forEach(card => {
+      card.addEventListener('click', () => {
+        chatInput.value = card.dataset.question;
+        sendMessage();
+      });
+    });
+
+    // Items de knowledge base
+    document.querySelectorAll('.kb-item').forEach(item => {
+      item.addEventListener('click', () => {
+        chatInput.value = item.textContent;
+        sendMessage();
+        // Scroll al chat
+        document.querySelector('.chat-widget').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Limpiar chat
+    clearChatBtn.addEventListener('click', () => {
+      if (confirm('¿Estás seguro de que quieres limpiar el chat?')) {
+        chatMessages.innerHTML = `
+          <div class="message bot">
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+              <div class="message-bubble">
+                ¡Hola! 👋 Soy el asistente virtual de YAvoy. ¿En qué puedo ayudarte hoy?
+              </div>
+              <div class="message-time">Justo ahora</div>
+            </div>
+          </div>
+        `;
+        suggestionsContainer.classList.add('show');
+      }
+    });
+
+    // Exportar chat
+    exportChatBtn.addEventListener('click', () => {
+      const messages = Array.from(chatMessages.querySelectorAll('.message')).map(msg => {
+        const sender = msg.classList.contains('user') ? 'Usuario' : 'Bot';
+        const text = msg.querySelector('.message-bubble').textContent;
+        const time = msg.querySelector('.message-time').textContent;
+        return `[${time}] ${sender}: ${text}`;
+      }).join('\n');
+      
+      const blob = new Blob([messages], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chat-yavoy-${new Date().toISOString().split('T')[0]}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+
+  <script src="js/soporte-chatbot.js"></script>
+</body>
+</html>

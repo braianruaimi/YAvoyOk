@@ -1,0 +1,353 @@
+/**
+ * YAvoy Theme Color Enhancement CSS
+ * Complementa el polyfill JavaScript para máxima compatibilidad
+ */
+
+/* Variables CSS para compatibilidad universal */
+:root {
+  --theme-primary: #06b6d4;
+  --theme-primary-rgb: 6, 182, 212;
+  --theme-alpha-05: rgba(6, 182, 212, 0.05);
+  --theme-alpha-10: rgba(6, 182, 212, 0.1);
+  --theme-alpha-20: rgba(6, 182, 212, 0.2);
+  --theme-alpha-30: rgba(6, 182, 212, 0.3);
+
+  /* Colores específicos por página */
+  --ceo-theme: #06b6d4;
+  --comercio-theme: #f59e0b;
+  --repartidor-theme: #667eea;
+}
+
+/* Soporte para diferentes temas por página */
+[data-theme="ceo"] {
+  --theme-primary: var(--ceo-theme);
+  --theme-primary-rgb: 6, 182, 212;
+}
+
+[data-theme="comercio"] {
+  --theme-primary: var(--comercio-theme);
+  --theme-primary-rgb: 245, 158, 11;
+}
+
+[data-theme="repartidor"] {
+  --theme-primary: var(--repartidor-theme);
+  --theme-primary-rgb: 102, 126, 234;
+}
+
+/* ===== ELEMENTOS DEL NAVEGADOR (Polyfill Visual) ===== */
+
+/* Selection color universal */
+::selection {
+  background-color: var(--theme-alpha-20);
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: var(--theme-alpha-20);
+  color: inherit;
+}
+
+/* Focus indicators */
+*:focus {
+  outline: 2px solid var(--theme-primary);
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--theme-primary);
+  outline-offset: 2px;
+}
+
+/* ===== SCROLLBARS (Cross-browser) ===== */
+
+/* WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--theme-alpha-05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--theme-alpha-20);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-alpha-30);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--theme-primary);
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--theme-alpha-05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--theme-alpha-20);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-alpha-30);
+}
+
+/* Firefox - Solo si soporta scrollbar-color */
+@supports (scrollbar-color: red blue) {
+
+  html,
+  body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-alpha-20) var(--theme-alpha-05);
+  }
+}
+
+/* Fallback para navegadores sin soporte */
+@supports not (scrollbar-width: thin) {
+
+  html,
+  body {
+    overflow: auto;
+  }
+}
+
+/* ===== FORM ELEMENTS (Theme-aware) ===== */
+
+/* Progress bars */
+progress {
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--theme-alpha-10);
+}
+
+progress::-webkit-progress-bar {
+  background-color: var(--theme-alpha-10);
+  border-radius: 4px;
+}
+
+progress::-webkit-progress-value {
+  background-color: var(--theme-primary);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+progress::-moz-progress-bar {
+  background-color: var(--theme-primary);
+  border-radius: 4px;
+}
+
+/* Range inputs */
+input[type="range"] {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-track {
+  background: var(--theme-alpha-20);
+  height: 4px;
+  border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  background: var(--theme-primary);
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-track {
+  background: var(--theme-alpha-20);
+  height: 4px;
+  border-radius: 2px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: var(--theme-primary);
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+/* Checkboxes */
+input[type="checkbox"]:checked {
+  background-color: var(--theme-primary);
+  border-color: var(--theme-primary);
+}
+
+input[type="radio"]:checked {
+  background-color: var(--theme-primary);
+  border-color: var(--theme-primary);
+}
+
+/* ===== UI ACCENTS ===== */
+
+/* Links que respetan el theme */
+.theme-link {
+  color: var(--theme-primary);
+  transition: color 0.2s ease;
+}
+
+.theme-link:hover {
+  color: rgba(var(--theme-primary-rgb), 0.8);
+}
+
+/* Botones que respetan el theme */
+.theme-button {
+  background-color: var(--theme-primary);
+  border-color: var(--theme-primary);
+  transition: all 0.2s ease;
+}
+
+.theme-button:hover {
+  background-color: rgba(var(--theme-primary-rgb), 0.9);
+  transform: translateY(-1px);
+}
+
+/* Badges y tags */
+.theme-badge {
+  background-color: var(--theme-alpha-10);
+  color: var(--theme-primary);
+  border: 1px solid var(--theme-alpha-20);
+}
+
+/* Borders temáticos */
+.theme-border {
+  border-color: var(--theme-alpha-20);
+}
+
+/* Shadows temáticos */
+.theme-shadow {
+  box-shadow: 0 4px 6px var(--theme-alpha-10);
+}
+
+.theme-shadow:hover {
+  box-shadow: 0 8px 15px var(--theme-alpha-20);
+}
+
+/* ===== ANIMACIONES Y TRANSICIONES ===== */
+
+/* Loading indicators */
+.theme-loading {
+  background: linear-gradient(90deg,
+      var(--theme-alpha-10) 25%,
+      var(--theme-alpha-20) 50%,
+      var(--theme-alpha-10) 75%);
+  background-size: 200% 100%;
+  animation: theme-loading 1.5s infinite;
+}
+
+@keyframes theme-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Pulse effect */
+.theme-pulse {
+  animation: theme-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes theme-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 var(--theme-alpha-30);
+  }
+
+  50% {
+    opacity: .8;
+    box-shadow: 0 0 0 8px rgba(var(--theme-primary-rgb), 0);
+  }
+}
+
+/* ===== UTILIDADES ESPECÍFICAS ===== */
+
+/* Elementos que se adaptan automáticamente al theme */
+.theme-aware {
+  transition: all 0.3s ease;
+}
+
+.theme-aware:hover {
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px var(--theme-alpha-10);
+}
+
+/* Overlays */
+.theme-overlay {
+  background-color: rgba(var(--theme-primary-rgb), 0.1);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Gradientes temáticos */
+.theme-gradient {
+  background: linear-gradient(135deg,
+      var(--theme-primary) 0%,
+      rgba(var(--theme-primary-rgb), 0.8) 100%);
+}
+
+/* ===== RESPONSIVE ENHANCEMENTS ===== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-alpha-05: rgba(6, 182, 212, 0.08);
+    --theme-alpha-10: rgba(6, 182, 212, 0.15);
+    --theme-alpha-20: rgba(6, 182, 212, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+
+@media print {
+
+  .theme-aware,
+  .theme-button,
+  .theme-link {
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}

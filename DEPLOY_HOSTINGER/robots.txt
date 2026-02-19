@@ -1,0 +1,81 @@
+# ========================================
+# YAVOY v3.1 - robots.txt
+# ========================================
+# Configuración para crawlers de motores de búsqueda
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /acerca-de.html
+Allow: /faq.html
+Allow: /preguntas-frecuentes.html
+Allow: /terminos.html
+Allow: /privacidad.html
+
+# Bloquear paneles de administración
+Disallow: /panel-admin.html
+Disallow: /panel-ceo-master.html
+Disallow: /dashboard-ceo.html
+Disallow: /admin-soporte.html
+
+# Bloquear paneles de usuarios
+Disallow: /panel-comercio.html
+Disallow: /panel-repartidor.html
+Disallow: /panel-cliente-pro.html
+Disallow: /comercio-app.html
+Disallow: /repartidor-app.html
+
+# Bloquear páginas de autenticación
+Disallow: /login.html
+Disallow: /reset-password.html
+Disallow: /verificar-email.html
+Disallow: /test-2fa.html
+Disallow: /test-login-comercio.html
+Disallow: /test-login-repartidor.html
+
+# Bloquear páginas de pago
+Disallow: /pagar-pedido.html
+Disallow: /pago-exitoso.html
+Disallow: /pago-fallido.html
+Disallow: /pago-pendiente.html
+Disallow: /configurar-pago.html
+
+# Bloquear archivos de test y diagnóstico
+Disallow: /diagnostico-sistema.html
+Disallow: /agregar-comercio-test.html
+Disallow: /demo-map-engine.html
+
+# Bloquear directorios del sistema
+Disallow: /src/
+Disallow: /models/
+Disallow: /registros/
+Disallow: /logs/
+Disallow: /backup/
+Disallow: /node_modules/
+Disallow: /*.js$
+Disallow: /*.json$
+Disallow: /*.env$
+
+# Permitir recursos estáticos
+Allow: /css/
+Allow: /js/*.js
+Allow: /icons/
+
+# Sitemap
+Sitemap: https://yavoy.space/sitemap.xml
+
+# Crawl-delay para evitar sobrecarga
+Crawl-delay: 10
+
+# User-agents específicos
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 10
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 10

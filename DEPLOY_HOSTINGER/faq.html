@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Preguntas Frecuentes sobre YAvoy - Encuentra respuestas rápidas a tus dudas.">
+  <title>Preguntas Frecuentes (FAQ) - YAvoy</title>
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="icon" type="image/png" href="icons/icon-yavoy.png">
+  <style>
+    .faq-container {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 40px 20px;
+    }
+
+    .faq-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .faq-header h1 {
+      font-size: 2.5rem;
+      color: var(--color-primario);
+      margin-bottom: 15px;
+    }
+
+    .faq-header p {
+      font-size: 1.2rem;
+      color: var(--color-texto);
+    }
+
+    .faq-categorias {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .faq-categoria-btn {
+      padding: 10px 20px;
+      background: var(--color-superficie);
+      border: 1px solid var(--color-borde);
+      border-radius: 8px;
+      color: var(--color-texto);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .faq-categoria-btn:hover,
+    .faq-categoria-btn.active {
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
+    }
+
+    .faq-seccion {
+      margin-bottom: 30px;
+    }
+
+    .faq-seccion h2 {
+      color: var(--color-primario);
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .faq-item {
+      background: var(--color-superficie);
+      border-radius: 8px;
+      margin-bottom: 15px;
+      overflow: hidden;
+      border: 1px solid var(--color-borde);
+      transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+      border-color: var(--color-primario);
+    }
+
+    .faq-question {
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: var(--color-texto-claro);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .faq-question:hover {
+      color: var(--color-primario);
+    }
+
+    .faq-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+      color: var(--color-primario);
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      padding: 0 20px;
+      color: var(--color-texto);
+      line-height: 1.8;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+      padding: 0 20px 20px 20px;
+    }
+
+    .faq-answer p {
+      margin: 0 0 12px 0;
+    }
+
+    .faq-answer ul {
+      margin: 10px 0;
+      padding-left: 25px;
+    }
+
+    .faq-answer li {
+      margin-bottom: 8px;
+    }
+
+    .contacto-box {
+      background: linear-gradient(135deg, var(--color-primario), #0891b2);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    .contacto-box h3 {
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .contacto-box p {
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 20px;
+    }
+
+    .contacto-btns {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .contacto-btn {
+      padding: 12px 24px;
+      background: white;
+      color: var(--color-primario);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .contacto-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-volver {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 30px;
+      background: var(--color-primario);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-volver:hover {
+      background: #0891b2;
+      transform: translateY(-2px);
+    }
+
+    .link-primario {
+      color: var(--color-primario);
+    }
+
+    @media (max-width: 768px) {
+      .faq-header h1 {
+        font-size: 2rem;
+      }
+
+      .faq-categorias {
+        flex-direction: column;
+      }
+
+      .faq-categoria-btn {
+        width: 100%;
+      }
+
+      .contacto-btns {
+        flex-direction: column;
+      }
+
+      .contacto-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="faq-container">
+    <div class="faq-header">
+      <h1>❓ Preguntas Frecuentes</h1>
+      <p>Encuentra respuestas rápidas a las dudas más comunes</p>
+    </div>
+
+    <!-- Categorías -->
+    <div class="faq-categorias">
+      <button class="faq-categoria-btn active" onclick="mostrarCategoria('todos')">Todas</button>
+      <button class="faq-categoria-btn" onclick="mostrarCategoria('clientes')">🛍️ Clientes</button>
+      <button class="faq-categoria-btn" onclick="mostrarCategoria('comercios')">🏪 Comercios</button>
+      <button class="faq-categoria-btn" onclick="mostrarCategoria('repartidores')">🚴 Repartidores</button>
+      <button class="faq-categoria-btn" onclick="mostrarCategoria('general')">⚙️ General</button>
+    </div>
+
+    <!-- Para Clientes -->
+    <div class="faq-seccion" data-categoria="clientes">
+      <h2>🛍️ Para Clientes</h2>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cómo hago un pedido?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Es muy simple:</p>
+          <ol>
+            <li>Haz clic en "Hacer Pedido" en la página principal.</li>
+            <li>Completa el formulario con los detalles de tu pedido.</li>
+            <li>Un repartidor cercano tomará tu pedido.</li>
+            <li>Recibirás actualizaciones sobre el estado de tu entrega.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cuánto cuesta el envío?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            El costo del envío depende de la distancia y es acordado entre tú y el comercio. 
+            Generalmente oscila entre $200 y $500 para entregas locales.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cuánto tarda la entrega?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Los tiempos promedio son:
+          </p>
+          <ul>
+            <li><strong>Entregas locales:</strong> 20-40 minutos</li>
+            <li><strong>Zonas cercanas:</strong> 30-60 minutos</li>
+          </ul>
+          <p>El tiempo exacto depende de la disponibilidad del repartidor y la distancia.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Puedo rastrear mi pedido?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Sí, cuando tu pedido es aceptado recibirás actualizaciones sobre su estado:
+            Pendiente → Aceptado → En Camino → Entregado.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Qué métodos de pago aceptan?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Los métodos de pago son acordados directamente con el comercio. 
+            Generalmente aceptan: efectivo, transferencia, MercadoPago o tarjetas.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Para Comercios -->
+    <div class="faq-seccion" data-categoria="comercios">
+      <h2>🏪 Para Comercios</h2>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cómo me registro como comercio?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>El registro es rápido y gratuito:</p>
+          <ol>
+            <li>Haz clic en "Soy Comercio" → "Registrarme".</li>
+            <li>Completa el formulario con tus datos (nombre, categoría, WhatsApp, email).</li>
+            <li>Envía el formulario y listo, ya aparecerás en la plataforma.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cuánto cuesta registrarse?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            <strong>¡Es completamente GRATIS!</strong> No hay costos de registro ni mensualidades. 
+            Solo pagas el costo del envío cuando solicitas una entrega.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cómo recibo los pedidos?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Los clientes te contactan directamente por WhatsApp o teléfono. 
+            Luego coordinas la entrega con el repartidor disponible.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Puedo modificar mis datos después de registrarme?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Sí, contáctanos a <a href="mailto:YAvoy5@gmail.com" class="link-primary">YAvoy5@gmail.com</a> 
+            con tus datos actualizados y lo modificamos inmediatamente.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Para Repartidores -->
+    <div class="faq-seccion" data-categoria="repartidores">
+      <h2>🚴 Para Repartidores</h2>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Qué necesito para ser repartidor?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Requisitos básicos:</p>
+          <ul>
+            <li>✅ Ser mayor de 18 años</li>
+            <li>✅ Tener DNI argentino</li>
+            <li>✅ Poseer vehículo propio (moto, bici o auto)</li>
+            <li>✅ Documentación del vehículo vigente</li>
+            <li>✅ Celular con internet</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cuánto puedo ganar?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            <strong>Recibes el 80% del costo de envío.</strong> Por ejemplo:
+          </p>
+          <ul>
+            <li>Envío de $300 → Ganas $240</li>
+            <li>Envío de $500 → Ganas $400</li>
+          </ul>
+          <p>Cuantas más entregas hagas, más ganas. Además, hay beneficios por entregas rápidas.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cómo recibo los pagos?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Los pagos se coordinan directamente con el comercio o cliente al momento de la entrega. 
+            Puedes recibir efectivo, transferencia o MercadoPago.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Puedo elegir qué entregas hacer?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            ¡Sí! Eres completamente independiente. Ves los pedidos disponibles y decides cuáles tomar 
+            según tu ubicación, horario y preferencia.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Qué pasa si tengo un problema durante la entrega?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Contáctanos inmediatamente por WhatsApp al +54 221 504 7962. 
+            Te ayudamos a resolver cualquier inconveniente.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- General -->
+    <div class="faq-seccion" data-categoria="general">
+      <h2>⚙️ General</h2>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿En qué zonas operan?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Actualmente operamos en <strong>Ensenada y zonas aledañas</strong>. 
+            Estamos expandiéndonos constantemente a nuevas áreas.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿YAvoy es una app móvil?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            YAvoy es una <strong>Progressive Web App (PWA)</strong>. Funciona desde tu navegador 
+            y puedes agregarla a tu pantalla de inicio para usarla como una app nativa.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Es seguro usar YAvoy?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Sí, tomamos muy en serio la seguridad. Tus datos están cifrados y nunca los compartimos 
+            sin tu consentimiento. Lee nuestra 
+            <a href="privacidad.html" class="link-primary">Política de Privacidad</a> 
+            para más detalles.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          ¿Cómo puedo contactarlos?
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Estamos disponibles para ayudarte:</p>
+          <ul>
+            <li>📧 Email: <a href="mailto:YAvoy5@gmail.com" class="link-primary">YAvoy5@gmail.com</a></li>
+            <li>📱 WhatsApp: <a href="https://wa.me/542215047962" class="link-primary">+54 221 504 7962</a></li>
+            <li>☎️ Teléfono: 2215047962</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contacto -->
+    <div class="contacto-box">
+      <h3>¿No encontraste tu respuesta?</h3>
+      <p>Estamos aquí para ayudarte. Contáctanos por cualquiera de estos medios:</p>
+      <div class="contacto-btns">
+        <a href="mailto:YAvoy5@gmail.com" class="contacto-btn">
+          📧 Email
+        </a>
+        <a href="https://wa.me/542215047962" class="contacto-btn" target="_blank" rel="noopener">
+          💬 WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="index.html" class="btn-volver">← Volver al Inicio</a>
+    </div>
+  </div>
+
+  <script>
+    function toggleFaq(element) {
+      const item = element.parentElement;
+      const wasActive = item.classList.contains('active');
+      
+      // Cerrar todos
+      document.querySelectorAll('.faq-item').forEach(faq => {
+        faq.classList.remove('active');
+      });
+      
+      // Abrir el clickeado si no estaba activo
+      if (!wasActive) {
+        item.classList.add('active');
+      }
+    }
+
+    function mostrarCategoria(categoria) {
+      // Actualizar botones
+      document.querySelectorAll('.faq-categoria-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Mostrar/ocultar secciones
+      const secciones = document.querySelectorAll('.faq-seccion');
+      secciones.forEach(seccion => {
+        if (categoria === 'todos' || seccion.dataset.categoria === categoria) {
+          seccion.style.display = 'block';
+        } else {
+          seccion.style.display = 'none';
+        }
+      });
+    }
+
+    // Cerrar FAQ al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.faq-item')) {
+        document.querySelectorAll('.faq-item').forEach(faq => {
+          faq.classList.remove('active');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
