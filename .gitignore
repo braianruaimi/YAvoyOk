@@ -47,3 +47,6 @@ coverage/
 # 🏗️ Build output
 dist/
 build/
+
+manifest.zip
+*.zip

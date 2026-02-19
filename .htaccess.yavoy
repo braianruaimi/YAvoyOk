@@ -1,0 +1,44 @@
+# ============================================
+# YAvoy v3.1 Enterprise - Proxy Reverso
+# Redirige todo el tráfico al servidor Node.js
+# ============================================
+
+RewriteEngine On
+
+# Redirigir HTTP a HTTPS (opcional, comentar si no tienes SSL)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Excluir archivos estáticos reales (CSS, JS, imágenes)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Proxy reverso a Node.js en puerto 5502
+RewriteRule ^(.*)$ http://127.0.0.1:5502/$1 [P,L]
+
+# Headers de proxy
+<IfModule mod_headers.c>
+    RequestHeader set X-Forwarded-Proto "https"
+    RequestHeader set X-Forwarded-Port "443"
+    RequestHeader set X-Real-IP "%{REMOTE_ADDR}e"
+</IfModule>
+
+# Habilitar ProxyPass (Apache 2.4+)
+<IfModule mod_proxy.c>
+    ProxyRequests Off
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:5502/
+    ProxyPassReverse / http://127.0.0.1:5502/
+    
+    # WebSocket support
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteRule ^/?(.*) "ws://127.0.0.1:5502/$1" [P,L]
+</IfModule>
+
+# Seguridad
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
