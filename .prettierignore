@@ -1,0 +1,12 @@
+node_modules/
+coverage/
+backups/
+logs/
+_BACKUP_*
+*.min.js
+*.log
+.env
+.env.*
+!.env.example
+uploads/
+registros/
